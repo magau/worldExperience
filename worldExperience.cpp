@@ -73,6 +73,7 @@ void Base_ParticlesSystem::pop_particle(string pType){
     vector <BaseParticle*> :: iterator erase_it;
     int nErase;
     int pNum;
+    int indexCorrection;
     bool eraseAll;
  
     if(pType.compare("all") == 0){
@@ -96,6 +97,7 @@ void Base_ParticlesSystem::pop_particle(string pType){
         }
         particles.clear();
     } else {
+        indexCorrection = nErase;
         pNum = 0;
         erase_it = erase_particles.end() - 1;
         for (vector <BaseParticle*>::iterator particle_it = particles.end() - 1;
@@ -107,8 +109,9 @@ void Base_ParticlesSystem::pop_particle(string pType){
                 particles.erase(particle_it);
                 pNum++;
                 erase_it--;
+                indexCorrection--;
             } else {
-                particle->index -= nErase;
+                particle->index -= indexCorrection;
             }
         }
     }
@@ -158,6 +161,8 @@ main(){
 
     Base_ParticlesSystem sys;
     sys.setup();
+    sys.add_particle(new BaseParticle());
+    sys.add_particle(new BaseParticle());
     sys.get_particlesByName();
     sys.pop_particle(8);
     sys.get_particlesByName();
