@@ -41,7 +41,6 @@ void Base_ParticlesSystem::pop_particle(string pType){
  
     if(pType.compare("all") == 0){
         eraseAll = true;
-        nErase = particles.size();
     } else {
         nErase = get_particlesByName(pType).size();
         if (nErase == particles.size()){
@@ -51,22 +50,29 @@ void Base_ParticlesSystem::pop_particle(string pType){
         }
     }
 
-    pNum = 0;
-    for (vector <BaseParticle*>::iterator particle_it = particles.end() - 1;
-                          particle_it >= particles.begin() && nErase > pNum;
-                                                            particle_it--){
-        particle = *particle_it;
-        if ( eraseAll || pType.compare(particle->pType) == 0){
+    if (eraseAll) {
+        for (vector <BaseParticle*>::iterator particle_it = particles.end() - 1;
+                                               particle_it >= particles.begin();
+                                                                 particle_it--){
+            particle = *particle_it;
             delete particle;
-            if (!eraseAll) {
+        }
+        particles.clear();
+    } else {
+        pNum = 0;
+        for (vector <BaseParticle*>::iterator particle_it = particles.end() - 1;
+                              particle_it >= particles.begin() && nErase > pNum;
+                                                                particle_it--){
+            particle = *particle_it;
+            if ( pType.compare(particle->pType) == 0){
+                delete particle;
                 particles.erase(particle_it);
                 pNum++;
+            } else {
+                particle->index--;
             }
-        } else if (!eraseAll) {
-            particle->index--;
         }
     }
-    if (eraseAll) particles.clear();
 }
 
 
