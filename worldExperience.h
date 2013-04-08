@@ -28,6 +28,7 @@ class Base_ParticlesSystem{
         void add_particle(PType particle);
         void pop_particle(int index=(int)NULL);
         void pop_particle(string pType);
+        void clear_particles();
         void setup();
         vector <BaseParticle*> get_particlesByName(string pType="all");
 };

@@ -97,6 +97,9 @@ void Base_ParticlesSystem::pop_particle(int index){
     }
 }
 
+void Base_ParticlesSystem::clear_particles(){
+    pop_particle("all");
+}
 
 template <class PType>
 //PType handles the "BaseParticle" class and all their derived classes.
@@ -143,7 +146,7 @@ main(){
     sys.get_particlesByName();
     sys.pop_particle("derivedP");
     sys.get_particlesByName();
-    sys.pop_particle("all");
+    sys.clear_particles();
     sys.get_particlesByName();
     sys.add_particle(new DerivedParticle());
     sys.add_particle(new BaseParticle());
