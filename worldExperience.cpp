@@ -33,6 +33,27 @@ vector <BaseParticle*> Base_ParticlesSystem::get_particlesByName(string pType){
     return result;
 }
 
+void Base_ParticlesSystem::pop_particle(int index){
+    BaseParticle* particle;
+
+    if (index == (int)NULL || index == particles.size() - 1) {
+        delete particles.back();
+        particles.pop_back();
+    } else {
+        for (vector <BaseParticle*>::iterator particle_it = particles.end() - 1;
+                                               particle_it >= particles.begin() + index;
+                                                                particle_it--){
+            particle = *particle_it;
+            if (index == particle->index){
+                delete particle;
+                particles.erase(particle_it);
+            } else {
+                particle->index--;
+            }
+        }
+    }
+}
+
 void Base_ParticlesSystem::pop_particle(string pType){
     BaseParticle* particle;
     int nErase;
@@ -68,28 +89,6 @@ void Base_ParticlesSystem::pop_particle(string pType){
                 delete particle;
                 particles.erase(particle_it);
                 pNum++;
-            } else {
-                particle->index--;
-            }
-        }
-    }
-}
-
-
-void Base_ParticlesSystem::pop_particle(int index){
-    BaseParticle* particle;
-
-    if (index == (int)NULL || index == particles.size() - 1) {
-        delete particles.back();
-        particles.pop_back();
-    } else {
-        for (vector <BaseParticle*>::iterator particle_it = particles.end() - 1;
-                                               particle_it >= particles.begin() + index;
-                                                                particle_it--){
-            particle = *particle_it;
-            if (index == particle->index){
-                delete particle;
-                particles.erase(particle_it);
             } else {
                 particle->index--;
             }
