@@ -34,6 +34,12 @@ vector <BaseParticle*> Base_ParticlesSystem::get_particlesByName(string pType){
 }
 
 void Base_ParticlesSystem::pop_particle(int index){
+ /*
+ Erase element from "particles" pointers vector after
+ deallocate the respective memory using the "delete"
+ function. Also redefine the "index" value of each element
+ below the erased element.
+ */
     BaseParticle* particle;
 
     if (index == (int)NULL || index == particles.size() - 1) {
@@ -55,7 +61,16 @@ void Base_ParticlesSystem::pop_particle(int index){
 }
 
 void Base_ParticlesSystem::pop_particle(string pType){
+ /*
+ Erase elements from "particles" pointers vector after
+ deallocate the respective memory using the "delete"
+ function. Also redefine the "index" value of each element
+ below the erased element.
+ */
+
     BaseParticle* particle;
+    vector <BaseParticle*> erase_particles;
+    vector <BaseParticle*> :: iterator erase_it;
     int nErase;
     int pNum;
     bool eraseAll;
@@ -63,7 +78,8 @@ void Base_ParticlesSystem::pop_particle(string pType){
     if(pType.compare("all") == 0){
         eraseAll = true;
     } else {
-        nErase = get_particlesByName(pType).size();
+        erase_particles = get_particlesByName(pType);
+        nErase = erase_particles.size();
         if (nErase == particles.size()){
             eraseAll = true;
         } else {
@@ -81,16 +97,18 @@ void Base_ParticlesSystem::pop_particle(string pType){
         particles.clear();
     } else {
         pNum = 0;
+        erase_it = erase_particles.end() - 1;
         for (vector <BaseParticle*>::iterator particle_it = particles.end() - 1;
                               particle_it >= particles.begin() && nErase > pNum;
                                                                 particle_it--){
             particle = *particle_it;
-            if ( pType.compare(particle->pType) == 0){
+            if ( particle->index == (*erase_it)->index ){
                 delete particle;
                 particles.erase(particle_it);
                 pNum++;
+                erase_it--;
             } else {
-                particle->index--;
+                particle->index -= nErase;
             }
         }
     }
@@ -141,9 +159,9 @@ main(){
     Base_ParticlesSystem sys;
     sys.setup();
     sys.get_particlesByName();
-    sys.pop_particle(3);
+    sys.pop_particle(8);
     sys.get_particlesByName();
-    sys.pop_particle("derivedP");
+    sys.pop_particle("baseP");
     sys.get_particlesByName();
     sys.clear_particles();
     sys.get_particlesByName();
