@@ -6,8 +6,8 @@ using namespace std;
 
 class BaseParticle{
     public:
-        string pType;
-        int index;
+        string iType;
+        int id;
         BaseParticle ();
 };
 
@@ -18,19 +18,24 @@ class DerivedParticle : public BaseParticle{
 
 class Base_ParticlesSystem{
     public:
-        int index;
+        int id;
         string psType;
-        string default_pType;
-        vector<BaseParticle*> particles;
+        string default_iType;
+        vector<BaseParticle*> itemsVector;
+        vector<int> freeIdBuff;
 
         Base_ParticlesSystem();
-        template <class PType>
-        void add_particle(PType particle);
-        void pop_particle(int index=(int)NULL);
-        void pop_particle(string pType);
-        void clear_particles();
+        template <class IType>
+        void add(IType item);
+        void add_itemByType(string iType="");
+        void set_default_pType(string iType);
+        void pop(int index=(int)NULL);
+        void pop_itemById(int id);
+        void pop_itemByType(string iType);
+        void reset_itemTypeById(int id, string iType="");
+        void clear();
         void setup();
-        vector <BaseParticle*> get_particlesByName(string pType="all");
+        vector <BaseParticle*> get_itemsByType(string iType="all");
 };
 
 class Derived_ParticlesSystem : public Base_ParticlesSystem{
@@ -41,7 +46,7 @@ class Derived_ParticlesSystem : public Base_ParticlesSystem{
 //class World{
 //    public:
 //    vector<Base_ParticlesSystem> base_particles_sys;
-//    void add_particles_system(string psType="basePS",string pType="baseP");
+//    void add(string psType="basePS",string iType="baseP");
 //    void get_info(string psType="all");
 //};
 
