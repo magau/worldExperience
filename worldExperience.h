@@ -6,7 +6,7 @@ using namespace std;
 
 class BaseParticle{
     public:
-        string iType;
+        string name;
         int id;
         BaseParticle ();
 };
@@ -16,26 +16,40 @@ class DerivedParticle : public BaseParticle{
         DerivedParticle();
 };
 
-class Base_ParticlesSystem{
+template <typename IType>
+class Base_ItemsSystem{
     public:
         int id;
-        string psType;
-        string default_iType;
-        vector<BaseParticle*> itemsVector;
+        string name;
+        string default_addedItemName;
+        vector<IType> itemsVector;
         vector<int> freeIdBuff;
 
-        Base_ParticlesSystem();
-        template <class IType>
+        Base_ItemsSystem();
         void add(IType item);
-        void add_itemByType(string iType="");
-        void set_default_pType(string iType);
+        void set_default_itemName(string iName);
         void pop(int index=(int)NULL);
         void pop_itemById(int id);
-        void pop_itemByType(string iType);
-        void reset_itemTypeById(int id, string iType="");
+        void pop_itemByName(string iName);
         void clear();
+        vector <IType> get_itemsByName(string iName="all");
+        virtual void add_itemByName(string iName="");
+        virtual void setup();
+        virtual void update();
+        virtual void run();
+        /*
+         "reset_itemTypeById" should be implemented in order to replace
+         old items by newers of diferent types, passing the properties
+         you plane to keep with from one to the other.
+        */
+        virtual void reset_itemTypeById(int id, string iName="");
+};
+
+class Base_ParticlesSystem : public Base_ItemsSystem<BaseParticle*>{
+    public:
+        Base_ParticlesSystem();
+        void add_itemByName(string iName="");
         void setup();
-        vector <BaseParticle*> get_itemsByType(string iType="all");
 };
 
 class Derived_ParticlesSystem : public Base_ParticlesSystem{
@@ -43,11 +57,10 @@ class Derived_ParticlesSystem : public Base_ParticlesSystem{
         Derived_ParticlesSystem();
 };
 
-//class World{
-//    public:
-//    vector<Base_ParticlesSystem> base_particles_sys;
-//    void add(string psType="basePS",string iType="baseP");
-//    void get_info(string psType="all");
-//};
+class Base_World : public Base_ItemsSystem<Base_ParticlesSystem*>{
+    public:
+        Base_World();
+        void add_itemByName(string iName="");
+};
 
 

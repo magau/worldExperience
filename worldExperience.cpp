@@ -1,26 +1,22 @@
 #include "worldExperience.h"
 
 BaseParticle::BaseParticle(){
-    iType = "baseP";
+    name = "baseP";
 }
 
 DerivedParticle::DerivedParticle(){
-    iType="derivedP";
+    name="derivedP";
 }
 
-Base_ParticlesSystem::Base_ParticlesSystem(){
-    psType = "basePS";
-    default_iType = "basePS";
-}
-
-Derived_ParticlesSystem::Derived_ParticlesSystem(){
-    psType = "derivedPS";
-    default_iType = "basePS";
-}
-
-template <class IType>
+template <typename IType> 
 //IType handles the "BaseParticle" class and all their derived classes.
-void Base_ParticlesSystem::add(IType item){
+Base_ItemsSystem<IType>::Base_ItemsSystem(){
+    name = "baseIS";
+    default_addedItemName = "baseI";
+}
+
+template <typename IType> 
+void Base_ItemsSystem<IType>::add(IType item){
     itemsVector.push_back(item);
     if (freeIdBuff.size() > 0){
         itemsVector.back()->id = freeIdBuff.back();
@@ -30,60 +26,48 @@ void Base_ParticlesSystem::add(IType item){
     }
 }
 
-void Base_ParticlesSystem::add_itemByType(string iType){
-   if (iType.size() == 0){
-       iType = default_iType;
-       cout<<"default iType:"<<default_iType<<endl;
-   } 
+template <typename IType> 
+void Base_ItemsSystem<IType>::add_itemByName(string iName){
 
-   if (iType.compare("baseP") == 0){
-       add(new BaseParticle());
-       //cout<<"add item, iType:"<<iType<<endl;
-   } else if (iType.compare("derivedP") == 0){
-       add(new DerivedParticle());
-       //cout<<"add item, iType:"<<iType<<endl;
-   }
-   /*
-    .
-    .
-    .
-       Add new item types
-   */
 }
 
-void Base_ParticlesSystem::set_default_pType(string iType){
-    default_iType = iType;
+template <typename IType> 
+void Base_ItemsSystem<IType>::set_default_itemName(string iName){
+    default_addedItemName = iName;
 }
 
-vector <BaseParticle*> Base_ParticlesSystem::get_itemsByType(string iType){
-    vector<BaseParticle*> result;
-    BaseParticle* item;
-    vector<BaseParticle*>::iterator particle_it;
+template <typename IType> 
+vector <IType> Base_ItemsSystem<IType>::get_itemsByName(string iName){
+    vector<IType> result;
+    IType item;
+    typename vector<IType>::iterator particle_it;
 
-    cout<<"psType:"<<psType<<endl;
+    cout<<"IS.name:"<<name<<endl;
     for (particle_it = itemsVector.begin();
          particle_it != itemsVector.end();
          particle_it++){
 
         item = *particle_it;
-        if (iType.compare(item->iType) == 0 || iType.compare("all") == 0){
-            cout<<" P.iType:"<<item->iType<<" P.id:"<<item->id<<endl;
+        if (iName.compare(item->name) == 0 || iName.compare("all") == 0){
+            cout<<" I.name:"<<item->name<<" I.id:"<<item->id<<endl;
             result.push_back(item);
         }
     }
     return result;
 }
 
-void Base_ParticlesSystem::pop(int index){
+
+template <typename IType> 
+void Base_ItemsSystem<IType>::pop(int index){
 /*
 Erase element from "itemsVector" pointers vector after
 deallocate the respective memory using the "delete"
 function. Also keep "id" value of each erased element
 in "freeIdBuff" vector for future added items.
 */
-    BaseParticle* item = itemsVector[index];
 
-    if (index >= 0 && index < itemsVector.size()) {
+    if (index >= 0 && index < itemsVector.size() && itemsVector.size() > 0) {
+        IType item = itemsVector[index];
         if (item->id < itemsVector.size() - 1) {
             freeIdBuff.push_back(item->id);
         }
@@ -92,13 +76,14 @@ in "freeIdBuff" vector for future added items.
     }
 }
 
-void Base_ParticlesSystem::pop_itemById(int id){
-    BaseParticle* item;
-    vector<BaseParticle*>::iterator particle_it;
+template <typename IType> 
+void Base_ItemsSystem<IType>::pop_itemById(int id){
+    IType item;
+    typename vector<IType>::iterator particle_it;
 
-    for (particle_it = itemsVector.end() - 1;
-         particle_it >= itemsVector.begin();
-         particle_it--){
+    for (particle_it = itemsVector.begin();
+         particle_it != itemsVector.end();
+         particle_it++){
 
         item = *particle_it;
         if (item->id == id){
@@ -112,63 +97,112 @@ void Base_ParticlesSystem::pop_itemById(int id){
     }
 }
 
-void Base_ParticlesSystem::pop_itemByType(string iType){
-    BaseParticle* item;
-    vector<BaseParticle*>::iterator particle_it;
+template <typename IType> 
+void Base_ItemsSystem<IType>::pop_itemByName(string iName){
+    IType item;
+    typename vector<IType>::iterator particle_it;
  
-    for (particle_it = itemsVector.end() - 1;
-         particle_it >= itemsVector.begin();
-         particle_it--){
+    if ( itemsVector.size() > 0){
+        for (particle_it = itemsVector.end() - 1;
+             particle_it >= itemsVector.begin();
+             particle_it--){
 
-        item = *particle_it;
-        if (iType.compare(item->iType) == 0) {
-            if (item->id < itemsVector.size() - 1) {
-                freeIdBuff.push_back(item->id);
+            item = *particle_it;
+            if (iName.compare(item->name) == 0) {
+                if (item->id < itemsVector.size() - 1) {
+                    freeIdBuff.push_back(item->id);
+                }
+                delete item;
+                itemsVector.erase(particle_it);
             }
-            delete item;
-            itemsVector.erase(particle_it);
         }
     }
 }
 
 
-void Base_ParticlesSystem::reset_itemTypeById(int id, string iType){
-    BaseParticle* item;
-    vector<BaseParticle*>::iterator particle_it;
+template <typename IType> 
+void Base_ItemsSystem<IType>::reset_itemTypeById(int id, string iName){
+    IType item;
+    typename vector<IType>::iterator particle_it;
 
-    if (iType.size() == 0){
-       iType = default_iType;
-       cout<<"default iType:"<<default_iType<<endl;
+    if (iName.size() == 0){
+       iName = default_addedItemName;
+       cout<<"default added Item name:"<<default_addedItemName<<endl;
     } 
 
-    for (particle_it = itemsVector.end() - 1;
-         particle_it >= itemsVector.begin();
-         particle_it--){
+    for (particle_it = itemsVector.begin();
+         particle_it != itemsVector.end();
+         particle_it++){
 
         item = *particle_it;
         if (item->id == id) {
             delete item;
             itemsVector.erase(particle_it);
-            add_itemByType(iType);
+            add_itemByName(iName);
             itemsVector.back()->id = id;
             break;
         }
     }
 }
 
-void Base_ParticlesSystem::clear(){
-    BaseParticle* item;
-    vector<BaseParticle*>::iterator particle_it;
+template <typename IType> 
+void Base_ItemsSystem<IType>::clear(){
+    IType item;
+    typename vector<IType>::iterator particle_it;
 
-    for (particle_it = itemsVector.end() - 1;
-         particle_it >= itemsVector.begin();
-         particle_it--){
 
-        item = *particle_it;
-        delete item;
+    if ( itemsVector.size() > 0){
+        for (particle_it = itemsVector.end() - 1;
+             particle_it >= itemsVector.begin();
+             particle_it--){
+
+            item = *particle_it;
+            delete item;
+        }
+        itemsVector.clear();
+        freeIdBuff.clear();
     }
-    itemsVector.clear();
-    freeIdBuff.clear();
+}
+
+template <class IType> 
+void Base_ItemsSystem<IType>::setup(){
+
+}
+
+template <class IType> 
+void Base_ItemsSystem<IType>::update(){
+
+}
+
+template <class IType> 
+void Base_ItemsSystem<IType>::run(){
+
+}
+
+Base_ParticlesSystem::Base_ParticlesSystem(){
+    name = "basePS";
+    default_addedItemName = "baseP";
+}
+
+void Base_ParticlesSystem::add_itemByName(string iName){
+   if (iName.size() == 0){
+       iName = default_addedItemName;
+       cout<<"default name:"<<default_addedItemName<<endl;
+   } 
+
+   if (iName.compare("baseP") == 0){
+       add(new BaseParticle());
+       //cout<<"add item, iName:"<<iName<<endl;
+   } else if (iName.compare("derivedP") == 0){
+       add(new DerivedParticle());
+       //cout<<"add item, iName:"<<iName<<endl;
+   }
+   /*
+    .
+    .
+    .
+       Add new item types
+   */
 }
 
 void Base_ParticlesSystem::setup(){
@@ -181,64 +215,70 @@ void Base_ParticlesSystem::setup(){
     }
 }
 
+Derived_ParticlesSystem::Derived_ParticlesSystem(){
+    name = "derivedPS";
+    default_addedItemName = "baseP";
+}
 
-//void World::add(string psType,string iType){
-//    if(psType.compare("basePS")){
-//        base_particles_sys.push_back(Base_ParticlesSystem());
-//        base_particles_sys.back().id = base_particles_sys.size() - 1;
-//    }
-//
-//    if(iType.compare("baseP")){
-//        base_particles_sys.back().
-//    }
-//}
-//
-//void World::get_info(string psType){
-//    for (vector<Base_ParticlesSystem>::iterator particles_sys=base_particles_sys.begin(); particles_sys != base_particles_sys.end(); particles_sys++){
-//        particles_sys->get_info();
-//    }
-//}
+Base_World::Base_World(){
+    name = "baseW";
+    default_addedItemName = "basePS";
+}
+
+void Base_World::add_itemByName(string iName){
+   if (iName.size() == 0){
+       iName = default_addedItemName;
+       cout<<"default name:"<<default_addedItemName<<endl;
+   } 
+
+   if (iName.compare("basePS") == 0){
+       add(new Base_ParticlesSystem());
+       //cout<<"add item, iName:"<<iName<<endl;
+   } else if (iName.compare("derivedPS") == 0){
+       add(new Derived_ParticlesSystem());
+       //cout<<"add item, iName:"<<iName<<endl;
+   }
+   /*
+    .
+    .
+    .
+       Add new item types
+   */
+}
 
 main(){
     
-
     Base_ParticlesSystem sys;
     sys.setup();
     sys.pop_itemById(8);
-    sys.get_itemsByType();
+    sys.get_itemsByName();
     sys.add(new BaseParticle());
-    sys.add(new BaseParticle());
-    sys.get_itemsByType();
-    sys.pop_itemByType("baseP");
-    sys.get_itemsByType();
-    sys.add(new BaseParticle());
-    sys.add(new BaseParticle());
-    sys.add(new BaseParticle());
-    sys.add(new BaseParticle());
-    sys.add(new BaseParticle());
-    sys.get_itemsByType();
+    sys.get_itemsByName();
+    sys.pop_itemByName("baseP");
+    sys.get_itemsByName();
+    sys.add(new DerivedParticle());
+    sys.get_itemsByName();
     sys.pop_itemById(2);
-    sys.get_itemsByType();
-    sys.set_default_pType("derivedP");
-    sys.add_itemByType();
-    sys.add_itemByType();
-    sys.add_itemByType();
-    sys.add_itemByType();
-    sys.get_itemsByType();
+    sys.get_itemsByName();
+    sys.add_itemByName("derivedP");
+    sys.set_default_itemName("derivedP");
+    sys.add_itemByName();
+    sys.get_itemsByName();
     sys.clear();
-    sys.get_itemsByType();
-    sys.add_itemByType();
-    sys.add_itemByType("baseP");
-    sys.get_itemsByType();
-    sys.set_default_pType("baseP");
-    sys.add_itemByType();
-    sys.add_itemByType();
-    sys.add_itemByType();
-    sys.add_itemByType();
-    sys.get_itemsByType();
-    sys.reset_itemTypeById(5,"derivedP");
+    sys.get_itemsByName();
+    sys.add_itemByName();
+    sys.add_itemByName();
+    sys.add_itemByName();
+    sys.get_itemsByName();
+    sys.reset_itemTypeById(2,"baseP");
+    sys.set_default_itemName("baseP");
     sys.reset_itemTypeById(0);
-    sys.get_itemsByType();
+    sys.get_itemsByName();
+
+    cout<<"world..."<<endl;
+    Base_World myWorld;
+    myWorld.add(&sys);
+    myWorld.get_itemsByName()[0]->get_itemsByName();
     cout<<"done"<<endl;
     
     //World world;
