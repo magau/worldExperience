@@ -17,10 +17,8 @@ class DerivedParticle : public BaseParticle{
 };
 
 template <typename IType>
-class Base_ItemsSystem{
+class Base_ItemsSystem : public BaseParticle{
     public:
-        int id;
-        string name;
         string default_addedItemName;
         vector<IType> itemsVector;
         vector<int> freeIdBuff;
