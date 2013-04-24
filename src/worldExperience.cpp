@@ -213,25 +213,54 @@ void Interaction_I::run(Particle_props* actuatedParticle_props, Particle_props* 
 
     weight = max_dist*weight_fact;
 
-    //for (u_int j=0; j<particlesVect_ptr->size(); j++){
-    //    actuated_particle = &(*particlesVect_ptr)[j];
-        dist = p_props->locat.distance(actuatedParticle_props->locat);
-        dx = actuatedParticle_props->locat.x - p_props->locat.x;
-        dy = actuatedParticle_props->locat.y - p_props->locat.y;
-        acc = weight / pow(dist,2);
-        actuatedParticle_props->accel.x += dx * acc;
-        actuatedParticle_props->accel.y += dy * acc;
-        //Do not aplly relaxation at the bounthery wall  
-        int offset = actuatedParticle_props->rad;
-        if (actuatedParticle_props->locat.x > offset &&
-            actuatedParticle_props->locat.x < ofGetWindowWidth() - offset &&
-            actuatedParticle_props->locat.y > offset &&
-            actuatedParticle_props->locat.y < ofGetWindowHeight() - offset ){
+    dist = p_props->locat.distance(actuatedParticle_props->locat);
+    dx = actuatedParticle_props->locat.x - p_props->locat.x;
+    dy = actuatedParticle_props->locat.y - p_props->locat.y;
+    acc = weight / pow(dist,2);
+    actuatedParticle_props->accel.x += dx * acc;
+    actuatedParticle_props->accel.y += dy * acc;
+    //Do not aplly relaxation at the bounthery wall  
+    int offset = actuatedParticle_props->rad;
+    if (actuatedParticle_props->locat.x > offset &&
+        actuatedParticle_props->locat.x < ofGetWindowWidth() - offset &&
+        actuatedParticle_props->locat.y > offset &&
+        actuatedParticle_props->locat.y < ofGetWindowHeight() - offset ){
 
-            actuatedParticle_props->relax_fact = 0.7;
-        }
-    //}
+        actuatedParticle_props->relax_fact = 0.7;
+    }
 } 
+
+Interaction_II::Interaction_II(Particle_props init_props) :
+Interaction(init_props){
+    name = "I_2";
+    max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
+}
+
+void Interaction_II::run(Particle_props* actuatedParticle_props, Particle_props* p_props){
+    float dist,dx,dy,weight,weight_fact,acc;
+    //Particle* actuated_particle;
+
+    weight_fact = 0.1;
+    min_dist = 40;
+
+    weight = max_dist*weight_fact;
+
+    dist = p_props->locat.distance(actuatedParticle_props->locat);
+    dx = actuatedParticle_props->locat.x - p_props->locat.x;
+    dy = actuatedParticle_props->locat.y - p_props->locat.y;
+
+    if (dist < min_dist) dist = min_dist;
+    acc = weight / pow(dist,2);
+
+    actuatedParticle_props->accel.x += - dx * acc;
+    actuatedParticle_props->accel.y += - dy * acc;
+
+    // //Over relaxation
+    // if (dist == min_dist) {
+    //     actuated_particle->props.relax_fact *= 0.95;
+    //     //actuated_particle->props.relax_fact *= 0.7;
+    // }
+}
 
 BaseParticle::BaseParticle(Particle_props init_props) :
               Base_ItemsSystem<Interaction*>(init_props){
@@ -247,12 +276,11 @@ void BaseParticle::add_itemByName(string iName,Particle_props init_props){
    if (iName.compare("I_1") == 0){
        add(new Interaction_I(init_props));
        //cout<<"add item, iName:"<<iName<<endl;
-   }// else if (iName.compare("IP_1") == 0){
-   //} else if (iName.compare("derivedP") == 0){
-   //    add(new InteractiveParticle(init_props));
+   } else if (iName.compare("I_2") == 0){
+       add(new Interaction_II(init_props));
        //add(new DerivedParticle());
        //cout<<"add item, iName:"<<iName<<endl;
-   //}
+   }
    /*
     .
     .
@@ -331,150 +359,150 @@ void BaseParticle :: enable_screenElasticBoundery(){
    }
 }
 
-//InteractiveParticle::InteractiveParticle(Particle_props init_props) :
-//                     BaseParticle(init_props){
-//    name="IP_1";
-//}
-//
-///*
-//DerivedParticle::DerivedParticle(Particle_props init_props) :
-//                 Base_ItemsSystem<BaseParticle*>(init_props){
-//    name="derivedP";
-//}
-//*/
-//
-//Base_ParticlesSystem::Base_ParticlesSystem(Particle_props init_props) :
-//                      Base_ItemsSystem<BaseParticle*>(init_props){
-//    name = "basePS";
-//    default_addedItemName = "baseP";
-//}
-//
-//void Base_ParticlesSystem::add_itemByName(string iName,Particle_props init_props){
-//   if (iName.size() == 0){
-//       iName = default_addedItemName;
-//       cout<<"default name:"<<default_addedItemName<<endl;
-//   } 
-//
-//   if (iName.compare("baseP") == 0){
-//       add(new BaseParticle(init_props));
-//       //cout<<"add item, iName:"<<iName<<endl;
-//   } else if (iName.compare("IP_1") == 0){
-//   //} else if (iName.compare("derivedP") == 0){
-//       add(new InteractiveParticle(init_props));
-//       //add(new DerivedParticle());
-//       //cout<<"add item, iName:"<<iName<<endl;
-//   }
-//   /*
-//    .
-//    .
-//    .
-//       Add new item types
-//   */
-//}
-//
-//void Base_ParticlesSystem::setup(){
-////    for (int i=0;i<10;i++){
-////        if (i<5){
-////            add(new BaseParticle());
-////        } else {
-////            add(new DerivedParticle());
-////        }
-////    }
-//}
-//
+InteractiveParticle::InteractiveParticle(Particle_props init_props) :
+                     BaseParticle(init_props){
+    name="IP_1";
+}
+
+void InteractiveParticle::run(){
+// for interaction in itemsVector
+// interaction.run()
+}
+
+/*
+DerivedParticle::DerivedParticle(Particle_props init_props) :
+                 Base_ItemsSystem<BaseParticle*>(init_props){
+    name="derivedP";
+}
+*/
+
+Base_ParticlesSystem::Base_ParticlesSystem(Particle_props init_props) :
+                      Base_ItemsSystem<BaseParticle*>(init_props){
+    name = "basePS";
+    default_addedItemName = "baseP";
+}
+
+void Base_ParticlesSystem::add_itemByName(string iName,Particle_props init_props){
+   if (iName.size() == 0){
+       iName = default_addedItemName;
+   } 
+
+   if (iName.compare("baseP") == 0){
+       add(new BaseParticle(init_props));
+   } else if (iName.compare("IP_1") == 0){
+       add(new InteractiveParticle(init_props));
+   }
+   /*
+    .
+    .
+    .
+       Add new item types
+   */
+}
+
+void Base_ParticlesSystem::setup(){
+//    for (int i=0;i<10;i++){
+//        if (i<5){
+//            add(new BaseParticle());
+//        } else {
+//            add(new DerivedParticle());
+//        }
+//    }
+}
+
 //void Base_ParticlesSystem::interact(Base_ParticlesSystem* actuated_PS){
 ////    for (u_int i=0; i<itemsVector.size(); i++){
 ////        itemsVector[i].interact( &(actuated_PS->itemsVector) );
 ////    }
 //}
 //
-//void Base_ParticlesSystem::run(){
-//
-//}
-//
-///*
-//Derived_ParticlesSystem::Derived_ParticlesSystem() :
-//                         Base_ItemsSystem<BaseParticle*>(init_props){
-//    name = "derivedPS";
-//    default_addedItemName = "baseP";
-//}
-//*/
-//
-//RegularGrid_ParticlesSystem::RegularGrid_ParticlesSystem(Particle_props init_props) :
-//                             Base_ParticlesSystem(init_props){
-//    name = "regGidPS";
-//    default_addedItemName = "baseP";
-//}
-//
-//void RegularGrid_ParticlesSystem::setup(int particles_distance, ofPoint grid_size){
-//    //This method ("constructor") builds a 2D regular grid particles system.
-//    // particles_distance - pixels
-//    // grid_size - [0 < grid_size <1] Relative to window size.
-//    u_int i,j,win_w,win_h,grd_w,grd_h;
-//    Particle_props init_props;
-//    ofPoint grid_offset;
-//    int grid_ds;
-//    ofPoint grid_num;
-//
-//    init_props.veloc.set(0,0);
-//    init_props.accel.set(0,0);
-//    init_props.rad = 6;
-//    init_props.relax_fact = 1.0;
-//    init_props.color = ofColor(255);
-//
-//    grid_ds = particles_distance;
-//    win_w = ofGetWindowWidth();
-//    win_h = ofGetWindowHeight();
-//    grd_w = round(win_w*grid_size.x);
-//    grd_h = round(win_h*grid_size.y);
-//    //grid_offset.x = (win_w - (grd_w-2*grid_ds)/grid_ds * grid_ds)/2;
-//    //grid_offset.y = (win_h - (grd_h-2*grid_ds)/grid_ds * grid_ds)/2;
-//    //grid_num.set(1+(win_w-2*grid_offset.x)/grid_ds,1+(win_h-2*grid_offset.y)/grid_ds);
-//
-//    grid_offset.x = (win_w - grd_w)/2;
-//    grid_offset.y = (win_h - grd_h)/2;
-//    grid_num.set(grd_w/grid_ds , grd_h/grid_ds);
-//
-//////One particle for testing
-////grid_num.set(1);
-////init_props.loc.x = win_w/2;//
-////init_props.loc.y = win_h/2;//
-//    for (i=0; i<grid_num.y; i++){
-//        //init_props.loc.y = i*grid_ds + grid_offset.y;
-//        init_props.locat.y = i*grid_ds + grid_offset.y;
-//        for (j=0; j<grid_num.x; j++){
-//            //init_props.loc.x = j * grid_ds + grid_offset.x;
-//            init_props.locat.x = j * grid_ds + grid_offset.x;
-//            add(new BaseParticle(init_props));
-//        }
-//    }
-//}
-//
-//Base_World::Base_World(){
-//    name = "baseW";
-//    default_addedItemName = "basePS";
-//}
-//
-//void Base_World::add_itemByName(string iName, Particle_props init_props){
-//   if (iName.size() == 0){
-//       iName = default_addedItemName;
-//       cout<<"default name:"<<default_addedItemName<<endl;
-//   } 
-//
-//   if (iName.compare("basePS") == 0){
-//       add(new Base_ParticlesSystem(init_props));
-//       //cout<<"add item, iName:"<<iName<<endl;
-//   } else if (iName.compare("derivedPS") == 0){
-//       add(new RegularGrid_ParticlesSystem(init_props));
-//       //cout<<"add item, iName:"<<iName<<endl;
-//   }
-//   /*
-//    .
-//    .
-//    .
-//       Add new item types
-//   */
-//}
+void Base_ParticlesSystem::run(){
+
+}
+
+/*
+Derived_ParticlesSystem::Derived_ParticlesSystem() :
+                         Base_ItemsSystem<BaseParticle*>(init_props){
+    name = "derivedPS";
+    default_addedItemName = "baseP";
+}
+*/
+
+RegularGrid_ParticlesSystem::RegularGrid_ParticlesSystem(Particle_props init_props) :
+                             Base_ParticlesSystem(init_props){
+    name = "regGidPS";
+    default_addedItemName = "baseP";
+}
+
+void RegularGrid_ParticlesSystem::setup(int particles_distance, ofPoint grid_size){
+    //This method ("constructor") builds a 2D regular grid particles system.
+    // particles_distance - pixels
+    // grid_size - [0 < grid_size <1] Relative to window size.
+    u_int i,j,win_w,win_h,grd_w,grd_h;
+    Particle_props init_props;
+    ofPoint grid_offset;
+    int grid_ds;
+    ofPoint grid_num;
+
+    init_props.veloc.set(0,0);
+    init_props.accel.set(0,0);
+    init_props.rad = 6;
+    init_props.relax_fact = 1.0;
+    init_props.color = ofColor(255);
+
+    grid_ds = particles_distance;
+    win_w = ofGetWindowWidth();
+    win_h = ofGetWindowHeight();
+    grd_w = round(win_w*grid_size.x);
+    grd_h = round(win_h*grid_size.y);
+    //grid_offset.x = (win_w - (grd_w-2*grid_ds)/grid_ds * grid_ds)/2;
+    //grid_offset.y = (win_h - (grd_h-2*grid_ds)/grid_ds * grid_ds)/2;
+    //grid_num.set(1+(win_w-2*grid_offset.x)/grid_ds,1+(win_h-2*grid_offset.y)/grid_ds);
+
+    grid_offset.x = (win_w - grd_w)/2;
+    grid_offset.y = (win_h - grd_h)/2;
+    grid_num.set(grd_w/grid_ds , grd_h/grid_ds);
+
+////One particle for testing
+//grid_num.set(1);
+//init_props.loc.x = win_w/2;//
+//init_props.loc.y = win_h/2;//
+    for (i=0; i<grid_num.y; i++){
+        //init_props.loc.y = i*grid_ds + grid_offset.y;
+        init_props.locat.y = i*grid_ds + grid_offset.y;
+        for (j=0; j<grid_num.x; j++){
+            //init_props.loc.x = j * grid_ds + grid_offset.x;
+            init_props.locat.x = j * grid_ds + grid_offset.x;
+            add(new BaseParticle(init_props));
+        }
+    }
+}
+
+Base_World::Base_World(){
+    name = "baseW";
+    default_addedItemName = "basePS";
+}
+
+void Base_World::add_itemByName(string iName, Particle_props init_props){
+   if (iName.size() == 0){
+       iName = default_addedItemName;
+       cout<<"default name:"<<default_addedItemName<<endl;
+   } 
+
+   if (iName.compare("basePS") == 0){
+       add(new Base_ParticlesSystem(init_props));
+       //cout<<"add item, iName:"<<iName<<endl;
+   } else if (iName.compare("derivedPS") == 0){
+       add(new RegularGrid_ParticlesSystem(init_props));
+       //cout<<"add item, iName:"<<iName<<endl;
+   }
+   /*
+    .
+    .
+    .
+       Add new item types
+   */
+}
 //
 ////main(){
 ////    

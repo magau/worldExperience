@@ -30,13 +30,14 @@ class Interaction_I : public Interaction{
         void run(Particle_props* actuatedParticle_props, Particle_props* p_props);
 };
 
-/*
+
 class Interaction_II : public Interaction{
     public:
         Interaction_II(Particle_props init_props);
-        void run(vector<Particle>* particlesVect_ptr);
+        void run(Particle_props* actuatedParticle_props, Particle_props* p_props);
 };
 
+/*
 class Interaction_III : public Interaction{
     public:
         Interaction_III(Particle_props init_props);
@@ -65,31 +66,31 @@ class BaseParticle: public Base_ItemsSystem<Interaction*>{
         void enable_screenElasticBoundery();
 };
 
-//class InteractiveParticle : public BaseParticle{
-//    public:
-//        InteractiveParticle (Particle_props init_props);
-//        virtual void run(vector<BaseParticle>* actuated_particlesVect_ptr);
-//        //virtual void interact(Particle* actuated_particle);
-//        virtual void interact(vector<BaseParticle>* particlesVect_ptr);
-//};
-//
+class InteractiveParticle : public BaseParticle{
+    public:
+        InteractiveParticle (Particle_props init_props);
+        void run();
+        //virtual void interact(Particle* actuated_particle);
+        //virtual void interact(vector<BaseParticle>* particlesVect_ptr);
+};
+
 ///*
 //class DerivedParticle : public BaseParticle{
 //    public:
 //        DerivedParticle(Particle_props init_props);
 //};
 //*/
-//
-//class Base_ParticlesSystem : public Base_ItemsSystem<BaseParticle*>{
-//    public:
-//        Base_ParticlesSystem(Particle_props init_props);
-//        void add_itemByName(string iName="",Particle_props init_props=Particle_props());
-//        //set up the system particles initial position
-//        virtual void setup();//unordered_map<int> setupParameters);
-//        //call the run() method for every particles
-//        virtual void run();
-//        virtual void interact(Base_ParticlesSystem* actuated_PS);
-//};
+
+class Base_ParticlesSystem : public Base_ItemsSystem<BaseParticle*>{
+    public:
+        Base_ParticlesSystem(Particle_props init_props);
+        void add_itemByName(string iName="",Particle_props init_props=Particle_props());
+        //set up the system particles initial position
+        virtual void setup();//unordered_map<int> setupParameters);
+        //call the run() method for every particles
+        virtual void run();
+        //virtual void interact(Base_ParticlesSystem* actuated_PS);
+};
 
 /*
 class Derived_ParticlesSystem : public Base_ParticlesSystem{
@@ -98,36 +99,36 @@ class Derived_ParticlesSystem : public Base_ParticlesSystem{
 };
 */
 
-//class RegularGrid_ParticlesSystem : public Base_ParticlesSystem{
-//    public:
-//        RegularGrid_ParticlesSystem(Particle_props init_props);
-//        //void setup(Particle_props init_props, unordered_map<int> setupParameters);
-//        void setup(int particles_distance, ofPoint grid_size=ofPoint(1));
-//};
-//
-///*
-//class mouse_ParticlesSystem : public Interactions_System {
-//    public:
-//        vector <Interaction_I> interactions;
-//        void setup();
-//        void update(ofVec3f locat);
-//        void run(vector<Particle>* particlesVect_ptr);
-//};
-//
-//class mouseParticlesGenerator_ParticlesSystem : public Interactions_System {
-//    public:
-//        //vector <Interaction_IV> interactions;
-//        int min_dist; 
-//        u_int default_type;
-//        void setup();
-//        void update(ofVec3f locat);
-//        void run(vector<Particle>* particlesVect_ptr);
-//};
-//*/
-//
-//class Base_World : public Base_ItemsSystem<Base_ParticlesSystem*>{
-//    public:
-//        Base_World();
-//        void add_itemByName(string iName="",Particle_props init_props=Particle_props());
-//};
-//
+class RegularGrid_ParticlesSystem : public Base_ParticlesSystem{
+    public:
+        RegularGrid_ParticlesSystem(Particle_props init_props);
+        //void setup(Particle_props init_props, unordered_map<int> setupParameters);
+        void setup(int particles_distance, ofPoint grid_size=ofPoint(1));
+};
+
+/*
+class mouse_ParticlesSystem : public Interactions_System {
+    public:
+        vector <Interaction_I> interactions;
+        void setup();
+        void update(ofVec3f locat);
+        void run(vector<Particle>* particlesVect_ptr);
+};
+
+class mouseParticlesGenerator_ParticlesSystem : public Interactions_System {
+    public:
+        //vector <Interaction_IV> interactions;
+        int min_dist; 
+        u_int default_type;
+        void setup();
+        void update(ofVec3f locat);
+        void run(vector<Particle>* particlesVect_ptr);
+};
+*/
+
+class Base_World : public Base_ItemsSystem<Base_ParticlesSystem*>{
+    public:
+        Base_World();
+        void add_itemByName(string iName="",Particle_props init_props=Particle_props());
+};
+
