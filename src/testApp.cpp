@@ -111,8 +111,8 @@ void testApp::setup(){
    
    }
 
-void testApp::exit() {
+   void testApp::exit() {
  
     // stop the thread
     mouse.stopThread();
-}
+   }

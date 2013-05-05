@@ -1,6 +1,12 @@
 #pragma once
-//#include "ItemsSystem.h"
+#include "Pointers_Container.h"
 #include "worldExperience.h"
+#include "Behaviors.h"
+#include "Interactions.h"
+#include "Particles.h"
+#include "Particles_System.h"
+#include "ofMain.h"
+
 ////#include "ParticleSystem.h"
 //#include "InteractionSystem.h"
 //
