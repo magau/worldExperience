@@ -6,6 +6,8 @@ Particle :: Particle (Particle_props init_props){
 }
 
 void Particle :: run() {
+    behave();
+    interact();
     update();
     display();
 }
@@ -31,6 +33,26 @@ void Particle :: update() {
 //cout<<"props.vel:"<<props.vel<<" props.loc:"<<props.loc<<endl;
     // Clear accelaration to allow comulative 
     // interactions and order independency:
+}
+
+void Particle :: behave() {
+        for(vector<Behavior*>::iterator IterBehav = behaviors.itemsVector.begin();
+                                        IterBehav != behaviors.itemsVector.end();
+                                        IterBehav++){
+            (*IterBehav)->run();
+        }
+}
+
+void Particle :: interact() {
+        for(vector<Interaction*>::iterator IterInterac = interactions.itemsVector.begin();
+                                        IterInterac != interactions.itemsVector.end();
+                                        IterInterac++){
+            
+            //for(vector<Particle*>::iterator IterPart = actuated_particles.itemsVector.begin();
+            //                                IterPart != actuated_particles.itemsVector.end();
+            //                                IterPart++){
+            (*IterInterac)->run();
+        }
 }
 
 /*
@@ -79,7 +101,7 @@ void Particle :: enable_screenElasticBoundery(){
 
 Circle::Circle(Particle_props init_props) :
                      Particle(init_props){
-    itemType="P_Circle";
+    name="P_Circle";
 }
 
 void Circle :: display() {
@@ -91,7 +113,7 @@ void Circle :: display() {
 /*
 InteractiveParticle::InteractiveParticle(Particle_props init_props) :
                      Particle(init_props){
-    itemType="IP_1";
+    name="IP_1";
 }
 
 void InteractiveParticle::run(){
@@ -101,8 +123,87 @@ void InteractiveParticle::run(){
 
 DerivedParticle::DerivedParticle(Particle_props init_props) :
                  Pointers_Container<Particle*>(init_props){
-    itemType="derivedP";
+    name="derivedP";
 }
 */
+
+//Particles_Container::Particles_Container(){
+//
+//}
+
+Particle* Particles_Container::add_itemByName(string iName,Particle_props init_props){
+
+   Particle* newParticle = (int)NULL;
+
+   if (iName.size() == 0){
+       iName = default_addedItemName;
+   } 
+
+   if (iName.compare("baseP") == 0){
+       newParticle = new Particle(init_props);
+   } else if (iName.compare("P_Circle") == 0){
+       newParticle = new Circle(init_props);
+   }
+   /*
+    .
+    .
+    .
+       Add new item types
+   */
+
+   add(newParticle);
+
+   return newParticle;
+
+}
+
+//void Particles_Container::set_regularGrig(int particles_distance){
+//
+//    int win_w = ofGetWindowWidth();
+//    int win_h = ofGetWindowHeight();
+//    int nParticles = itemsVector.size();
+//    //This method ("constructor") builds a 2D regular grid particles system.
+//    // particles_distance - pixels
+//    // grid_size - [0 < grid_size <1] Relative to window size.
+//    u_int i,j,win_w,win_h,grd_w,grd_h;
+//    Particle_props init_props;
+//    ofPoint grid_offset;
+//    int grid_ds;
+//    ofPoint grid_num;
+//
+//    init_props.veloc.set(0,0);
+//    init_props.accel.set(0,0);
+//    init_props.rad = 6;
+//    init_props.relax_fact = 1.0;
+//    init_props.color = ofColor(255);
+//
+//    grid_ds = particles_distance;
+//    win_w = ofGetWindowWidth();
+//    win_h = ofGetWindowHeight();
+//    grd_w = round(win_w*grid_size.x);
+//    grd_h = round(win_h*grid_size.y);
+//    //grid_offset.x = (win_w - (grd_w-2*grid_ds)/grid_ds * grid_ds)/2;
+//    //grid_offset.y = (win_h - (grd_h-2*grid_ds)/grid_ds * grid_ds)/2;
+//    //grid_num.set(1+(win_w-2*grid_offset.x)/grid_ds,1+(win_h-2*grid_offset.y)/grid_ds);
+//
+//    grid_offset.x = (win_w - grd_w)/2;
+//    grid_offset.y = (win_h - grd_h)/2;
+//    grid_num.set(grd_w/grid_ds , grd_h/grid_ds);
+//
+//////One particle for testing
+////grid_num.set(1);
+////init_props.loc.x = win_w/2;//
+////init_props.loc.y = win_h/2;//
+//    create_systemParticles();
+//
+//    for (i=0; i<grid_num.y; i++){
+//        //init_props.loc.y = i*grid_ds + grid_offset.y;
+//        init_props.locat.y = i*grid_ds + grid_offset.y;
+//        for (j=0; j<grid_num.x; j++){
+//            init_props.locat.x = j * grid_ds + grid_offset.x;
+//            create_particle(init_props);
+//        }
+//    }
+//}
 
 

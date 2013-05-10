@@ -4,8 +4,19 @@ Interaction::Interaction(Particle_props* host_props){
     props = host_props;
 }
 
-void Interaction::run(Particle_props* actuatedParticle_props){
+void Interaction::interact(Particle_props* actuatedParticle_props){
 
+}
+
+void Interaction::run(){
+    vector<Particle*>::iterator actuatedParticle_it;
+
+    for (actuatedParticle_it = actuated_particles->itemsVector.begin();
+         actuatedParticle_it != actuated_particles->itemsVector.end();
+         actuatedParticle_it++){
+
+         interact(&(*actuatedParticle_it)->props);
+    }
 }
 
 /*
@@ -18,11 +29,12 @@ void Interaction::update(Particle_props* p_props){
 Interaction_I::Interaction_I(Particle_props* host_props) :
 Interaction(host_props){
     //props = init_props;
-    itemType = "I_1";
+    name = "I_1";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
-void Interaction_I::run(Particle_props* actuatedParticle_props){
+
+void Interaction_I::interact(Particle_props* actuatedParticle_props){
     float dist,dx,dy,weight,weight_fact,acc;
     //Particle* actuated_particle;
 
@@ -49,11 +61,11 @@ void Interaction_I::run(Particle_props* actuatedParticle_props){
 
 Interaction_II::Interaction_II(Particle_props* host_props) :
 Interaction(host_props){
-    itemType = "I_2";
+    name = "I_2";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
-void Interaction_II::run(Particle_props* actuatedParticle_props){
+void Interaction_II::interact(Particle_props* actuatedParticle_props){
     float dist,dx,dy,weight,weight_fact,acc;
     //Particle* actuated_particle;
 
@@ -79,17 +91,20 @@ void Interaction_II::run(Particle_props* actuatedParticle_props){
     // }
 }
 
-void Interactions_Container::add_itemByName(string iName, Particle_props* init_props){
+Interaction* Interactions_Container::add_itemByName(string iName, Particle_props* init_props){
+
+   Interaction* newInteraction = (int)NULL;
+
    if (iName.size() == 0){
        iName = default_addedItemName;
-       //cout<<"default itemType:"<<default_addedItemName<<endl;
+       //cout<<"default name:"<<default_addedItemName<<endl;
    } 
 
    if (iName.compare("I_1") == 0){
-       add(new Interaction_I(init_props));
+       newInteraction = new Interaction_I(init_props);
        //cout<<"add item, iName:"<<iName<<endl;
    } else if (iName.compare("I_2") == 0){
-       add(new Interaction_II(init_props));
+       newInteraction = new Interaction_II(init_props);
        //add(new DerivedParticle());
        //cout<<"add item, iName:"<<iName<<endl;
    }
@@ -99,6 +114,10 @@ void Interactions_Container::add_itemByName(string iName, Particle_props* init_p
     .
        Add new item types
    */
+
+   add(newInteraction);
+
+   return newInteraction;
 }
 
 

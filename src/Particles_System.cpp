@@ -2,28 +2,10 @@
 
 Particles_System::Particles_System(Particle_props init_props) :
                  Particle(init_props){
-    itemType = "basePS";
+    name = "basePS";
     default_Particle = "baseP";
     default_Interaction = "baseI";
 }
-
-//void Particles_System::add_itemByName(string iName,Particle_props init_props){
-//   if (iName.size() == 0){
-//       iName = default_addedItemName;
-//   } 
-//
-//   if (iName.compare("baseP") == 0){
-//       add(new Particle(init_props));
-//   } else if (iName.compare("IP_1") == 0){
-//       add(new InteractiveParticle(init_props));
-//   }
-//   /*
-//    .
-//    .
-//    .
-//       Add new item types
-//   */
-//}
 
 void Particles_System::setup(){
 //    for (int i=0;i<10;i++){
@@ -45,18 +27,34 @@ void Particles_System::run(){
 
 }
 
+void Particles_System::create_systemParticles(){
+    //create System systemParticles Particles_Container.
+    systemParticles = new Particles_Container;
+    systemParticles->name = "Generic";
+    world->groups.add(systemParticles); 
+}
+
+void Particles_System::create_particle(Particle_props init_props){
+    //create newParticle add particle to worldParticles and 
+    //systemParticles Particles_Container
+    Particle* newParticle;
+    newParticle = new Particle(init_props);
+    world->particles.add(newParticle);
+    systemParticles->add(newParticle,false);
+}
+
 /*
 Derived_ParticlesSystem::Derived_ParticlesSystem() :
                          Pointers_Container<Particle*>(init_props){
-    itemType = "derivedPS";
+    name = "derivedPS";
     default_addedItemName = "baseP";
 }
 */
 
 RegularGrid_PS::RegularGrid_PS(Particle_props init_props) :
                              Particles_System(init_props){
-    itemType = "regGidPS";
-    default_Particle = "baseP";
+    name = "PS_RegGrid";
+    default_Particle = "P_Circle";
 }
 
 void RegularGrid_PS::setup(int particles_distance, ofPoint grid_size){
@@ -92,15 +90,34 @@ void RegularGrid_PS::setup(int particles_distance, ofPoint grid_size){
 //grid_num.set(1);
 //init_props.loc.x = win_w/2;//
 //init_props.loc.y = win_h/2;//
+    create_systemParticles();
+
     for (i=0; i<grid_num.y; i++){
         //init_props.loc.y = i*grid_ds + grid_offset.y;
         init_props.locat.y = i*grid_ds + grid_offset.y;
         for (j=0; j<grid_num.x; j++){
-            //init_props.loc.x = j * grid_ds + grid_offset.x;
             init_props.locat.x = j * grid_ds + grid_offset.x;
-            manager->worldParticles.add(new Particle(init_props));
+            create_particle(init_props);
         }
     }
 }
+
+//void ParticlesSystems_Container::add_itemByName(string iName,Particle_props init_props){
+//   if (iName.size() == 0){
+//       iName = default_addedItemName;
+//   } 
+//
+//   if (iName.compare("") == 0){
+//       add(new Particles_System(init_props));
+//   } else if (iName.compare("PS_RegGrid") == 0){
+//       add(new RegularGrid_PS(init_props));
+//   }
+//   /*
+//    .
+//    .
+//    .
+//       Add new item types
+//   */
+//}
 
 

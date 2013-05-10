@@ -17,7 +17,27 @@ Particle* World_Manager::create_particle(string iName, Particle_props init_props
     return newParticle;
 }
 
-void World_Manager::create_regularGrid(int particles_distance, float windowRatio){
+Particles_Container* World_Manager::update(){
+    //for(uint i=0;i<world->particles.itemsVector.size();i++){
+    for(vector<Particle*>::iterator IterPart = world->particles.itemsVector.begin();
+                                    IterPart != world->particles.itemsVector.end();
+                                    IterPart++){
+        //world->particles.itemsVector[i]->display();
+        // cout<<i<<":"<<world.particles.itemsVector[i]->props.locat<<endl;
+        (*IterPart)->run();
+    }
+    return &(world->particles);
+}
+
+void World_Manager::draw(){
+    for(vector<Particle*>::iterator IterPart = world->particles.itemsVector.begin();
+                                    IterPart != world->particles.itemsVector.end();
+                                    IterPart++){
+        (*IterPart)->display();
+    }
+}
+
+Particles_Container* World_Manager::create_regularGrid(int particles_distance, float windowRatio){
     //This method ("constructor") builds a 2D regular grid particles system.
     // particles_distance - pixels
     // grid_size - [0 < grid_size <1] Relative to window size.
@@ -64,4 +84,5 @@ void World_Manager::create_regularGrid(int particles_distance, float windowRatio
             regGrid->add(newParticle,false);
         }
     }
+    return regGrid;
 }

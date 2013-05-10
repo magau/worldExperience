@@ -1,34 +1,23 @@
 
-class Particles_Container : public Pointers_Container<Particle*>{
-    
-};
-
 class Particles_System : public Particle{
     public:
         int id;
-        string itemType;
+        string name;
         string default_Particle;
         string default_Interaction;
-        ParticlesManager* manager;
-        Particles_Container* hostParticles;
-        Particles_Container* actuatedParticles;
-        Particles_System(Particle_props init_props);
+        World* world;
+        Particles_Container* systemParticles;
+        Particles_System(Particle_props init_props=Particle_props());
         //void add_itemByName(string iName="",Particle_props init_props=Particle_props());
         //set up the system particles initial position
+        void create_systemParticles();
+        void create_particle(Particle_props init_props);
         virtual void setup();//unordered_map<int> setupParameters);
         //call the run() method for every particles
         virtual void run();
         //virtual void interact(Base_ParticlesSystem* actuated_PS);
 };
 
-
-class ParticlesManager{
-    public:
-        Particles_Container worldParticles;
-        Pointers_Container<Particles_Container*> groups;
-        Pointers_Container<Particles_System*> systems;
-        //void add_ParticleSystemByType();
-};
 
 /*
 class Derived_ParticlesSystem : public Base_ParticlesSystem{
@@ -63,4 +52,10 @@ class mouseParticlesGenerator_ParticlesSystem : public Interactions_System {
         void run(vector<Particle>* particlesVect_ptr);
 };
 */
+
+//class ParticlesSystems_Container : public Pointers_Container<Particles_System*>{
+//    public:
+//        void add_itemByName(string iName,Particle_props init_props);
+//};
+
 

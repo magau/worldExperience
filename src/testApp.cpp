@@ -1,6 +1,8 @@
 #include "testApp.h"
 #include "math.h"
 
+getMouseLocation mouse;
+
 void testApp::setup(){
     //ofSetFrameRate(1);
     ofSetVerticalSync(true);
@@ -30,6 +32,9 @@ void testApp::setup(){
 //    mainOutputSyphonServer.setName("dancingParticules");
 //#endif
 //
+  manager.world = &world;
+  manager.create_regularGrid(15,4.0/5);
+  //cout<<world.particles.itemsVector.size()<<endl;
 }
    
    //--------------------------------------------------------------
@@ -53,6 +58,15 @@ void testApp::setup(){
    //--------------------------------------------------------------
    void testApp::draw(){
        ofBackground(0);
+
+       manager.draw();
+//
+//         for(int i=0;i<world.particles.itemsVector.size();i++){
+//             world.particles.itemsVector[i]->display();
+//            // cout<<i<<":"<<world.particles.itemsVector[i]->props.locat<<endl;
+//
+//         }
+//
 ////cout<<"update start..."<<endl;
 //       main_particles_system.run();
 ////cout<<"update end."<<endl;

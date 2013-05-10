@@ -1,15 +1,15 @@
 #pragma once
+
 #include "Pointers_Container.h"
 #include "worldExperience.h"
 #include "Behaviors.h"
 #include "Interactions.h"
 #include "Particles.h"
 #include "Particles_System.h"
+#include "Particles_Manager.h"
 #include "ofMain.h"
 
-////#include "ParticleSystem.h"
-//#include "InteractionSystem.h"
-//
+
 ////#define SYPHON
 ////#define OSC_MSG
 //
@@ -21,7 +21,6 @@
 //#include "ofxOsc.h"
 //#endif	
 //
-#include "ofMain.h"
 
 class getMouseLocation : public ofThread {
     public:
@@ -43,6 +42,9 @@ class getMouseLocation : public ofThread {
 
 class testApp : public ofBaseApp{
 	public:
+           World world;
+           World_Manager manager;
+            
 //                RegularGrid_PS main_particles_system;
 //                RegularGrid_IS regularGrid_interactions_system;
 ////#ifdef SYPHON
@@ -54,7 +56,7 @@ class testApp : public ofBaseApp{
 //               //oscFromKinect_IS external_interactions;
 //#else
 //               //mouse and keyboard interactions
-                getMouseLocation mouse;  
+//                getMouseLocation mouse;  
 //                //mouseWaveSrc_IS mouseWave;
 ////                mouseWaveSrcGenerator_IS mouseWaveGenerator;
 //                mouse_IS external_interactions;

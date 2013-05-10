@@ -3,14 +3,16 @@
 class Particle{
     public:
         int id;
-        string itemType;
+        string name;
         Particle_props props;
         Interactions_Container interactions;
         Behaviors_Container behaviors;
-        ParticlesManager* manager;
+        World* world;
         Particle (Particle_props init_props);
         //virtual void setup(Particle_props _props);
         virtual void run();
+        virtual void behave();
+        virtual void interact();
         virtual void update();
         virtual void display();
         //void bound_particles_location();
@@ -42,4 +44,11 @@ class DerivedParticle : public BaseParticle{
         DerivedParticle(Particle_props init_props);
 };
 */
+
+class Particles_Container : public Pointers_Container<Particle*>{
+    public:
+        //Particles_Container();
+        Particle* add_itemByName(string iName, Particle_props init_props);
+        //void set_regularGrid();
+};
 

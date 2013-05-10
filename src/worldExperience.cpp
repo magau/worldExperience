@@ -1,6 +1,4 @@
 #include "testApp.h"
-//#include "worldExperience.h"
-//#include "Interactions.h"
 
 Particle_props :: Particle_props(){
     locat = ofVec3f(float(NULL));
@@ -15,14 +13,14 @@ Particle_props :: Particle_props(){
 
    /*
 Base_World::Base_World(){
-    itemType = "baseW";
+    name = "baseW";
     default_addedItemName = "basePS";
 }
 
 void Base_World::add_itemByName(string iName, Particle_props init_props){
    if (iName.size() == 0){
        iName = default_addedItemName;
-       //cout<<"default itemType:"<<default_addedItemName<<endl;
+       //cout<<"default name:"<<default_addedItemName<<endl;
    } 
 
    if (iName.compare("basePS") == 0){
