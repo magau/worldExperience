@@ -157,6 +157,23 @@ Particle* Particles_Container::add_itemByName(string iName,Particle_props init_p
 
 }
 
+
+void Particles_Container::attachInteraction_one2one(string iName, Particles_Container* actuated_particles){
+//    typename vector<Particles*>::iterator particle_it;
+//    for (particle_it = itemsVector.begin();
+//         particle_it != itemsVector.end();
+//         particle_it++){
+//        particle = *particle_it;
+//        particle->interactions.        
+//
+//    }
+//
+}
+
+void Particles_Container::attachInteraction_many2one(string iName, Particles_Container* actuated_particles){
+
+}
+
 //void Particles_Container::set_regularGrig(int particles_distance){
 //
 //    int win_w = ofGetWindowWidth();

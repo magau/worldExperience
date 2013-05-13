@@ -50,5 +50,7 @@ class Particles_Container : public Pointers_Container<Particle*>{
         //Particles_Container();
         Particle* add_itemByName(string iName, Particle_props init_props);
         //void set_regularGrid();
+        void attachInteraction_one2one(string iName, Particles_Container* actuated_particles);
+        void attachInteraction_many2one(string iName, Particles_Container* actuated_particles);
 };
 

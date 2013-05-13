@@ -35,10 +35,17 @@ void testApp::setup(){
   manager.world = &world;
   manager.create_regularGrid(15,4.0/5);
   //cout<<world.particles.itemsVector.size()<<endl;
+  //for (u_int i=0; i<manager.world->groups.itemsVector.size(); i++){
+  //    cout<<manager.world->groups.itemsVector[i]->id;
+  //}
+  //cout<<endl;
+
+
 }
    
    //--------------------------------------------------------------
    void testApp::update(){
+       manager.update();
 //       external_interactions.update();
 //       main_particles_system.update_interactions(external_interactions.allInteractions_ptr);
 //cout<<"update start..."<<endl;
@@ -53,6 +60,20 @@ void testApp::setup(){
 //
 //     regularGrid_interactions_system.run( &(main_particles_system.particles) );
 ////cout<<"update end."<<endl;
+       //if(keys[OF_KEY_ALT]){// && keys['g']){
+       //if(ofGetKeyPressed('a')){//OF_KEY_CTRL)){
+       //    for (u_int i=0; i<manager.world->groups.itemsVector.size(); i++){
+       //        cout<<manager.world->groups.itemsVector[i]->id;
+       //    }
+       //    cout<<endl;
+
+       //    //if (key != OF_KEY_ALT && key != 'g') {  
+       //    //    group = manager.world->groups.get_itemById(key);
+       //    //    cout<<group->name<<";"<<group->id<<endl;
+       //    //    // do whatever you wanna do if both a and b are down.  
+       //    //}
+       //}
+
    }
    
    //--------------------------------------------------------------
@@ -83,7 +104,49 @@ void testApp::setup(){
    
    //--------------------------------------------------------------
    void testApp::keyPressed(int key){
-   
+
+        //switch (key){
+        //    case 'r':
+        //        manager.create_regularGrid(15,4.0/5);
+        //        break;
+        //    case 's':
+        //        for (u_int i=0; i<manager.world->groups.itemsVector.size(); i++){
+        //            cout<<manager.world->groups.itemsVector[i]->id;
+        //        }
+        //        cout<<endl;
+        //        break;
+        //}
+
+       u_int n = key - 48;
+       Particles_Container* group;
+       if(keys['g'] && keys['s']) {
+           for (u_int i=0; i<manager.world->groups.itemsVector.size(); i++){
+               cout<<manager.world->groups.itemsVector[i]->id;
+           }
+           cout<<endl;
+
+           if (key != 'g' && key != 's') {
+               buffGroup = manager.world->groups.get_itemById(n);
+               if (buffGroup != (int)NULL){
+                   cout<<buffGroup->name<<";"<<buffGroup->id<<endl;
+                   // do whatever you wanna do if both a and b are down.
+               }
+           }
+           
+       } else if(keys['a'] && keys['s']) {
+           for (u_int i=0; i<manager.world->groups.itemsVector.size(); i++){
+               cout<<manager.world->groups.itemsVector[i]->id;
+           }
+           cout<<endl;
+
+           if (key != 'a' && key != 's') {
+               group = manager.world->groups.get_itemById(n);
+               if (group != (int)NULL){
+                   cout<<group->name<<";"<<group->id<<endl;
+                   // do whatever you wanna do if both a and b are down.
+               }
+           }
+       }
    }
    
    //--------------------------------------------------------------
