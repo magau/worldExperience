@@ -19,7 +19,8 @@ void testApp::setup(){
 //    //setting up the mouse controled location.
 //    //mouse.setup(&external_interactions.allInteractions_ptr[0]->props.loc);
     mouse.startThread(true, false);
-
+    managerInterface.start();
+    //listenMsg = false;
 //    main_particles_system.setup_interactions(); 
 //
 //    u_int interaction_type = 1;
@@ -104,9 +105,9 @@ void testApp::setup(){
    
    //--------------------------------------------------------------
    void testApp::keyPressed(int key){
-
+        managerInterface.listen(key);
         //switch (key){
-        //    case 'r':
+        //    case 'm':
         //        manager.create_regularGrid(15,4.0/5);
         //        break;
         //    case 's':
@@ -117,36 +118,6 @@ void testApp::setup(){
         //        break;
         //}
 
-       u_int n = key - 48;
-       Particles_Container* group;
-       if(keys['g'] && keys['s']) {
-           for (u_int i=0; i<manager.world->groups.itemsVector.size(); i++){
-               cout<<manager.world->groups.itemsVector[i]->id;
-           }
-           cout<<endl;
-
-           if (key != 'g' && key != 's') {
-               buffGroup = manager.world->groups.get_itemById(n);
-               if (buffGroup != (int)NULL){
-                   cout<<buffGroup->name<<";"<<buffGroup->id<<endl;
-                   // do whatever you wanna do if both a and b are down.
-               }
-           }
-           
-       } else if(keys['a'] && keys['s']) {
-           for (u_int i=0; i<manager.world->groups.itemsVector.size(); i++){
-               cout<<manager.world->groups.itemsVector[i]->id;
-           }
-           cout<<endl;
-
-           if (key != 'a' && key != 's') {
-               group = manager.world->groups.get_itemById(n);
-               if (group != (int)NULL){
-                   cout<<group->name<<";"<<group->id<<endl;
-                   // do whatever you wanna do if both a and b are down.
-               }
-           }
-       }
    }
    
    //--------------------------------------------------------------

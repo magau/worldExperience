@@ -20,3 +20,11 @@ class World_Manager{
         Particles_Container* update();
         void draw();
 };
+
+class Manager_KeyboardInterface{
+    public:
+        string msg;
+        bool isListening;
+        void start();
+        void listen(int key);
+};

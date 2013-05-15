@@ -7,7 +7,6 @@
 #include "Particles.h"
 #include "Particles_System.h"
 #include "Particles_Manager.h"
-#include "ofxKeyMap.h"  
 #include "ofMain.h"
 
 
@@ -44,10 +43,13 @@ class getMouseLocation : public ofThread {
 class testApp : public ofBaseApp{
 	public:
            
-           ofxKeyMap keys;  
+           //ofxKeyMap keys;  
            World world;
            World_Manager manager;
            Particles_Container* buffGroup;
+           Manager_KeyboardInterface managerInterface;
+           //string msg;
+           //bool listenMsg;
             
 //                RegularGrid_PS main_particles_system;
 //                RegularGrid_IS regularGrid_interactions_system;

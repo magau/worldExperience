@@ -86,3 +86,21 @@ Particles_Container* World_Manager::create_regularGrid(int particles_distance, f
     }
     return regGrid;
 }
+
+
+void Manager_KeyboardInterface::start(){
+    isListening = false;
+}
+
+void Manager_KeyboardInterface::listen(int key){
+   if(ofGetKeyPressed(17)) { //CTRL + Q
+       isListening = true;
+       msg.erase();
+   } else if(ofGetKeyPressed(23)) { //CTRL + W
+       isListening = false;
+       cout<<"msg:"<<msg<<endl;
+   } else if(isListening){
+       msg += key;
+   }
+}
+
