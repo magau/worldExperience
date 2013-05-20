@@ -3,7 +3,7 @@
 
 class Behavior{
     public:
-        int id;
+        u_int id;
         string name;
         Particle_props* props;
         int max_dist;

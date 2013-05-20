@@ -69,8 +69,8 @@ void RegularGrid_MP::setup(int particles_distance, float windowRatio){
     int grid_ds;
     ofPoint grid_num;
 
-    init_props.veloc.set(0,0);
-    init_props.accel.set(0,0);
+    init_props.veloc.set(0);
+    init_props.accel.set(0);
     init_props.rad = 6;
     init_props.relax_fact = 1.0;
     init_props.color = ofColor(255);
@@ -93,20 +93,20 @@ void RegularGrid_MP::setup(int particles_distance, float windowRatio){
 //grid_num.set(1);
 //init_props.loc.x = win_w/2;//
 //init_props.loc.y = win_h/2;//
-cout<<"create_slaveContainer - start."<<endl;
+//cout<<"create_slaveContainer - start."<<endl;
     create_slaveContainer();
-cout<<"create_slaveContainer - done."<<endl;
+//cout<<"create_slaveContainer - done."<<endl;
     
     for (i=0; i<grid_num.y; i++){
         //init_props.loc.y = i*grid_ds + grid_offset.y;
         init_props.locat.y = i*grid_ds + grid_offset.y;
         for (j=0; j<grid_num.x; j++){
             init_props.locat.x = j * grid_ds + grid_offset.x;
-cout<<"create_slaveParticle - start."<<endl;
+//cout<<"create_slaveParticle - start."<<endl;
             create_slaveParticle(init_props);
 
-cout<<"init_props.locat:"<<init_props.locat.x<<";"<<init_props.locat.y<<endl;
-cout<<"create_slaveParticle - done."<<endl;
+//cout<<"init_props.locat:"<<init_props.locat.x<<";"<<init_props.locat.y<<endl;
+//cout<<"create_slaveParticle - done."<<endl;
         }
     }
 }

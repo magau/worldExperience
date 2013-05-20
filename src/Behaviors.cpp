@@ -12,38 +12,37 @@ Behavior(host_props){
 
     name = "GravityGlue";
     locat = host_props->locat;
-    name = "I_1";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
 void GravityGlue::run(){
     float dist,dx,dy,weight,weight_fact,acc;
-    //Particle* actuated_particle;
 
-    weight_fact = 0.25;
+    weight_fact = 0.1;
+    min_dist = 40;
 
     weight = max_dist*weight_fact;
 
     dist = locat.distance(props->locat);
     dx = props->locat.x - locat.x;
     dy = props->locat.y - locat.y;
+
+    if (dist < min_dist) dist = min_dist;
+
     acc = weight / pow(dist,2);
-    props->accel.x += dx * acc;
-    props->accel.y += dy * acc;
+
+    props->accel.x += - dx * acc;
+    props->accel.y += - dy * acc;
+
     //Do not aplly relaxation at the bounthery wall  
-    int offset = props->rad;
-    if (props->locat.x > offset &&
-        props->locat.x < ofGetWindowWidth() - offset &&
-        props->locat.y > offset &&
-        props->locat.y < ofGetWindowHeight() - offset ){
+    //int offset = props->rad;
+    //if (props->locat.x > offset &&
+    //    props->locat.x < ofGetWindowWidth() - offset &&
+    //    props->locat.y > offset &&
+    //    props->locat.y < ofGetWindowHeight() - offset ){
 
-        props->relax_fact = 0.7;
-     }
-
-//if (id == 0) {
-//    cout<<"locat:"<<locat<<" props->locat:"<<props->locat<<endl;
-//}
- 
+    props->relax_fact = 0.7;
+    //}
 }
 
 MouseTracking::MouseTracking(Particle_props* host_props) : 
@@ -53,22 +52,18 @@ Behavior(host_props){
 
 void MouseTracking::run(){
    extern getMouseLocation mouse;
-   props->locat.x = mouse.x;
-   props->locat.y = mouse.y;
+   props->veloc.x = mouse.x - props->locat.x;
+   props->veloc.y = mouse.y - props->locat.y;
 }
 
 Behavior* Behaviors_Container::add_itemByName(string iName, Particle_props* host_props){
 
    Behavior* newBehavior = (int)NULL;
 
-   if (iName.size() == 0){
-       iName = default_addedItemName;
-       //cout<<"default name:"<<default_addedItemName<<endl;
-   } 
+   if (iName.size() == 0) iName = default_addedItemName;
 
    if (iName.compare("GravityGlue") == 0){
        newBehavior = new GravityGlue(host_props);
-       //cout<<"add item, iName:"<<iName<<endl;
    } else if (iName.compare("B_MouseTracking") == 0){
        newBehavior = new MouseTracking(host_props);
    }
@@ -83,5 +78,3 @@ Behavior* Behaviors_Container::add_itemByName(string iName, Particle_props* host
 
    return newBehavior;
 }
-
-

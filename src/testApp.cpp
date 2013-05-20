@@ -116,6 +116,18 @@ cout<<world.particles.itemsVector.size()<<endl;
         switch (key){
             case 'r':
                 //manager.create_regularGrid(15,4.0/5);
+                manager.world->particles.itemsVector.back()->interactions.add_itemByName("Electrical_Repulsion",
+                                                          &manager.world->particles.itemsVector.back()->props);
+                manager.world->particles.itemsVector.back()->interactions.itemsVector.back()->actuated_particles                 = manager.world->groups.itemsVector.back();
+                cout<<"add Electrical_Repulsion interaction"<<endl;
+                break;
+            case 'i':
+                //manager.create_regularGrid(15,4.0/5);
+                manager.world->particles.itemsVector.back()->interactions.pop();
+                cout<<"pop Electrical_Repulsion interaction"<<endl;
+                break;
+            case 'l':
+                //manager.create_regularGrid(15,4.0/5);
                 manager.world->particles.itemsVector.back()->behaviors.pop();
                 cout<<"pop MouseTracking behavior"<<endl;
                 break;

@@ -22,11 +22,11 @@ void Particle :: display() {
 
 void Particle :: update() {
     props.veloc += props.accel;
-//    enable_screenElasticBoundery();
+    elastic_boundery();
     props.locat += props.veloc;
     //Aplly relax_fact
     props.veloc *= ofVec3f(props.relax_fact);
-//    bound_particles_location();
+    //bound_particles_location();
     //props.vel = ofPoint(0);
     props.accel = ofVec3f(0);
     props.relax_fact = 1.0;
@@ -54,7 +54,6 @@ void Particle :: interact() {
             (*IterInterac)->run();
         }
 }
-
 /*
 void Particle :: bound_particles_location(){
    int offset = props.rad;
@@ -69,7 +68,6 @@ void Particle :: bound_particles_location(){
    } else if (props.locat.y > ofGetWindowHeight()-offset){
        props.locat.y = ofGetWindowHeight()-offset;
    }
-
 }
 
 void Particle :: set_speedLimit(int maxSpeed){
@@ -85,19 +83,21 @@ void Particle :: set_speedLimit(int maxSpeed){
        props.veloc.y = maxSpeed;
    }
 }
+*/
 
-void Particle :: enable_screenElasticBoundery(){
+void Particle :: elastic_boundery(){
    int offset = props.rad;
 
    //Elastic bounds
-   if ( props.locat.x <= offset || props.locat.x >= ofGetWindowWidth()-offset ){
+   if ( (props.locat.x <= offset &&  props.veloc.x < 0) ||
+        (props.locat.x >= ofGetWindowWidth()-offset &&  props.veloc.x > 0) ){
        props.veloc.x *= -1;
    }
-   if ( props.locat.y <= offset || props.locat.y >= ofGetWindowHeight()-offset ){
+   if ( (props.locat.y <= offset && props.veloc.y < 0) ||
+        (props.locat.y >= ofGetWindowHeight()-offset && props.veloc.y > 0) ){
        props.veloc.y *= -1;
    }
 }
-*/
 
 Circle::Circle(Particle_props init_props) :
                      Particle(init_props){

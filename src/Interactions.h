@@ -2,7 +2,7 @@ class Particles_Container;
 
 class Interaction {
     public:
-        int id;
+        u_int id;
         string name;
         Particle_props* props;
         int max_dist;
@@ -17,16 +17,15 @@ class Interaction {
         //virtual void update(Particle_props* p_props);
 };
 
-class Interaction_I : public Interaction{
+class Electrical_Repulsion : public Interaction{
     public:
-        Interaction_I(Particle_props* hostParticle_props=(int)NULL);
+        Electrical_Repulsion(Particle_props* hostParticle_props=(int)NULL);
         void interact(Particle_props* actuatedParticle_props);
 };
 
-
-class Interaction_II : public Interaction{
+class Electrical_Attraction : public Interaction{
     public:
-        Interaction_II(Particle_props* hostParticle_props);
+        Electrical_Attraction(Particle_props* hostParticle_props);
         void interact(Particle_props* actuatedParticle_props);
 };
 

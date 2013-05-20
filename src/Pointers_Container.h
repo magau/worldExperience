@@ -22,7 +22,7 @@ template <typename IType>
 class Pointers_Container{
     public:
         string name;
-        int id;
+        u_int id;
         //Particle_props props;
         string default_addedItemName;
         vector<IType> itemsVector;
@@ -32,9 +32,9 @@ class Pointers_Container{
         void add(IType item,bool mainContainer=true);
         virtual IType add_itemByName(string iName, Particle_props* host_props);
         virtual IType add_itemByName(string iName, Particle_props init_props=Particle_props());
-        IType pop(int index=(int)NULL, bool erase=true);
-        IType pop_itemById(int id, bool erase=true);
-        IType get_itemById(int id);
+        IType pop(u_int index=(u_int)NULL, bool erase=true);
+        IType pop_itemById(u_int id, bool erase=true);
+        IType get_itemById(u_int id);
         vector <IType> pop_itemByName(string iName, bool erase=true);
         vector <IType> clear(bool erase=true);
         vector <IType> get_itemsByName(string iName="all");
@@ -109,7 +109,7 @@ vector <IType> Pointers_Container<IType>::get_itemsByName(string iName){
 }
 
 template <typename IType> 
-IType Pointers_Container<IType>::pop(int index, bool erase){
+IType Pointers_Container<IType>::pop(u_int index, bool erase){
 /*
 Erase element from "itemsVector" pointers vector after
 deallocate the respective memory using the "delete"
@@ -122,7 +122,7 @@ in "freeIdBuff" vector for future added items.
     if (index >= 0 && index < itemsVector.size() && itemsVector.size() > 0) {
         item = itemsVector[index];
         if (erase) {
-            if (item->id < itemsVector.size() - 1) {
+            if (item->id < (u_int)(itemsVector.size() - 1)) {
                 freeIdBuff.push_back(item->id);
             }
             delete item;
@@ -133,7 +133,7 @@ in "freeIdBuff" vector for future added items.
 }
 
 template <typename IType> 
-IType Pointers_Container<IType>::get_itemById(int id){
+IType Pointers_Container<IType>::get_itemById(u_int id){
     IType item;
     IType result = (int)NULL;
     typename vector<IType>::iterator item_it;
@@ -156,7 +156,7 @@ cout<<"get item id:"<<id<<endl;
 
 
 template <typename IType> 
-IType Pointers_Container<IType>::pop_itemById(int id, bool erase){
+IType Pointers_Container<IType>::pop_itemById(u_int id, bool erase){
     IType item;
     IType result = (int)NULL;
     typename vector<IType>::iterator item_it;

@@ -26,19 +26,20 @@ void Interaction::update(Particle_props* p_props){
 */
 
 
-Interaction_I::Interaction_I(Particle_props* host_props) :
+Electrical_Repulsion::Electrical_Repulsion(Particle_props* host_props) :
 Interaction(host_props){
     //props = init_props;
-    name = "I_1";
+    name = "Electrical_Repulsion";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
 
-void Interaction_I::interact(Particle_props* actuatedParticle_props){
+void Electrical_Repulsion::interact(Particle_props* actuatedParticle_props){
     float dist,dx,dy,weight,weight_fact,acc;
     //Particle* actuated_particle;
 
-    weight_fact = 0.25;
+    weight_fact = 0.2;
+    //weight_fact = 0.25;
 
     weight = max_dist*weight_fact;
 
@@ -48,24 +49,24 @@ void Interaction_I::interact(Particle_props* actuatedParticle_props){
     acc = weight / pow(dist,2);
     actuatedParticle_props->accel.x += dx * acc;
     actuatedParticle_props->accel.y += dy * acc;
-    //Do not aplly relaxation at the bounthery wall  
-    int offset = actuatedParticle_props->rad;
-    if (actuatedParticle_props->locat.x > offset &&
-        actuatedParticle_props->locat.x < ofGetWindowWidth() - offset &&
-        actuatedParticle_props->locat.y > offset &&
-        actuatedParticle_props->locat.y < ofGetWindowHeight() - offset ){
+    ////Do not aplly relaxation at the bounthery wall  
+    //int offset = actuatedParticle_props->rad;
+    //if (actuatedParticle_props->locat.x > offset &&
+    //    actuatedParticle_props->locat.x < ofGetWindowWidth() - offset &&
+    //    actuatedParticle_props->locat.y > offset &&
+    //    actuatedParticle_props->locat.y < ofGetWindowHeight() - offset ){
 
-        actuatedParticle_props->relax_fact = 0.7;
-    }
+    //    actuatedParticle_props->relax_fact = 0.7;
+    //}
 } 
 
-Interaction_II::Interaction_II(Particle_props* host_props) :
+Electrical_Attraction::Electrical_Attraction(Particle_props* host_props) :
 Interaction(host_props){
-    name = "I_2";
+    name = "Electrical_Attraction";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
-void Interaction_II::interact(Particle_props* actuatedParticle_props){
+void Electrical_Attraction::interact(Particle_props* actuatedParticle_props){
     float dist,dx,dy,weight,weight_fact,acc;
     //Particle* actuated_particle;
 
@@ -100,11 +101,11 @@ Interaction* Interactions_Container::add_itemByName(string iName, Particle_props
        //cout<<"default name:"<<default_addedItemName<<endl;
    } 
 
-   if (iName.compare("I_1") == 0){
-       newInteraction = new Interaction_I(init_props);
+   if (iName.compare("Electrical_Repulsion") == 0){
+       newInteraction = new Electrical_Repulsion(init_props);
        //cout<<"add item, iName:"<<iName<<endl;
-   } else if (iName.compare("I_2") == 0){
-       newInteraction = new Interaction_II(init_props);
+   } else if (iName.compare("Electrical_Attraction") == 0){
+       newInteraction = new Electrical_Attraction(init_props);
        //add(new DerivedParticle());
        //cout<<"add item, iName:"<<iName<<endl;
    }

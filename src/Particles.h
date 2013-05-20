@@ -2,7 +2,7 @@
 
 class Particle{
     public:
-        int id;
+        u_int id;
         string name;
         Particle_props props;
         Interactions_Container interactions;
@@ -17,7 +17,7 @@ class Particle{
         virtual void display();
         //void bound_particles_location();
         //void set_speedLimit(int max_speed);
-        //void enable_screenElasticBoundery();
+        void elastic_boundery();
 };
 
 class Circle : public Particle{
