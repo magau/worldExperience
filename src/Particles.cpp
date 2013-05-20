@@ -9,7 +9,7 @@ void Particle :: run() {
     behave();
     interact();
     update();
-    display();
+    //display();
 }
 
 // Method to display
@@ -143,7 +143,10 @@ Particle* Particles_Container::add_itemByName(string iName,Particle_props init_p
        newParticle = new Particle(init_props);
    } else if (iName.compare("P_Circle") == 0){
        newParticle = new Circle(init_props);
+   } else if (iName.compare("MP_RegGrid") == 0){
+       newParticle = new RegularGrid_MP(init_props);
    }
+
    /*
     .
     .

@@ -13,6 +13,7 @@ Particle* World_Manager::create_particle(string iName, Particle_props init_props
     //create newParticle add particle to worldParticles and 
     //systemParticles Particles_Container
     Particle* newParticle;
+    init_props.world = world;
     newParticle = world->particles.add_itemByName(iName,init_props);
     return newParticle;
 }

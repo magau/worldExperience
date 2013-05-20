@@ -1,13 +1,14 @@
 #include "testApp.h"
 
-Particles_System::Particles_System(Particle_props init_props) :
+Master_Particle::Master_Particle(Particle_props init_props) :
                  Particle(init_props){
     name = "basePS";
-    default_Particle = "baseP";
+    default_Particle = "P_Circle";
+    //default_Particle = "baseP";
     default_Interaction = "baseI";
 }
 
-void Particles_System::setup(){
+void Master_Particle::setup(){
 //    for (int i=0;i<10;i++){
 //        if (i<5){
 //            add(new Particle());
@@ -22,25 +23,24 @@ void Particles_System::setup(){
 ////        itemsVector[i].interact( &(actuated_PS->itemsVector) );
 ////    }
 //}
-//
-void Particles_System::run(){
+
+void Master_Particle::run(){
 
 }
 
-void Particles_System::create_systemParticles(){
-    //create System systemParticles Particles_Container.
-    systemParticles = new Particles_Container;
-    systemParticles->name = "Generic";
-    world->groups.add(systemParticles); 
+void Master_Particle::create_slaveContainer(){
+    //create System slaveParticles Particles_Container.
+    slaveParticles = new Particles_Container;
+    slaveParticles->name = "Generic";
+    props.world->groups.add(slaveParticles); 
 }
 
-void Particles_System::create_particle(Particle_props init_props){
+void Master_Particle::create_slaveParticle(Particle_props init_props){
     //create newParticle add particle to worldParticles and 
-    //systemParticles Particles_Container
+    //slaveParticles Particles_Container
     Particle* newParticle;
-    newParticle = new Particle(init_props);
-    world->particles.add(newParticle);
-    systemParticles->add(newParticle,false);
+    newParticle = props.world->particles.add_itemByName(default_Particle,init_props);
+    slaveParticles->add(newParticle,false);
 }
 
 /*
@@ -51,13 +51,15 @@ Derived_ParticlesSystem::Derived_ParticlesSystem() :
 }
 */
 
-RegularGrid_PS::RegularGrid_PS(Particle_props init_props) :
-                             Particles_System(init_props){
-    name = "PS_RegGrid";
+RegularGrid_MP::RegularGrid_MP(Particle_props init_props) :
+                             Master_Particle(init_props){
+    name = "MP_RegGrid";
     default_Particle = "P_Circle";
+    // provisorio:
+    setup(15,4.0/5); 
 }
 
-void RegularGrid_PS::setup(int particles_distance, ofPoint grid_size){
+void RegularGrid_MP::setup(int particles_distance, float windowRatio){
     //This method ("constructor") builds a 2D regular grid particles system.
     // particles_distance - pixels
     // grid_size - [0 < grid_size <1] Relative to window size.
@@ -72,12 +74,13 @@ void RegularGrid_PS::setup(int particles_distance, ofPoint grid_size){
     init_props.rad = 6;
     init_props.relax_fact = 1.0;
     init_props.color = ofColor(255);
+    init_props.world = props.world;
 
     grid_ds = particles_distance;
     win_w = ofGetWindowWidth();
     win_h = ofGetWindowHeight();
-    grd_w = round(win_w*grid_size.x);
-    grd_h = round(win_h*grid_size.y);
+    grd_w = round(win_w*windowRatio);
+    grd_h = round(win_h*windowRatio);
     //grid_offset.x = (win_w - (grd_w-2*grid_ds)/grid_ds * grid_ds)/2;
     //grid_offset.y = (win_h - (grd_h-2*grid_ds)/grid_ds * grid_ds)/2;
     //grid_num.set(1+(win_w-2*grid_offset.x)/grid_ds,1+(win_h-2*grid_offset.y)/grid_ds);
@@ -90,14 +93,20 @@ void RegularGrid_PS::setup(int particles_distance, ofPoint grid_size){
 //grid_num.set(1);
 //init_props.loc.x = win_w/2;//
 //init_props.loc.y = win_h/2;//
-    create_systemParticles();
-
+cout<<"create_slaveContainer - start."<<endl;
+    create_slaveContainer();
+cout<<"create_slaveContainer - done."<<endl;
+    
     for (i=0; i<grid_num.y; i++){
         //init_props.loc.y = i*grid_ds + grid_offset.y;
         init_props.locat.y = i*grid_ds + grid_offset.y;
         for (j=0; j<grid_num.x; j++){
             init_props.locat.x = j * grid_ds + grid_offset.x;
-            create_particle(init_props);
+cout<<"create_slaveParticle - start."<<endl;
+            create_slaveParticle(init_props);
+
+cout<<"init_props.locat:"<<init_props.locat.x<<";"<<init_props.locat.y<<endl;
+cout<<"create_slaveParticle - done."<<endl;
         }
     }
 }
@@ -108,9 +117,9 @@ void RegularGrid_PS::setup(int particles_distance, ofPoint grid_size){
 //   } 
 //
 //   if (iName.compare("") == 0){
-//       add(new Particles_System(init_props));
+//       add(new Master_Particle(init_props));
 //   } else if (iName.compare("PS_RegGrid") == 0){
-//       add(new RegularGrid_PS(init_props));
+//       add(new RegularGrid_MP(init_props));
 //   }
 //   /*
 //    .

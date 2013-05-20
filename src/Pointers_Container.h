@@ -1,4 +1,5 @@
 #include "ofMain.h"
+class World;
 
 class Particle_props{
     public:
@@ -14,6 +15,7 @@ class Particle_props{
         float relax_fact;
         bool isAlive;
         Particle_props();
+        World* world;
 };
 
 template <typename IType>
@@ -29,7 +31,7 @@ class Pointers_Container{
         void set_default_itemName(string iName);
         void add(IType item,bool mainContainer=true);
         virtual IType add_itemByName(string iName, Particle_props* host_props);
-        virtual IType add_itemByName(string iName, Particle_props init_props);
+        virtual IType add_itemByName(string iName, Particle_props init_props=Particle_props());
         IType pop(int index=(int)NULL, bool erase=true);
         IType pop_itemById(int id, bool erase=true);
         IType get_itemById(int id);

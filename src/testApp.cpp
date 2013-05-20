@@ -34,18 +34,25 @@ void testApp::setup(){
 //#endif
 //
   manager.world = &world;
-  manager.create_regularGrid(15,4.0/5);
-  //cout<<world.particles.itemsVector.size()<<endl;
+  //manager.create_regularGrid(15,4.0/5);
+  manager.create_particle("MP_RegGrid");
+
+cout<<world.particles.itemsVector.size()<<endl;
+  Particle* p = manager.create_particle("P_Circle");
+  p->props.rad = 6;
+  p->props.color = ofColor(255,0,0);;
+  p->behaviors.add_itemByName("B_MouseTracking",&p->props);
+cout<<world.particles.itemsVector.size()<<endl;
+  
   //for (u_int i=0; i<manager.world->groups.itemsVector.size(); i++){
   //    cout<<manager.world->groups.itemsVector[i]->id;
   //}
-  //cout<<endl;
-
 
 }
    
    //--------------------------------------------------------------
    void testApp::update(){
+       
        manager.update();
 //       external_interactions.update();
 //       main_particles_system.update_interactions(external_interactions.allInteractions_ptr);
@@ -106,17 +113,37 @@ void testApp::setup(){
    //--------------------------------------------------------------
    void testApp::keyPressed(int key){
         managerInterface.listen(key);
-        //switch (key){
-        //    case 'm':
-        //        manager.create_regularGrid(15,4.0/5);
-        //        break;
-        //    case 's':
-        //        for (u_int i=0; i<manager.world->groups.itemsVector.size(); i++){
-        //            cout<<manager.world->groups.itemsVector[i]->id;
-        //        }
-        //        cout<<endl;
-        //        break;
-        //}
+        switch (key){
+            case 'r':
+                //manager.create_regularGrid(15,4.0/5);
+                manager.world->particles.itemsVector.back()->behaviors.pop();
+                cout<<"pop MouseTracking behavior"<<endl;
+                break;
+            case 'm':
+                manager.world->particles.itemsVector.back()->behaviors.add_itemByName("B_MouseTracking",
+                                                          &manager.world->particles.itemsVector.back()->props);
+                cout<<"add B_MouseTracking"<<endl;
+                break;
+            case 'o':
+                for (u_int i=0; i<manager.world->particles.itemsVector.size()-2; i++){
+                    manager.world->particles.itemsVector[i]->props.locat.set(0);
+                }
+                cout<<"set particles location to origin"<<endl;
+                break;
+            case 'a':
+                for (u_int i=0; i<manager.world->particles.itemsVector.size()-2; i++){
+                    manager.world->particles.itemsVector[i]->behaviors.add_itemByName("GravityGlue",
+                                                          &manager.world->particles.itemsVector[i]->props);
+                }
+                cout<<"set GravityGlue"<<endl;
+                break;
+             case 'f':
+                for (u_int i=0; i<manager.world->particles.itemsVector.size()-2; i++){
+                    manager.world->particles.itemsVector[i]->behaviors.pop();
+                }
+                cout<<"pop GravityGlue behavior"<<endl;
+                break;
+         }
 
    }
    

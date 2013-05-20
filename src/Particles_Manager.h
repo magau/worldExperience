@@ -15,7 +15,7 @@ class World_Manager{
     public:
         World* world;
         Particles_Container* create_group(string iName="Generic");
-        Particle* create_particle(string iName, Particle_props init_props);
+        Particle* create_particle(string iName, Particle_props init_props=Particle_props());
         Particles_Container* create_regularGrid(int particles_distance, float windowRatio);
         Particles_Container* update();
         void draw();

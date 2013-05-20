@@ -15,6 +15,13 @@ class Behavior{
         virtual void run();//Particle_props* p_props);
 };
 
+class GravityGlue : public Behavior{
+    public:
+        ofVec3f locat;
+        GravityGlue(Particle_props* host_props);
+        void run();
+};
+
 class MouseTracking : public Behavior{
     public:
         MouseTracking(Particle_props* host_props);

@@ -7,7 +7,7 @@ class Particle{
         Particle_props props;
         Interactions_Container interactions;
         Behaviors_Container behaviors;
-        World* world;
+        //World* world;
         Particle (Particle_props init_props);
         //virtual void setup(Particle_props _props);
         virtual void run();
