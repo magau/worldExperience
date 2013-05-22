@@ -12,7 +12,7 @@ class Behavior{
         float weigth_fact;
         World* world;
         Behavior(Particle_props* host_props);
-        virtual void run();//Particle_props* p_props);
+        virtual void run();
 };
 
 class GravityGlue : public Behavior{
@@ -32,5 +32,3 @@ class Behaviors_Container : public Pointers_Container<Behavior*>{
     public:
         Behavior* add_itemByName(string iName, Particle_props* host_props);
 };
-
-

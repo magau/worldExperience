@@ -39,9 +39,6 @@ class Pointers_Container{
         vector <IType> clear(bool erase=true);
         vector <IType> get_itemsByName(string iName="all");
         /*
-        virtual void setup();
-        virtual void update();
-        virtual void run();
          "reset_itemTypeById" should be implemented in order to replace
          old items by newers of diferent types, passing the properties
          you plane to keep with from one to the other.
@@ -94,7 +91,6 @@ vector <IType> Pointers_Container<IType>::get_itemsByName(string iName){
     IType item;
     typename vector<IType>::iterator item_it;
 
-    //cout<<"IS.name:"<<name<<endl;
     for (item_it = itemsVector.begin();
          item_it != itemsVector.end();
          item_it++){
@@ -260,22 +256,4 @@ vector<IType> Pointers_Container<IType>::clear(bool erase){
     }
     return result; 
 }
-
-/*
-template <class IType> 
-void Pointers_Container<IType>::setup(){
-
-}
-
-template <class IType> 
-void Pointers_Container<IType>::update(){
-
-}
-
-template <class IType> 
-void Pointers_Container<IType>::run(){
-
-}
-*/
-
 

@@ -14,7 +14,6 @@ class Interaction {
         Interaction(Particle_props* hostParticle_props);
         virtual void run();
         virtual void interact(Particle_props* actuatedParticle_props);
-        //virtual void update(Particle_props* p_props);
 };
 
 class Electrical_Repulsion : public Interaction{

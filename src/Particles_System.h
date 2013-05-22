@@ -3,26 +3,16 @@ class Master_Particle : public Particle{
     public:
         string default_Particle;
         string default_Interaction;
-        //unordered_map<float> interactionsMaster;
+        //unordered_map<float> interactions_master;
         Particles_Container* slaveParticles;
         Master_Particle(Particle_props init_props=Particle_props());
-        //void add_itemByName(string iName="",Particle_props init_props=Particle_props());
         //set up the system particles initial position
         void create_slaveContainer();
         void create_slaveParticle(Particle_props init_props);
+        void run();
         virtual void setup();//unordered_map<int> setupParameters);
-        //call the run() method for every particles
-        virtual void run();
-        //virtual void interact(Base_ParticlesSystem* actuated_PS);
 };
 
-
-/*
-class Derived_ParticlesSystem : public Base_ParticlesSystem{
-    public:
-        Derived_ParticlesSystem();
-};
-*/
 
 class RegularGrid_MP : public Master_Particle{
     public:
@@ -50,10 +40,4 @@ class mouseParticlesGenerator_ParticlesSystem : public Interactions_System {
         void run(vector<Particle>* particlesVect_ptr);
 };
 */
-
-//class ParticlesSystems_Container : public Pointers_Container<Master_Particle*>{
-//    public:
-//        void add_itemByName(string iName,Particle_props init_props);
-//};
-
 

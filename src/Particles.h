@@ -7,7 +7,6 @@ class Particle{
         Particle_props props;
         Interactions_Container interactions;
         Behaviors_Container behaviors;
-        //World* world;
         Particle (Particle_props init_props);
         //virtual void setup(Particle_props _props);
         virtual void run();
@@ -23,33 +22,15 @@ class Particle{
 class Circle : public Particle{
     public:
         Circle (Particle_props init_props);
-        //virtual void setup(Particle_props _props);
         void display();
-        //void bound_particles_location();
-        //void set_speedLimit(int max_speed);
-        //void enable_screenElasticBoundery();
 };
 
-/*
-class InteractiveParticle : public BaseParticle{
-    public:
-        InteractiveParticle (Particle_props init_props);
-        void run();
-        //virtual void interact(Particle* actuated_particle);
-        //virtual void interact(vector<BaseParticle>* particlesVect_ptr);
-};
-
-class DerivedParticle : public BaseParticle{
-    public:
-        DerivedParticle(Particle_props init_props);
-};
-*/
 
 class Particles_Container : public Pointers_Container<Particle*>{
     public:
-        //Particles_Container();
         Particle* add_itemByName(string iName, Particle_props init_props);
-        //void set_regularGrid();
+
+// This two methods must be transfered to the Master_Particle class, in Future...
         void attachInteraction_one2one(string iName, Particles_Container* actuated_particles);
         void attachInteraction_many2one(string iName, Particles_Container* actuated_particles);
 };

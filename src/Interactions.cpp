@@ -15,20 +15,12 @@ void Interaction::run(){
          actuatedParticle_it != actuated_particles->itemsVector.end();
          actuatedParticle_it++){
 
-         interact(&(*actuatedParticle_it)->props);
+         interact(&(**actuatedParticle_it).props);
     }
 }
 
-/*
-void Interaction::update(Particle_props* p_props){
-
-}
-*/
-
-
 Electrical_Repulsion::Electrical_Repulsion(Particle_props* host_props) :
 Interaction(host_props){
-    //props = init_props;
     name = "Electrical_Repulsion";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
@@ -36,7 +28,6 @@ Interaction(host_props){
 
 void Electrical_Repulsion::interact(Particle_props* actuatedParticle_props){
     float dist,dx,dy,weight,weight_fact,acc;
-    //Particle* actuated_particle;
 
     weight_fact = 0.2;
     //weight_fact = 0.25;
@@ -68,7 +59,6 @@ Interaction(host_props){
 
 void Electrical_Attraction::interact(Particle_props* actuatedParticle_props){
     float dist,dx,dy,weight,weight_fact,acc;
-    //Particle* actuated_particle;
 
     weight_fact = 0.1;
     min_dist = 40;
@@ -98,16 +88,12 @@ Interaction* Interactions_Container::add_itemByName(string iName, Particle_props
 
    if (iName.size() == 0){
        iName = default_addedItemName;
-       //cout<<"default name:"<<default_addedItemName<<endl;
    } 
 
    if (iName.compare("Electrical_Repulsion") == 0){
        newInteraction = new Electrical_Repulsion(init_props);
-       //cout<<"add item, iName:"<<iName<<endl;
    } else if (iName.compare("Electrical_Attraction") == 0){
        newInteraction = new Electrical_Attraction(init_props);
-       //add(new DerivedParticle());
-       //cout<<"add item, iName:"<<iName<<endl;
    }
    /*
     .
