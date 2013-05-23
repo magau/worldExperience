@@ -4,6 +4,7 @@ class Interaction {
     public:
         u_int id;
         string name;
+        bool isAlive;
         Particle_props* props;
         int max_dist;
         int min_dist; 
@@ -28,13 +29,16 @@ class Electrical_Attraction : public Interaction{
         void interact(Particle_props* actuatedParticle_props);
 };
 
-/*
-class Interaction_III : public Interaction{
+class Wave_Source : public Interaction{
     public:
-        Interaction_III(Particle_props* hostParticle_props);
-        void interact(vector<Particle>* particlesVect_ptr);
+        int wave_speed;
+        float weight,weight_fact;
+
+        Wave_Source(Particle_props* hostParticle_props);
+        void interact(Particle_props* actuatedParticle_props);
 };
 
+/*
 class Interaction_IV : public Interaction{
     public:
         ofVec3f temp_loc;

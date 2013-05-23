@@ -9,6 +9,7 @@ class World{
         //void add_ParticleSystemByType();
         //Particles_Container* create_group(string iName="Generic");
         Particle* create_particle(string iName, Particle_props init_props=Particle_props());
+        void remove_particle(Particle* particle_ptr);
         Particles_Container* update();
         void draw();
 };

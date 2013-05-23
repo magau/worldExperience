@@ -50,6 +50,12 @@ void testApp::draw(){
 void testApp::keyPressed(int key){
      managerInterface.listen(key);
      switch (key){
+         case 'w':
+             world.particles.itemsVector.back()->interactions.add_itemByName("Wave_Source",
+                                                       &world.particles.itemsVector.back()->props);
+             world.particles.itemsVector.back()->interactions.itemsVector.back()->actuated_particles                          = world.groups.itemsVector.back();
+             cout<<"add Wave_Source interaction"<<endl;
+             break;
          case 'r':
              world.particles.itemsVector.back()->interactions.add_itemByName("Electrical_Repulsion",
                                                        &world.particles.itemsVector.back()->props);

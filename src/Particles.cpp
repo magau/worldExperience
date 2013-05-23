@@ -39,12 +39,28 @@ void Particle :: behave() {
 }
 
 void Particle :: interact() {
-        for(vector<Interaction*>::iterator IterInterac = interactions.itemsVector.begin();
-                                        IterInterac != interactions.itemsVector.end();
-                                        IterInterac++){
+    Interaction* temp_interaction_ptr; 
+
+    // variável 'index' temporaria até
+    // mudar o argumento de entrada do metodo
+    // pop(u_ind) para pop(vector<Interaction*>::iterator)
+
+    if ( interactions.itemsVector.size() > 0){
+        int index = interactions.itemsVector.size()-1;
+        
+        for(vector<Interaction*>::iterator IterInterac = interactions.itemsVector.end()-1;
+                                        IterInterac >= interactions.itemsVector.begin();
+                                        IterInterac--){
+            temp_interaction_ptr = *IterInterac;
+            temp_interaction_ptr->run();
+            if(!temp_interaction_ptr->isAlive){
+                interactions.pop(index);
+            } else {
+                index --;
+            }
             
-            (*IterInterac)->run();
         }
+    }
 }
 
 /*

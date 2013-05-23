@@ -18,13 +18,22 @@ Particle* World::create_particle(string iName, Particle_props init_props){
     return newParticle;
 }
 
-Particles_Container* World::update(){
+Particles_Container* World :: update(){
+    Particle* temp_particle_ptr;
     for(vector<Particle*>::iterator IterPart = particles.itemsVector.begin();
                                     IterPart != particles.itemsVector.end();
                                     IterPart++){
-        (*IterPart)->run();
+        temp_particle_ptr = *IterPart;
+        temp_particle_ptr->run();
+        if(!temp_particle_ptr->props.isAlive){
+            remove_particle(temp_particle_ptr);
+        }
     }
     return &(particles);
+}
+
+void World :: remove_particle(Particle* particle_ptr){
+
 }
 
 void World::draw(){
