@@ -36,6 +36,7 @@ class Wave_Source : public Interaction{
 
         Wave_Source(Particle_props* hostParticle_props);
         void interact(Particle_props* actuatedParticle_props);
+        void run();
 };
 
 /*

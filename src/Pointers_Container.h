@@ -33,6 +33,7 @@ class Pointers_Container{
         virtual IType add_itemByName(string iName, Particle_props* host_props);
         virtual IType add_itemByName(string iName, Particle_props init_props=Particle_props());
         IType pop(u_int index=(u_int)NULL, bool erase=true);
+        IType pop(typename vector<IType>::iterator item_it, bool erase=true);
         IType pop_itemById(u_int id, bool erase=true);
         IType get_itemById(u_int id);
         vector <IType> pop_itemByName(string iName, bool erase=true);
@@ -102,6 +103,27 @@ vector <IType> Pointers_Container<IType>::get_itemsByName(string iName){
         }
     }
     return result;
+}
+
+template <typename IType> 
+IType Pointers_Container<IType>::pop(typename vector<IType>::iterator item_it, bool erase){
+/*
+Erase element from "itemsVector" pointers vector after
+deallocate the respective memory using the "delete"
+function. Also keep "id" value of each erased element
+in "freeIdBuff" vector for future added items.
+*/
+
+    if (item_it >= itemsVector.begin() && item_it < itemsVector.end() && itemsVector.size() > 0) {
+        if (erase) {
+            if ((**item_it).id < (u_int)(itemsVector.size() - 1)) {
+                freeIdBuff.push_back((**item_it).id);
+            }
+            delete *item_it;
+        }
+        itemsVector.erase(item_it);
+    }
+    return *item_it;
 }
 
 template <typename IType> 
