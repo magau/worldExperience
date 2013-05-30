@@ -17,17 +17,17 @@ void Particle :: display() {
 }
 
 void Particle :: update() {
-    props.veloc += props.accel;
+    props.ofVec3f_map["vel"] += props.ofVec3f_map["acc"];
     elastic_boundery();
-    props.locat += props.veloc;
+    props.ofVec3f_map["loc"] += props.ofVec3f_map["vel"];
     //Aplly relax_fact
-    props.veloc *= ofVec3f(props.relax_fact);
+    props.ofVec3f_map["vel"] *= ofVec3f(props.relax_fact);
     props.relax_fact = 1.0;
     //bound_particles_location();
 
     // Clear accelaration to allow comulative 
     // interactions and order independency:
-    props.accel = ofVec3f(0);
+    props.ofVec3f_map["acc"] = ofVec3f(0);
 }
 
 void Particle :: behave() {
@@ -88,16 +88,16 @@ void Particle :: set_speedLimit(int maxSpeed){
 */
 
 void Particle :: elastic_boundery(){
-   int offset = props.rad;
+   int offset = props.int_map["rad"];
 
    //Elastic bounds
-   if ( (props.locat.x <= offset &&  props.veloc.x < 0) ||
-        (props.locat.x >= ofGetWindowWidth()-offset &&  props.veloc.x > 0) ){
-       props.veloc.x *= -1;
+   if ( (props.ofVec3f_map["loc"].x <= offset &&  props.ofVec3f_map["vel"].x < 0) ||
+        (props.ofVec3f_map["loc"].x >= ofGetWindowWidth()-offset &&  props.ofVec3f_map["vel"].x > 0) ){
+       props.ofVec3f_map["vel"].x *= -1;
    }
-   if ( (props.locat.y <= offset && props.veloc.y < 0) ||
-        (props.locat.y >= ofGetWindowHeight()-offset && props.veloc.y > 0) ){
-       props.veloc.y *= -1;
+   if ( (props.ofVec3f_map["loc"].y <= offset && props.ofVec3f_map["vel"].y < 0) ||
+        (props.ofVec3f_map["loc"].y >= ofGetWindowHeight()-offset && props.ofVec3f_map["vel"].y > 0) ){
+       props.ofVec3f_map["vel"].y *= -1;
    }
 }
 
@@ -109,8 +109,8 @@ Circle::Circle(Particle_props init_props) :
 void Circle :: display() {
     //ofColor(...);
     //ofFill();
-    ofSetColor(props.color);
-    ofEllipse(props.locat.x,props.locat.y,props.rad,props.rad);
+    ofSetColor(props.ofColor_map["surf"]);
+    ofEllipse(props.ofVec3f_map["loc"].x,props.ofVec3f_map["loc"].y,props.int_map["rad"],props.int_map["rad"]);
 }
 
 Particle* Particles_Container::add_itemByName(string iName,Particle_props init_props){

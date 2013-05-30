@@ -49,11 +49,11 @@ void RegularGrid_MP::setup(int particles_distance, float windowRatio){
     int grid_ds;
     ofPoint grid_num;
 
-    init_props.veloc.set(0);
-    init_props.accel.set(0);
-    init_props.rad = 6;
+    init_props.ofVec3f_map["vel"].set(0);
+    init_props.ofVec3f_map["acc"].set(0);
+    init_props.int_map["rad"] = 6;
     init_props.relax_fact = 1.0;
-    init_props.color = ofColor(255);
+    init_props.ofColor_map["surf"] = ofColor(255);
     init_props.world = props.world;
 
     grid_ds = particles_distance;
@@ -69,9 +69,9 @@ void RegularGrid_MP::setup(int particles_distance, float windowRatio){
     create_slaveContainer();
     
     for (i=0; i<grid_num.y; i++){
-        init_props.locat.y = i*grid_ds + grid_offset.y;
+        init_props.ofVec3f_map["loc"].y = i*grid_ds + grid_offset.y;
         for (j=0; j<grid_num.x; j++){
-            init_props.locat.x = j * grid_ds + grid_offset.x;
+            init_props.ofVec3f_map["loc"].x = j * grid_ds + grid_offset.x;
             create_slaveParticle(init_props);
         }
     }

@@ -11,15 +11,16 @@ void testApp::setup(){
     //mouseWave.min_dist = regularGrid_interactions_system.grid_ds*2;
     //mouseWaveGenerator.setup();
     mouse.startThread(true, false);
-    managerInterface.start();
+    worldInterface.world = &world;
+    worldInterface.start();
     //listenMsg = false;
 
     //world.create_regularGrid(15,4.0/5);
     world.create_particle("MP_RegGrid");
 
     Particle* p = world.create_particle("P_Circle");
-    p->props.rad = 6;
-    p->props.color = ofColor(255,0,0);;
+    p->props.int_map["rad"] = 6;
+    p->props.ofColor_map["surf"] = ofColor(255,0,0);;
     p->behaviors.add_itemByName("B_MouseTracking",&p->props);
     
     //for (u_int i=0; i<world.groups.itemsVector.size(); i++){
@@ -48,7 +49,9 @@ void testApp::draw(){
    
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-     managerInterface.listen(key);
+     //worldInterface.listen(key);
+
+
      switch (key){
          case 'w':
              world.particles.itemsVector.back()->interactions.add_itemByName("Wave_Source",
@@ -77,7 +80,7 @@ void testApp::keyPressed(int key){
              break;
          case 'o':
              for (u_int i=0; i<world.particles.itemsVector.size()-2; i++){
-                 world.particles.itemsVector[i]->props.locat.set(0);
+                 world.particles.itemsVector[i]->props.ofVec3f_map["loc"].set(0);
              }
              cout<<"set particles location to origin"<<endl;
              break;

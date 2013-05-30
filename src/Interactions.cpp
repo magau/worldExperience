@@ -34,12 +34,12 @@ void Electrical_Repulsion::interact(Particle_props* actuatedParticle_props){
 
     weight = max_dist*weight_fact;
 
-    dist = props->locat.distance(actuatedParticle_props->locat);
-    dx = actuatedParticle_props->locat.x - props->locat.x;
-    dy = actuatedParticle_props->locat.y - props->locat.y;
+    dist = props->ofVec3f_map["loc"].distance(actuatedParticle_props->ofVec3f_map["loc"]);
+    dx = actuatedParticle_props->ofVec3f_map["loc"].x - props->ofVec3f_map["loc"].x;
+    dy = actuatedParticle_props->ofVec3f_map["loc"].y - props->ofVec3f_map["loc"].y;
     acc = weight / pow(dist,2);
-    actuatedParticle_props->accel.x += dx * acc;
-    actuatedParticle_props->accel.y += dy * acc;
+    actuatedParticle_props->ofVec3f_map["acc"].x += dx * acc;
+    actuatedParticle_props->ofVec3f_map["acc"].y += dy * acc;
     ////Do not aplly relaxation at the bounthery wall  
     //int offset = actuatedParticle_props->rad;
     //if (actuatedParticle_props->locat.x > offset &&
@@ -64,15 +64,15 @@ void Electrical_Attraction::interact(Particle_props* actuatedParticle_props){
     min_dist = 40;
     weight = max_dist*weight_fact;
 
-    dist = props->locat.distance(actuatedParticle_props->locat);
-    dx = actuatedParticle_props->locat.x - props->locat.x;
-    dy = actuatedParticle_props->locat.y - props->locat.y;
+    dist = props->ofVec3f_map["loc"].distance(actuatedParticle_props->ofVec3f_map["loc"]);
+    dx = actuatedParticle_props->ofVec3f_map["loc"].x - props->ofVec3f_map["loc"].x;
+    dy = actuatedParticle_props->ofVec3f_map["loc"].y - props->ofVec3f_map["loc"].y;
 
     if (dist < min_dist) dist = min_dist;
     acc = weight / pow(dist,2);
 
-    actuatedParticle_props->accel.x += - dx * acc;
-    actuatedParticle_props->accel.y += - dy * acc;
+    actuatedParticle_props->ofVec3f_map["acc"].x += - dx * acc;
+    actuatedParticle_props->ofVec3f_map["acc"].y += - dy * acc;
 
     // //Over relaxation
     // if (dist == min_dist) {
@@ -112,15 +112,15 @@ void Wave_Source :: interact(Particle_props* actuatedParticle_props){
     float dist,acc,size_ds;
     ofPoint ds, dir, wavePos;
 
-    ds.x = actuatedParticle_props->locat.x - props->locat.x;
-    ds.y = actuatedParticle_props->locat.y - props->locat.y;
+    ds.x = actuatedParticle_props->ofVec3f_map["loc"].x - props->ofVec3f_map["loc"].x;
+    ds.y = actuatedParticle_props->ofVec3f_map["loc"].y - props->ofVec3f_map["loc"].y;
     size_ds = ofVec3f(0).distance(ds);
     dir.set(ds.x/size_ds,ds.y/size_ds);
     
-    wavePos.set(props->locat.x + timer * dir.x, props->locat.y + timer * dir.y);
-    dist = actuatedParticle_props->locat.distance(wavePos);
+    wavePos.set(props->ofVec3f_map["loc"].x + timer * dir.x, props->ofVec3f_map["loc"].y + timer * dir.y);
+    dist = actuatedParticle_props->ofVec3f_map["loc"].distance(wavePos);
     if (dist > max_dist) {
-        props->isAlive = false;
+        props->bool_map["isAlive"] = false;
         isAlive = false;
     } else {
 
@@ -128,10 +128,10 @@ void Wave_Source :: interact(Particle_props* actuatedParticle_props){
 
         acc = weight / pow(dist,2);
 
-        ds.x = actuatedParticle_props->locat.x - wavePos.x ;
-        ds.y = actuatedParticle_props->locat.y - wavePos.y;
-        actuatedParticle_props->accel.x += ds.x * acc;
-        actuatedParticle_props->accel.y += ds.y * acc;
+        ds.x = actuatedParticle_props->ofVec3f_map["loc"].x - wavePos.x ;
+        ds.y = actuatedParticle_props->ofVec3f_map["loc"].y - wavePos.y;
+        actuatedParticle_props->ofVec3f_map["acc"].x += ds.x * acc;
+        actuatedParticle_props->ofVec3f_map["acc"].y += ds.y * acc;
 
 //        cout<<"dir.x:"<<dir.x<<" wavePos.x:"<<wavePos.x<<" ds.x:"<<ds.x<<" dist:"<<dist<<endl;
 

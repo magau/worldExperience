@@ -1,13 +1,15 @@
 #pragma once
 
-#include "Pointers_Container.h"
+#include "ofMain.h"
+#include <tr1/unordered_map> 
+using namespace tr1;
 #include "worldExperience.h"
+#include "Pointers_Container.h"
 #include "Behaviors.h"
 #include "Interactions.h"
 #include "Particles.h"
 #include "Particles_System.h"
 #include "Particles_Manager.h"
-#include "ofMain.h"
 
 
 //#define SYPHON
@@ -38,7 +40,7 @@ class testApp : public ofBaseApp{
            
            World world;
            Particles_Container* buffGroup;
-           Manager_KeyboardInterface managerInterface;
+           World_KeyboardInterface worldInterface;
            //string msg;
            //bool listenMsg;
             
