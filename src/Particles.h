@@ -1,4 +1,3 @@
-#include "testApp.h"
 
 class Particle{
     public:

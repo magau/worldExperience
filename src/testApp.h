@@ -40,7 +40,7 @@ class testApp : public ofBaseApp{
            
            World world;
            Particles_Container* buffGroup;
-           World_KeyboardInterface worldInterface;
+           Manager_KeyboardInterface managerInterface;
            //string msg;
            //bool listenMsg;
             

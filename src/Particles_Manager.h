@@ -14,13 +14,10 @@ class World{
         void draw();
 };
 
-class World_KeyboardInterface{
+class Manager_KeyboardInterface{
     public:
-        World* world;
         string msg;
-        vector<string> particlesName;
-        Particle* tempParticle;
-        bool isListening, creatingParticle;
+        bool isListening;
         void start();
         void listen(int key);
 };

@@ -44,43 +44,19 @@ void World::draw(){
     }
 }
 
-void World_KeyboardInterface::start(){
-
-    particlesName.push_back("baseP"); 
-    particlesName.push_back("P_Circle"); 
-    particlesName.push_back("MP_RegGrid"); 
-
+void Manager_KeyboardInterface::start(){
     isListening = false;
-    creatingParticle = false;
 }
 
-void World_KeyboardInterface::listen(int key){
-   if(ofGetKeyPressed(9)) { //CTRL + I
+void Manager_KeyboardInterface::listen(int key){
+   if(ofGetKeyPressed(17)) { //CTRL + Q
        isListening = true;
        msg.erase();
-       cout<<"insert mode"<<msg<<endl;
-   } else if(ofGetKeyPressed(5)) { //CTRL + E
+   } else if(ofGetKeyPressed(23)) { //CTRL + W
        isListening = false;
-       cout<<"end msg"<<msg<<endl;
        cout<<"msg:"<<msg<<endl;
-       if(msg.compare("create particle") == 0){
-           creatingParticle = true;
-           cout<<"particles:";
-           // iterate over particlesName in future...
-           cout<<"baseP"<<endl;
-           cout<<"P_Circle"<<endl;
-           cout<<"MP_RegGrid"<<endl;
-       } else if(creatingParticle){
-           tempParticle = world->create_particle(msg, Particle_props());
-       }
    } else if(isListening){
-       if(key != 8){
-           msg += key;
-       } else {
-           msg.erase(msg.end()-1);
-       }
-       cout<<"msg:"<<msg<<endl;
+       msg += key;
    }
-   
 }
 

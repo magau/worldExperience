@@ -11,8 +11,7 @@ void testApp::setup(){
     //mouseWave.min_dist = regularGrid_interactions_system.grid_ds*2;
     //mouseWaveGenerator.setup();
     mouse.startThread(true, false);
-    worldInterface.world = &world;
-    worldInterface.start();
+    managerInterface.start();
     //listenMsg = false;
 
     //world.create_regularGrid(15,4.0/5);
@@ -56,9 +55,7 @@ void testApp::draw(){
    
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-     //worldInterface.listen(key);
-
-
+     managerInterface.listen(key);
      switch (key){
          case 'w':
              world.particles.itemsVector.back()->interactions.add_itemByName("Wave_Source",
