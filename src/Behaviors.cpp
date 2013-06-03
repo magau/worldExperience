@@ -2,6 +2,8 @@
 
 Behavior::Behavior(Particle_props* host_props){
     props = host_props;
+    isAlive = true;
+    isActive = true;
 }
 
 void Behavior::run(){
@@ -11,7 +13,7 @@ GravityGlue::GravityGlue(Particle_props* host_props) :
 Behavior(host_props){
 
     name = "GravityGlue";
-    locat = host_props->ofVec3f_map["loc"];
+    locat = host_props->locat;
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
@@ -23,16 +25,16 @@ void GravityGlue::run(){
 
     weight = max_dist*weight_fact;
 
-    dist = locat.distance(props->ofVec3f_map["loc"]);
-    dx = props->ofVec3f_map["loc"].x - locat.x;
-    dy = props->ofVec3f_map["loc"].y - locat.y;
+    dist = locat.distance(props->locat);
+    dx = props->locat.x - locat.x;
+    dy = props->locat.y - locat.y;
 
     if (dist < min_dist) dist = min_dist;
 
     acc = weight / pow(dist,2);
 
-    props->ofVec3f_map["acc"].x += - dx * acc;
-    props->ofVec3f_map["acc"].y += - dy * acc;
+    props->accel.x += - dx * acc;
+    props->accel.y += - dy * acc;
 
     //Do not aplly relaxation at the bounthery wall  
     //int offset = props->rad;
@@ -52,8 +54,8 @@ Behavior(host_props){
 
 void MouseTracking::run(){
    extern getMouseLocation mouse;
-   props->ofVec3f_map["vel"].x = mouse.x - props->ofVec3f_map["loc"].x;
-   props->ofVec3f_map["vel"].y = mouse.y - props->ofVec3f_map["loc"].y;
+   props->veloc.x = mouse.x - props->locat.x;
+   props->veloc.y = mouse.y - props->locat.y;
 }
 
 Behavior* Behaviors_Container::add_itemByName(string iName, Particle_props* host_props){

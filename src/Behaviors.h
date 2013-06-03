@@ -6,6 +6,7 @@ class Behavior{
         u_int id;
         string name;
         Particle_props* props;
+        bool isAlive, isActive;
         int max_dist;
         int min_dist; 
         int timer;

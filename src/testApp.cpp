@@ -19,8 +19,15 @@ void testApp::setup(){
     world.create_particle("MP_RegGrid");
 
     Particle* p = world.create_particle("P_Circle");
-    p->props.int_map["rad"] = 6;
-    p->props.ofColor_map["surf"] = ofColor(255,0,0);;
+    p->props.color = ofColor(255,0,0);
+    //p->props.rad = 10;
+    //p->props.intPtr_map["rad"] = &(p->props.rad);
+    *(p->intPtr_map["rad"]) = 10;
+    cout<<"props.rad:"<<p->props.rad<<endl;//"; color:";
+    cout<<"propsintPtr_map['rad']:"<<p->intPtr_map["rad"]<<endl;//"; color:";
+    cout<<"*propsintPtr_map['rad']:"<<*(p->intPtr_map["rad"])<<endl;//"; color:";
+    //cout<<*(p->props.ofColorPtr_map["props.color"])<<endl;
+    //*(p->props.ofColorPtr_map["color"]) = ofColor(255,0,0);;
     p->behaviors.add_itemByName("B_MouseTracking",&p->props);
     
     //for (u_int i=0; i<world.groups.itemsVector.size(); i++){
@@ -80,7 +87,7 @@ void testApp::keyPressed(int key){
              break;
          case 'o':
              for (u_int i=0; i<world.particles.itemsVector.size()-2; i++){
-                 world.particles.itemsVector[i]->props.ofVec3f_map["loc"].set(0);
+                 world.particles.itemsVector[i]->props.locat.set(0);
              }
              cout<<"set particles location to origin"<<endl;
              break;

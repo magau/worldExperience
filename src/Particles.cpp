@@ -3,6 +3,14 @@
 
 Particle :: Particle (Particle_props init_props){
     props = init_props;
+
+    ofVec3fPtr_map["loc"]      = &props.locat;
+    ofVec3fPtr_map["vel"]      = &props.veloc;
+    ofVec3fPtr_map["acc"]      = &props.accel;
+    ofColorPtr_map["color"]    = &props.color;
+    intPtr_map["rad"]          = &props.rad;
+    floatPtr_map["relax_fact"] = &props.relax_fact;
+    boolPtr_map["isAlive"]     = &props.isAlive;
 }
 
 void Particle :: run() {
@@ -17,17 +25,17 @@ void Particle :: display() {
 }
 
 void Particle :: update() {
-    props.ofVec3f_map["vel"] += props.ofVec3f_map["acc"];
+    props.veloc += props.accel;
     elastic_boundery();
-    props.ofVec3f_map["loc"] += props.ofVec3f_map["vel"];
+    props.locat += props.veloc;
     //Aplly relax_fact
-    props.ofVec3f_map["vel"] *= ofVec3f(props.relax_fact);
+    props.veloc *= ofVec3f(props.relax_fact);
     props.relax_fact = 1.0;
     //bound_particles_location();
 
     // Clear accelaration to allow comulative 
     // interactions and order independency:
-    props.ofVec3f_map["acc"] = ofVec3f(0);
+    props.accel = ofVec3f(0);
 }
 
 void Particle :: behave() {
@@ -88,16 +96,16 @@ void Particle :: set_speedLimit(int maxSpeed){
 */
 
 void Particle :: elastic_boundery(){
-   int offset = props.int_map["rad"];
+   int offset = props.rad;
 
    //Elastic bounds
-   if ( (props.ofVec3f_map["loc"].x <= offset &&  props.ofVec3f_map["vel"].x < 0) ||
-        (props.ofVec3f_map["loc"].x >= ofGetWindowWidth()-offset &&  props.ofVec3f_map["vel"].x > 0) ){
-       props.ofVec3f_map["vel"].x *= -1;
+   if ( (props.locat.x <= offset &&  props.veloc.x < 0) ||
+        (props.locat.x >= ofGetWindowWidth()-offset &&  props.veloc.x > 0) ){
+       props.veloc.x *= -1;
    }
-   if ( (props.ofVec3f_map["loc"].y <= offset && props.ofVec3f_map["vel"].y < 0) ||
-        (props.ofVec3f_map["loc"].y >= ofGetWindowHeight()-offset && props.ofVec3f_map["vel"].y > 0) ){
-       props.ofVec3f_map["vel"].y *= -1;
+   if ( (props.locat.y <= offset && props.veloc.y < 0) ||
+        (props.locat.y >= ofGetWindowHeight()-offset && props.veloc.y > 0) ){
+       props.veloc.y *= -1;
    }
 }
 
@@ -109,11 +117,12 @@ Circle::Circle(Particle_props init_props) :
 void Circle :: display() {
     //ofColor(...);
     //ofFill();
-    ofSetColor(props.ofColor_map["surf"]);
-    ofEllipse(props.ofVec3f_map["loc"].x,props.ofVec3f_map["loc"].y,props.int_map["rad"],props.int_map["rad"]);
+    ofSetColor(props.color);
+    ofEllipse(props.locat.x,props.locat.y,props.rad,props.rad);
 }
 
 Particle* Particles_Container::add_itemByName(string iName,Particle_props init_props){
+
 
    Particle* newParticle = (int)NULL;
 
@@ -135,6 +144,10 @@ Particle* Particles_Container::add_itemByName(string iName,Particle_props init_p
     .
        Add new item types
    */
+//cout<<"add_itemByName... props.rad = "<<init_props.rad<<endl;
+//*(init_props.intPtr_map["rad"]) = 10;
+//cout<<"add_itemByName...*props.intPtr_map['rad'] = "<<*(newParticle->props.intPtr_map["rad"])<<endl;
+//cout<<"add_itemByName... props.rad = "<<newParticle->props.rad<<endl;
 
    add(newParticle);
 

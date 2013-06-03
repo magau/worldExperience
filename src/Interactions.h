@@ -4,7 +4,7 @@ class Interaction {
     public:
         u_int id;
         string name;
-        bool isAlive;
+        bool isAlive, isActive;
         Particle_props* props;
         int max_dist;
         int min_dist; 

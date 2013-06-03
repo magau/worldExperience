@@ -5,6 +5,13 @@ class Particle{
         u_int id;
         string name;
         Particle_props props;
+
+        unordered_map<string, ofVec3f*> ofVec3fPtr_map;
+        unordered_map<string, ofColor*> ofColorPtr_map;
+        unordered_map<string, int*> intPtr_map;
+        unordered_map<string, float*> floatPtr_map;
+        unordered_map<string, bool*> boolPtr_map;
+
         Interactions_Container interactions;
         Behaviors_Container behaviors;
         Particle (Particle_props init_props);

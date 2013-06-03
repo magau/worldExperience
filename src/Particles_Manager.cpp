@@ -25,7 +25,7 @@ Particles_Container* World :: update(){
                                     IterPart++){
         temp_particle_ptr = *IterPart;
         temp_particle_ptr->run();
-        if(!temp_particle_ptr->props.bool_map["isAlive"]){
+        if(!temp_particle_ptr->props.isAlive){
             remove_particle(temp_particle_ptr);
         }
     }
