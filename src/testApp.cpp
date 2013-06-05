@@ -4,6 +4,7 @@
 getMouseLocation mouse;
 
 void testApp::setup(){
+    Particle* p;
     //ofSetFrameRate(1);
     ofSetVerticalSync(true);
     ofEnableSmoothing();
@@ -15,19 +16,18 @@ void testApp::setup(){
     //listenMsg = false;
 
     //world.create_regularGrid(15,4.0/5);
-    world.create_particle("MP_RegGrid");
+    p = world.create_particle("MP_RegGrid");
 
-    Particle* p = world.create_particle("P_Circle");
-    p->props.color = ofColor(255,0,0);
-    //p->props.rad = 10;
-    //p->props.intPtr_map["rad"] = &(p->props.rad);
+    p = world.create_particle("P_Circle");
+
+    p->color = ofColor(255,0,0);
     *(p->intPtr_map["rad"]) = 10;
-    cout<<"props.rad:"<<p->props.rad<<endl;//"; color:";
-    cout<<"propsintPtr_map['rad']:"<<p->intPtr_map["rad"]<<endl;//"; color:";
-    cout<<"*propsintPtr_map['rad']:"<<*(p->intPtr_map["rad"])<<endl;//"; color:";
-    //cout<<*(p->props.ofColorPtr_map["props.color"])<<endl;
-    //*(p->props.ofColorPtr_map["color"]) = ofColor(255,0,0);;
-    p->behaviors.add_itemByName("B_MouseTracking",&p->props);
+    cout<<"rad:"<<p->rad<<endl;//"; color:";
+    cout<<"intPtr_map['rad']:"<<p->intPtr_map["rad"]<<endl;//"; color:";
+    cout<<"*intPtr_map['rad']:"<<*(p->intPtr_map["rad"])<<endl;//"; color:";
+    //cout<<*(p->ofColorPtr_map["color"])<<endl;
+    //*(p->ofColorPtr_map["color"]) = ofColor(255,0,0);;
+    p->behaviors.add_itemByName("B_MouseTracking",p);
     
     //for (u_int i=0; i<world.groups.itemsVector.size(); i++){
     //    cout<<world.groups.itemsVector[i]->id;
@@ -55,17 +55,18 @@ void testApp::draw(){
    
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
+
      managerInterface.listen(key);
      switch (key){
          case 'w':
              world.particles.itemsVector.back()->interactions.add_itemByName("Wave_Source",
-                                                       &world.particles.itemsVector.back()->props);
+                                                       world.particles.itemsVector.back());
              world.particles.itemsVector.back()->interactions.itemsVector.back()->actuated_particles                          = world.groups.itemsVector.back();
              cout<<"add Wave_Source interaction"<<endl;
              break;
          case 'r':
              world.particles.itemsVector.back()->interactions.add_itemByName("Electrical_Repulsion",
-                                                       &world.particles.itemsVector.back()->props);
+                                                       world.particles.itemsVector.back());
              world.particles.itemsVector.back()->interactions.itemsVector.back()->actuated_particles                          = world.groups.itemsVector.back();
              cout<<"add Electrical_Repulsion interaction"<<endl;
              break;
@@ -79,19 +80,19 @@ void testApp::keyPressed(int key){
              break;
          case 'm':
              world.particles.itemsVector.back()->behaviors.add_itemByName("B_MouseTracking",
-                                                &world.particles.itemsVector.back()->props);
+                                                world.particles.itemsVector.back());
              cout<<"add B_MouseTracking"<<endl;
              break;
          case 'o':
              for (u_int i=0; i<world.particles.itemsVector.size()-2; i++){
-                 world.particles.itemsVector[i]->props.locat.set(0);
+                 world.particles.itemsVector[i]->locat.set(0);
              }
              cout<<"set particles location to origin"<<endl;
              break;
          case 'a':
              for (u_int i=0; i<world.particles.itemsVector.size()-2; i++){
                  world.particles.itemsVector[i]->behaviors.add_itemByName("GravityGlue",
-                                                &world.particles.itemsVector[i]->props);
+                                                world.particles.itemsVector[i]);
              }
              cout<<"set GravityGlue"<<endl;
              break;

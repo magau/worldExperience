@@ -1,14 +1,13 @@
-
 class Master_Particle : public Particle{
     public:
         string default_Particle;
         string default_Interaction;
         //unordered_map<float> interactions_master;
         Particles_Container* slaveParticles;
-        Master_Particle(Particle_props init_props=Particle_props());
+        Master_Particle(World* _world);
         //set up the system particles initial position
         void create_slaveContainer();
-        void create_slaveParticle(Particle_props init_props);
+        Particle* create_slaveParticle();
         void run();
         virtual void setup();//unordered_map<int> setupParameters);
 };
@@ -16,8 +15,8 @@ class Master_Particle : public Particle{
 
 class RegularGrid_MP : public Master_Particle{
     public:
-        RegularGrid_MP(Particle_props init_props);
-        //void setup(Particle_props init_props, unordered_map<int> setupParameters);
+        RegularGrid_MP(World* _world);
+        //void setup(unordered_map<int> setupParameters);
         void setup(int particles_distance, float windowRatio);
 };
 

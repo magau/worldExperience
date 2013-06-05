@@ -1,38 +1,16 @@
-//#include "ofMain.h"
-//class World;
-
-/*
-class Particle_props{
-    public:
-        ofVec3f locat;
-        ofVec3f veloc;
-        ofVec3f accel;
-        ofPoint loc;
-        ofPoint vel;
-        ofPoint acc;
-        ofColor color;
-        int rad;
-        float relax_threshold;
-        float relax_fact;
-        bool isAlive;
-        Particle_props();
-        World* world;
-};
-*/
 template <typename IType>
 class Pointers_Container{
     public:
         string name;
         u_int id;
-        //Particle_props props;
         string default_addedItemName;
         vector<IType> itemsVector;
         vector<int> freeIdBuff;
 
         void set_default_itemName(string iName);
         void add(IType item,bool mainContainer=true);
-        virtual IType add_itemByName(string iName, Particle_props* host_props);
-        virtual IType add_itemByName(string iName, Particle_props init_props=Particle_props());
+        virtual IType add_itemByName(string iName, Particle* _host_particle);
+        virtual IType add_itemByName(string iName, World* _world);
         IType pop(u_int index=(u_int)NULL, bool erase=true);
         IType pop(typename vector<IType>::iterator item_it, bool erase=true);
         IType pop_itemById(u_int id, bool erase=true);
@@ -51,9 +29,8 @@ class Pointers_Container{
 /*
 template <typename IType> 
 //IType handles the "BaseParticle" class and all their derived classes.
-Pointers_Container<IType>::Pointers_Container(Particle_props init_props){
+Pointers_Container<IType>::Pointers_Container(){
     //name = "baseIS";
-    props = init_props;
     //default_addedItemName = "baseI";
 }
 */
@@ -72,14 +49,13 @@ void Pointers_Container<IType>::add(IType item,bool mainContainer){
 }
 
 template <typename IType> 
-IType Pointers_Container<IType>::add_itemByName(string iName,Particle_props init_props){
+IType Pointers_Container<IType>::add_itemByName(string iName, World* _world){
     return (int)NULL;
 }
 
 template <typename IType> 
-IType Pointers_Container<IType>::add_itemByName(string iName,Particle_props* host_props){
+IType Pointers_Container<IType>::add_itemByName(string iName,Particle* _host_particle){
     return (int)NULL;
-
 }
 
 template <typename IType> 

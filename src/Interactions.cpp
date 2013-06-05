@@ -1,12 +1,12 @@
 #include "testApp.h"
 
-Interaction::Interaction(Particle_props* host_props){
-    props = host_props;
+Interaction::Interaction(Particle* _host_particle){
+    host_particle = _host_particle;
     isAlive = true;
     isActive = true;
 }
 
-void Interaction::interact(Particle_props* actuatedParticle_props){
+void Interaction::interact(Particle* actuated_particle){
 
 }
 
@@ -17,18 +17,18 @@ void Interaction::run(){
          actuatedParticle_it != actuated_particles->itemsVector.end();
          actuatedParticle_it++){
 
-         interact(&(**actuatedParticle_it).props);
+         interact(*actuatedParticle_it);
     }
 }
 
-Electrical_Repulsion::Electrical_Repulsion(Particle_props* host_props) :
-Interaction(host_props){
+Electrical_Repulsion::Electrical_Repulsion(Particle* _host_particle) :
+Interaction(_host_particle){
     name = "Electrical_Repulsion";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
 
-void Electrical_Repulsion::interact(Particle_props* actuatedParticle_props){
+void Electrical_Repulsion::interact(Particle* actuated_particle){
     float dist,dx,dy,weight,weight_fact,acc;
 
     weight_fact = 0.2;
@@ -36,55 +36,55 @@ void Electrical_Repulsion::interact(Particle_props* actuatedParticle_props){
 
     weight = max_dist*weight_fact;
 
-    dist = props->locat.distance(actuatedParticle_props->locat);
-    dx = actuatedParticle_props->locat.x - props->locat.x;
-    dy = actuatedParticle_props->locat.y - props->locat.y;
+    dist = host_particle->locat.distance(actuated_particle->locat);
+    dx = actuated_particle->locat.x - host_particle->locat.x;
+    dy = actuated_particle->locat.y - host_particle->locat.y;
     acc = weight / pow(dist,2);
-    actuatedParticle_props->accel.x += dx * acc;
-    actuatedParticle_props->accel.y += dy * acc;
+    actuated_particle->accel.x += dx * acc;
+    actuated_particle->accel.y += dy * acc;
     ////Do not aplly relaxation at the bounthery wall  
-    //int offset = actuatedParticle_props->rad;
-    //if (actuatedParticle_props->locat.x > offset &&
-    //    actuatedParticle_props->locat.x < ofGetWindowWidth() - offset &&
-    //    actuatedParticle_props->locat.y > offset &&
-    //    actuatedParticle_props->locat.y < ofGetWindowHeight() - offset ){
+    //int offset = actuated_particle->rad;
+    //if (actuated_particle->locat.x > offset &&
+    //    actuated_particle->locat.x < ofGetWindowWidth() - offset &&
+    //    actuated_particle->locat.y > offset &&
+    //    actuated_particle->locat.y < ofGetWindowHeight() - offset ){
 
-    //    actuatedParticle_props->relax_fact = 0.7;
+    //    actuated_particle->relax_fact = 0.7;
     //}
 } 
 
-Electrical_Attraction::Electrical_Attraction(Particle_props* host_props) :
-Interaction(host_props){
+Electrical_Attraction::Electrical_Attraction(Particle* _host_particle) :
+Interaction(_host_particle){
     name = "Electrical_Attraction";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
-void Electrical_Attraction::interact(Particle_props* actuatedParticle_props){
+void Electrical_Attraction::interact(Particle* actuated_particle){
     float dist,dx,dy,weight,weight_fact,acc;
 
     weight_fact = 0.1;
     min_dist = 40;
     weight = max_dist*weight_fact;
 
-    dist = props->locat.distance(actuatedParticle_props->locat);
-    dx = actuatedParticle_props->locat.x - props->locat.x;
-    dy = actuatedParticle_props->locat.y - props->locat.y;
+    dist = host_particle->locat.distance(actuated_particle->locat);
+    dx = actuated_particle->locat.x - host_particle->locat.x;
+    dy = actuated_particle->locat.y - host_particle->locat.y;
 
     if (dist < min_dist) dist = min_dist;
     acc = weight / pow(dist,2);
 
-    actuatedParticle_props->accel.x += - dx * acc;
-    actuatedParticle_props->accel.y += - dy * acc;
+    actuated_particle->accel.x += - dx * acc;
+    actuated_particle->accel.y += - dy * acc;
 
     // //Over relaxation
     // if (dist == min_dist) {
-    //     actuatedParticle_props->relax_fact *= 0.95;
-    //     //actuatedParticle_props->relax_fact *= 0.7;
+    //     actuated_particle->relax_fact *= 0.95;
+    //     //actuated_particle->relax_fact *= 0.7;
     // }
 }
 
-Wave_Source :: Wave_Source(Particle_props* host_props) :
-Interaction(host_props){
+Wave_Source :: Wave_Source(Particle* _host_particle) :
+Interaction(_host_particle){
     name = "Wave_Source";
     min_dist=80;
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
@@ -103,26 +103,26 @@ void Wave_Source :: run(){
          actuatedParticle_it != actuated_particles->itemsVector.end();
          actuatedParticle_it++){
 
-         interact(&(**actuatedParticle_it).props);
+         interact(*actuatedParticle_it);
     }
    
     timer += wave_speed;
 }
 
-void Wave_Source :: interact(Particle_props* actuatedParticle_props){
+void Wave_Source :: interact(Particle* actuated_particle){
     //Particle* actuated_particle;
     float dist,acc,size_ds;
     ofPoint ds, dir, wavePos;
 
-    ds.x = actuatedParticle_props->locat.x - props->locat.x;
-    ds.y = actuatedParticle_props->locat.y - props->locat.y;
+    ds.x = actuated_particle->locat.x - host_particle->locat.x;
+    ds.y = actuated_particle->locat.y - host_particle->locat.y;
     size_ds = ofVec3f(0).distance(ds);
     dir.set(ds.x/size_ds,ds.y/size_ds);
     
-    wavePos.set(props->locat.x + timer * dir.x, props->locat.y + timer * dir.y);
-    dist = actuatedParticle_props->locat.distance(wavePos);
+    wavePos.set(host_particle->locat.x + timer * dir.x, host_particle->locat.y + timer * dir.y);
+    dist = actuated_particle->locat.distance(wavePos);
     if (dist > max_dist) {
-        props->isAlive = false;
+        host_particle->isAlive = false;
         isAlive = false;
     } else {
 
@@ -130,22 +130,22 @@ void Wave_Source :: interact(Particle_props* actuatedParticle_props){
 
         acc = weight / pow(dist,2);
 
-        ds.x = actuatedParticle_props->locat.x - wavePos.x ;
-        ds.y = actuatedParticle_props->locat.y - wavePos.y;
-        actuatedParticle_props->accel.x += ds.x * acc;
-        actuatedParticle_props->accel.y += ds.y * acc;
+        ds.x = actuated_particle->locat.x - wavePos.x ;
+        ds.y = actuated_particle->locat.y - wavePos.y;
+        actuated_particle->accel.x += ds.x * acc;
+        actuated_particle->accel.y += ds.y * acc;
 
 //        cout<<"dir.x:"<<dir.x<<" wavePos.x:"<<wavePos.x<<" ds.x:"<<ds.x<<" dist:"<<dist<<endl;
 
         ////Do not aplly relaxation at the bounthery wall  
-        //int offset = actuatedParticle_props->rad;
-        //if (actuatedParticle_props->locat.x > offset &&
-        //    actuatedParticle_props->locat.x < ofGetWindowWidth() - offset &&
-        //    actuatedParticle_props->locat.y > offset &&
-        //    actuatedParticle_props->locat.y < ofGetWindowHeight() - offset ){
+        //int offset = actuated_particle->rad;
+        //if (actuated_particle->locat.x > offset &&
+        //    actuated_particle->locat.x < ofGetWindowWidth() - offset &&
+        //    actuated_particle->locat.y > offset &&
+        //    actuated_particle->locat.y < ofGetWindowHeight() - offset ){
 
-        //    actuatedParticle_props->relax_fact = 0.9;
-        //    //actuatedParticle_props->relax_fact = 0.7;
+        //    actuated_particle->relax_fact = 0.9;
+        //    //actuated_particle->relax_fact = 0.7;
         //}
     } 
 
@@ -153,7 +153,7 @@ void Wave_Source :: interact(Particle_props* actuatedParticle_props){
 }
 
 
-Interaction* Interactions_Container::add_itemByName(string iName, Particle_props* init_props){
+Interaction* Interactions_Container::add_itemByName(string iName, Particle* _host_particle){
 
    Interaction* newInteraction = (int)NULL;
 
@@ -162,11 +162,11 @@ Interaction* Interactions_Container::add_itemByName(string iName, Particle_props
    } 
 
    if (iName.compare("Electrical_Repulsion") == 0){
-       newInteraction = new Electrical_Repulsion(init_props);
+       newInteraction = new Electrical_Repulsion(_host_particle);
    } else if (iName.compare("Electrical_Attraction") == 0){
-       newInteraction = new Electrical_Attraction(init_props);
+       newInteraction = new Electrical_Attraction(_host_particle);
    } else if (iName.compare("Wave_Source") == 0){
-       newInteraction = new Wave_Source(init_props);
+       newInteraction = new Wave_Source(_host_particle);
    }
    /*
     .

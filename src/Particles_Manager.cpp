@@ -9,12 +9,12 @@
 //    return newGroup;
 //}
 
-Particle* World::create_particle(string iName, Particle_props init_props){
+Particle* World::create_particle(string iName){
     //create newParticle add particle to worldParticles and 
     //systemParticles Particles_Container
     Particle* newParticle;
-    init_props.world = this;
-    newParticle = particles.add_itemByName(iName,init_props);
+    newParticle = particles.add_itemByName(iName, this);
+    newParticle->world = this;
     return newParticle;
 }
 
@@ -25,7 +25,7 @@ Particles_Container* World :: update(){
                                     IterPart++){
         temp_particle_ptr = *IterPart;
         temp_particle_ptr->run();
-        if(!temp_particle_ptr->props.isAlive){
+        if(!temp_particle_ptr->isAlive){
             remove_particle(temp_particle_ptr);
         }
     }

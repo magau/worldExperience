@@ -5,31 +5,31 @@ class Behavior{
     public:
         u_int id;
         string name;
-        Particle_props* props;
+        Particle* host_particle;
         bool isAlive, isActive;
         int max_dist;
         int min_dist; 
         int timer;
         float weigth_fact;
         World* world;
-        Behavior(Particle_props* host_props);
+        Behavior(Particle* host_particle);
         virtual void run();
 };
 
 class GravityGlue : public Behavior{
     public:
         ofVec3f locat;
-        GravityGlue(Particle_props* host_props);
+        GravityGlue(Particle* host_particle);
         void run();
 };
 
 class MouseTracking : public Behavior{
     public:
-        MouseTracking(Particle_props* host_props);
+        MouseTracking(Particle* host_particle);
         void run();
 };
 
 class Behaviors_Container : public Pointers_Container<Behavior*>{
     public:
-        Behavior* add_itemByName(string iName, Particle_props* host_props);
+        Behavior* add_itemByName(string iName, Particle* host_particle);
 };
