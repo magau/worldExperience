@@ -5,6 +5,7 @@ getMouseLocation mouse;
 
 void testApp::setup(){
     Particle* p;
+    Particles_Container* g;
     //ofSetFrameRate(1);
     ofSetVerticalSync(true);
     ofEnableSmoothing();
@@ -13,22 +14,19 @@ void testApp::setup(){
     //mouseWaveGenerator.setup();
     mouse.startThread(true, false);
     managerInterface.start();
-    //listenMsg = false;
 
-    //world.create_regularGrid(15,4.0/5);
     p = world.create_particle("MP_RegGrid");
 
     p = world.create_particle("P_Circle");
 
-    p->color = ofColor(255,0,0);
+    *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
     *(p->intPtr_map["rad"]) = 10;
-    cout<<"rad:"<<p->rad<<endl;//"; color:";
-    cout<<"intPtr_map['rad']:"<<p->intPtr_map["rad"]<<endl;//"; color:";
-    cout<<"*intPtr_map['rad']:"<<*(p->intPtr_map["rad"])<<endl;//"; color:";
-    //cout<<*(p->ofColorPtr_map["color"])<<endl;
-    //*(p->ofColorPtr_map["color"]) = ofColor(255,0,0);;
+
     p->behaviors.add_itemByName("B_MouseTracking",p);
     
+    g = world.create_group("G_dancers");
+    g->add(p,false);
+
     //for (u_int i=0; i<world.groups.itemsVector.size(); i++){
     //    cout<<world.groups.itemsVector[i]->id;
     //}
@@ -57,6 +55,7 @@ void testApp::draw(){
 void testApp::keyPressed(int key){
 
      managerInterface.listen(key);
+/*
      switch (key){
          case 'w':
              world.particles.itemsVector.back()->interactions.add_itemByName("Wave_Source",
@@ -103,6 +102,7 @@ void testApp::keyPressed(int key){
              cout<<"pop GravityGlue behavior"<<endl;
              break;
       }
+*/
 
 }
 
