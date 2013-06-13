@@ -3,6 +3,7 @@
 
 Particle :: Particle (World* _world){
 
+    name="P_Base";
     world = _world;
     ofVec3fPtr_map["loc"]      = &locat;
     ofVec3fPtr_map["vel"]      = &veloc;
@@ -11,6 +12,27 @@ Particle :: Particle (World* _world){
     intPtr_map["rad"]          = &rad;
     floatPtr_map["relax_fact"] = &relax_fact;
     boolPtr_map["isAlive"]     = &isAlive;
+    isAlive = true;
+    isActive = true;
+}
+
+Particle :: ~Particle (){
+    vector<Particles_Container*>::iterator iterGroup;
+
+    cout<<"destructing particle; id:"<<id<<endl;
+
+    for (iterGroup = groups.itemsVector.begin();
+         iterGroup != groups.itemsVector.end();
+         iterGroup++){
+        (*iterGroup)->pop_itemById(id, false);
+    }
+
+    behaviors.clear();
+    interactions.clear();
+}
+
+void Particle :: setup() {
+
 }
 
 void Particle :: run() {
@@ -120,8 +142,15 @@ void Circle :: display() {
     ofEllipse(locat.x,locat.y,rad,rad);
 }
 
-Particle* Particles_Container::add_itemByName(string iName, World* _world){
+Particle* Particles_Container::add(Particle* particle, bool mainContainer){
+    Pointers_Container<Particle*>::add(particle, mainContainer);
+    if(!mainContainer) {
+        particle->groups.add(this,false);
+    }
+    return particle;
+}
 
+Particle* Particles_Container::add_itemByName(string iName, World* _world){
 
    Particle* newParticle = (int)NULL;
 
@@ -129,7 +158,7 @@ Particle* Particles_Container::add_itemByName(string iName, World* _world){
        iName = default_addedItemName;
    } 
 
-   if (iName.compare("baseP") == 0){
+   if (iName.compare("P_Base") == 0){
        newParticle = new Particle(_world);
    } else if (iName.compare("P_Circle") == 0){
        newParticle = new Circle(_world);
@@ -153,7 +182,6 @@ Particle* Particles_Container::add_itemByName(string iName, World* _world){
    return newParticle;
 
 }
-
 
 // This two methods must be transfered to the Master_Particle class, in Future...
 

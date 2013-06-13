@@ -1,3 +1,8 @@
+class Particles_Container;
+
+class Groups_Container : public Pointers_Container<Particles_Container*>{
+
+};
 
 class Particle{
     public:
@@ -16,10 +21,12 @@ class Particle{
         unordered_map<string, float*> floatPtr_map;
         unordered_map<string, bool*> boolPtr_map;
 
+        Groups_Container groups;
         Interactions_Container interactions;
         Behaviors_Container behaviors;
         Particle (World* _world);
-        //virtual void setup();
+        ~Particle();
+        virtual void setup();
         virtual void run();
         virtual void behave();
         virtual void interact();
@@ -40,6 +47,7 @@ class Circle : public Particle{
 class Particles_Container : public Pointers_Container<Particle*>{
     public:
         Particle* add_itemByName(string iName, World* world);
+        Particle* add(Particle* particles, bool mainContainer=true);
 
 // This two methods must be transfered to the Master_Particle class, in Future...
         void attachInteraction_one2one(string iName, Particles_Container* actuated_particles);

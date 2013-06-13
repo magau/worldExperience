@@ -1,5 +1,9 @@
 #include "testApp.h"
 
+World :: World() {
+    particles.name = "C_World";
+}
+
 Particles_Container* World::create_group(string iName){
     //create System systemParticles Particles_Container.
     Particles_Container* newGroup;
@@ -14,7 +18,6 @@ Particle* World::create_particle(string iName){
     //systemParticles Particles_Container
     Particle* newParticle;
     newParticle = particles.add_itemByName(iName, this);
-    newParticle->world = this;
     return newParticle;
 }
 
@@ -33,6 +36,8 @@ Particles_Container* World :: update(){
 }
 
 void World :: remove_particle(Particle* particle_ptr){
+   
+    particles.pop_itemById(particle_ptr->id);
 
 }
 

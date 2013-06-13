@@ -6,7 +6,7 @@ class Master_Particle : public Particle{
         Particles_Container* slaveParticles;
         Master_Particle(World* _world);
         //set up the system particles initial position
-        void create_slaveContainer();
+        Particles_Container* create_slaveContainer();
         Particle* create_slaveParticle();
         void run();
         virtual void setup();//unordered_map<int> setupParameters);
@@ -15,9 +15,12 @@ class Master_Particle : public Particle{
 
 class RegularGrid_MP : public Master_Particle{
     public:
+        int particles_distance;
+        float windowRatio;
         RegularGrid_MP(World* _world);
+        void setup();
         //void setup(unordered_map<int> setupParameters);
-        void setup(int particles_distance, float windowRatio);
+        //void setup(int particles_distance, float windowRatio);
 };
 
 /*

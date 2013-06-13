@@ -14,7 +14,7 @@ void testApp::setup(){
     //mouseWaveGenerator.setup();
     mouse.startThread(true, false);
     managerInterface.start();
-
+    
     p = world.create_particle("MP_RegGrid");
 
     p = world.create_particle("P_Circle");
@@ -27,6 +27,7 @@ void testApp::setup(){
     g = world.create_group("G_dancers");
     g->add(p,false);
 
+    //world.remove_particle(p);
     //for (u_int i=0; i<world.groups.itemsVector.size(); i++){
     //    cout<<world.groups.itemsVector[i]->id;
     //}

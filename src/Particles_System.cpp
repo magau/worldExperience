@@ -15,11 +15,12 @@ void Master_Particle::run(){
 
 }
 
-void Master_Particle::create_slaveContainer(){
+Particles_Container* Master_Particle::create_slaveContainer(){
     //create System slaveParticles Particles_Container.
     slaveParticles = new Particles_Container;
-    slaveParticles->name = "Generic";
+    slaveParticles->name = "MP_Generic";
     world->groups.add(slaveParticles); 
+    return slaveParticles;
 }
 
 Particle* Master_Particle::create_slaveParticle(){
@@ -34,11 +35,12 @@ Particle* Master_Particle::create_slaveParticle(){
 RegularGrid_MP::RegularGrid_MP(World* _world) : Master_Particle(_world){
     name = "MP_RegGrid";
     default_Particle = "P_Circle";
-    // provisorio:
-    setup(15,4.0/5); 
+    particles_distance = 15;
+    windowRatio = 4.0/5;
+    setup(); 
 }
 
-void RegularGrid_MP::setup(int particles_distance, float windowRatio){
+void RegularGrid_MP::setup(){
     //This method ("constructor") builds a 2D regular grid particles system.
     // particles_distance - pixels
     // grid_size - [0 < grid_size <1] Relative to window size.
@@ -60,6 +62,9 @@ void RegularGrid_MP::setup(int particles_distance, float windowRatio){
     grid_num.set(grd_w/grid_ds , grd_h/grid_ds);
 
     create_slaveContainer();
+
+grid_num.x = 2;
+grid_num.y = 2;
 
     for (i=0; i<grid_num.y; i++){
 

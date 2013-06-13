@@ -1,12 +1,9 @@
-class Groups_Container : public Pointers_Container<Particles_Container*>{
-
-};
-
 class World{
     public:
         Particles_Container particles;
         Groups_Container groups;
         //void add_ParticleSystemByType();
+        World();
         Particles_Container* create_group(string iName="Generic");
         Particle* create_particle(string iName);
         void remove_particle(Particle* particle_ptr);

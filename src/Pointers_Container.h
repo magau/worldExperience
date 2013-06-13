@@ -9,6 +9,7 @@ class Pointers_Container{
 
         void set_default_itemName(string iName);
         void add(IType item,bool mainContainer=true);
+        //virtual void del(IType item);
         virtual IType add_itemByName(string iName, Particle* _host_particle);
         virtual IType add_itemByName(string iName, World* _world);
         IType pop(u_int index=(u_int)NULL, bool erase=true);
@@ -90,13 +91,14 @@ deallocate the respective memory using the "delete"
 function. Also keep "id" value of each erased element
 in "freeIdBuff" vector for future added items.
 */
-
+    IType item; 
     if (item_it >= itemsVector.begin() && item_it < itemsVector.end() && itemsVector.size() > 0) {
         if (erase) {
             if ((**item_it).id < (u_int)(itemsVector.size() - 1)) {
                 freeIdBuff.push_back((**item_it).id);
             }
-            delete *item_it;
+            item = *item_it;
+            delete item;
         }
         itemsVector.erase(item_it);
     }
@@ -147,8 +149,6 @@ cout<<"get item id:"<<id<<endl;
     }
     return result;
 }
-
-
 
 template <typename IType> 
 IType Pointers_Container<IType>::pop_itemById(u_int id, bool erase){
