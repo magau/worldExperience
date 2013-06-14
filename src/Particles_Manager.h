@@ -15,8 +15,8 @@ class Manager_KeyboardInterface{
     public:
         Particles_Container* buffer_group;
         Particle* buffer_particle;
-        string msg;
-        bool isListening, create, remove, get, set, add, particle, group, behavior, interaction;
+        string temp_msg, msg, action, obj;
+        bool isListening, mainObj, create, remove, get, set, add, particle, group, behavior, interaction;
         void start();
         void listen(int key);
 };

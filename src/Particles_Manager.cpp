@@ -51,22 +51,31 @@ void World::draw(){
 
 void Manager_KeyboardInterface::start(){
     isListening = false;
+    mainObj = false;
 }
 
 void Manager_KeyboardInterface::listen(int key){
-   if(ofGetKeyPressed(9)) {
+
+   if(ofGetKeyPressed(13)) {
+       //RETURN
+   } else if(ofGetKeyPressed(9)) {
        //CTRL + I
-       isListening = true;
-       msg.erase();
-       cout<<"INSERT"<<endl;
+       isListening = !isListening;
+       temp_msg.erase();
+       cout<<(isListening?"INSERT":"EXIT INSERT")<<endl;
    } else if(ofGetKeyPressed(5)) {
        //CTRL + E
        isListening = false;
        cout<<"END"<<endl;
-       cout<<"msg:"<<msg<<endl;
+       cout<<"temp_msg:"<<temp_msg<<endl;
    } else if(isListening){
-       msg += key;
-       cout<<key<<endl;
+       if( key != 8 ){
+           temp_msg += key;
+       } else if (!temp_msg.empty()){
+           temp_msg.erase(temp_msg.end() - 1);
+       }
+       //cout<<key<<endl;
+       cout<<temp_msg<<endl;
    } else if(ofGetKeyPressed(3)){
        //CTRL + C
        create = true;
@@ -74,8 +83,9 @@ void Manager_KeyboardInterface::listen(int key){
        get    = false;
        set    = false;
        add    = false;
-
-       cout<<"CREATE"<<endl;
+       action = "CREATE";
+       cout<<action<<endl;
+       mainObj = true;
 
    } else if(ofGetKeyPressed(18)){
        //CTRL + R
@@ -84,8 +94,10 @@ void Manager_KeyboardInterface::listen(int key){
        get    = false;
        set    = false;
        add    = false;
+       action = "REMOVE";
+       cout<<action<<endl;
+       mainObj = true;
 
-       cout<<"REMOVE"<<endl;
 
    } else if(ofGetKeyPressed(7)){
        //CTRL + G
@@ -94,8 +106,10 @@ void Manager_KeyboardInterface::listen(int key){
        get    = true;
        set    = false;
        add    = false;
+       action = "GET";
+       cout<<action<<endl;
+       mainObj = true;
 
-       cout<<"GET"<<endl;
 
    } else if(ofGetKeyPressed(19)){
        //CTRL + S
@@ -104,8 +118,10 @@ void Manager_KeyboardInterface::listen(int key){
        get    = false;
        set    = true;
        add    = false;
+       action = "SET";
+       cout<<action<<endl;
+       mainObj = true;
 
-       cout<<"SET"<<endl;
 
    } else if(ofGetKeyPressed(1)){
        //CTRL + A
@@ -114,8 +130,10 @@ void Manager_KeyboardInterface::listen(int key){
        get    = false;
        set    = false;
        add    = true;
+       action = "ADD";
+       cout<<action<<endl;
+       mainObj = true;
 
-       cout<<"ADD"<<endl;
 
    } else if(ofGetKeyPressed(112)){
        // P
@@ -123,8 +141,10 @@ void Manager_KeyboardInterface::listen(int key){
        group       = false;
        behavior    = false;
        interaction = false;
-
-       cout<<"PARTICLE"<<endl;
+       obj = "PARTICLE";
+       if(mainObj) msg = action + "/" + obj;
+       cout<<obj<<endl;
+       cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(103)){
        // G
@@ -132,8 +152,10 @@ void Manager_KeyboardInterface::listen(int key){
        group       = true;
        behavior    = false;
        interaction = false;
-
-       cout<<"GROUP"<<endl;
+       obj = "GROUP";
+       if(mainObj) msg = action + "/" + obj;
+       cout<<obj<<endl;
+       cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(98)){
        // B
@@ -141,8 +163,10 @@ void Manager_KeyboardInterface::listen(int key){
        group       = false;
        behavior    = true;
        interaction = false;
-
-       cout<<"BEHAVIOR"<<endl;
+       obj = "BEHAVIOR";
+       if(mainObj) msg = action + "/" + obj;
+       cout<<obj<<endl;
+       cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(105)){
        // I
@@ -150,8 +174,10 @@ void Manager_KeyboardInterface::listen(int key){
        group       = false;
        behavior    = false;
        interaction = true;
-
-       cout<<"INTERACTION"<<endl;
+       obj = "INTERACTION";
+       if(mainObj) msg = action + "/" + obj;
+       cout<<obj<<endl;
+       cout<<msg<<endl;
 
    }
 }
