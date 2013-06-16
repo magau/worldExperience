@@ -13,7 +13,7 @@ void testApp::setup(){
     //mouseWave.min_dist = regularGrid_interactions_system.grid_ds*2;
     //mouseWaveGenerator.setup();
     mouse.startThread(true, false);
-    managerInterface.start();
+    managerInterface.start(&world);
     
     p = world.create_particle("MP_RegGrid");
 

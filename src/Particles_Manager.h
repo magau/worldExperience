@@ -13,10 +13,13 @@ class World{
 
 class Manager_KeyboardInterface{
     public:
+        World* world;
         Particles_Container* buffer_group;
         Particle* buffer_particle;
+        Interaction* buffer_interaction;
+        Behavior* buffer_behavior; 
         string temp_msg, msg, action, obj;
         bool isListening, mainObj, create, remove, get, set, add, particle, group, behavior, interaction;
-        void start();
+        void start(World* _world);
         void listen(int key);
 };

@@ -49,7 +49,8 @@ void World::draw(){
     }
 }
 
-void Manager_KeyboardInterface::start(){
+void Manager_KeyboardInterface::start(World* _world){
+    world = _world;
     isListening = false;
     mainObj = false;
 }
@@ -58,6 +59,21 @@ void Manager_KeyboardInterface::listen(int key){
 
    if(ofGetKeyPressed(13)) {
        //RETURN
+       if (create || action.compare("CREATE") == 0){
+           if (particle || obj.compare("PARTICLE") == 0) {
+               buffer_particle = world->create_particle(temp_msg);
+
+               *(buffer_particle->ofColorPtr_map["color"]) = ofColor(255,0,0);
+               *(buffer_particle->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetMouseX(),ofGetMouseY());
+               *(buffer_particle->intPtr_map["rad"]) = 10;
+
+
+           } else if (group || obj.compare("GROUP") == 0){
+               buffer_group = world->create_group(temp_msg);
+           }
+       } else if (set || action.compare("SET") == 0){
+
+       }
    } else if(ofGetKeyPressed(9)) {
        //CTRL + I
        isListening = !isListening;
@@ -65,6 +81,7 @@ void Manager_KeyboardInterface::listen(int key){
        cout<<(isListening?"INSERT":"EXIT INSERT")<<endl;
    } else if(ofGetKeyPressed(5)) {
        //CTRL + E
+       msg += "/" + temp_msg;
        isListening = false;
        cout<<"END"<<endl;
        cout<<"temp_msg:"<<temp_msg<<endl;
@@ -142,7 +159,11 @@ void Manager_KeyboardInterface::listen(int key){
        behavior    = false;
        interaction = false;
        obj = "PARTICLE";
-       if(mainObj) msg = action + "/" + obj;
+       if(mainObj){
+           msg = action + "/" + obj;
+       } else {
+           msg += obj;
+       }
        cout<<obj<<endl;
        cout<<msg<<endl;
 
