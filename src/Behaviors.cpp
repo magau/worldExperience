@@ -12,7 +12,7 @@ void Behavior::run(){
 GravityGlue::GravityGlue(Particle* _host_particle) :
 Behavior(_host_particle){
 
-    name = "GravityGlue";
+    name = "B_GravityGlue";
     locat = _host_particle->locat;
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
@@ -64,7 +64,7 @@ Behavior* Behaviors_Container::add_itemByName(string iName, Particle* _host_part
 
    if (iName.size() == 0) iName = default_addedItemName;
 
-   if (iName.compare("GravityGlue") == 0){
+   if (iName.compare("B_GravityGlue") == 0){
        newBehavior = new GravityGlue(_host_particle);
    } else if (iName.compare("B_MouseTracking") == 0){
        newBehavior = new MouseTracking(_host_particle);

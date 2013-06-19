@@ -1,10 +1,10 @@
 #include "testApp.h"
 
 Master_Particle::Master_Particle(World* _world) : Particle(_world){
-    name = "basePS";
-    default_Particle = "P_Circle";
-    //default_Particle = "baseP";
-    default_Interaction = "baseI";
+    name = "MP_Base";
+    default_Particle = "P_Base";
+    //default_Particle = "P_Circle";
+    //default_Interaction = "I";
 }
 
 void Master_Particle::setup(){
@@ -18,7 +18,7 @@ void Master_Particle::run(){
 Particles_Container* Master_Particle::create_slaveContainer(){
     //create System slaveParticles Particles_Container.
     slaveParticles = new Particles_Container;
-    slaveParticles->name = "MP_Generic";
+    slaveParticles->name = "C_" + name;
     world->groups.add(slaveParticles); 
     return slaveParticles;
 }

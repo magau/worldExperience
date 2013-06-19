@@ -23,7 +23,7 @@ void Interaction::run(){
 
 Electrical_Repulsion::Electrical_Repulsion(Particle* _host_particle) :
 Interaction(_host_particle){
-    name = "Electrical_Repulsion";
+    name = "I_ElectRepulsion";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
@@ -55,7 +55,7 @@ void Electrical_Repulsion::interact(Particle* actuated_particle){
 
 Electrical_Attraction::Electrical_Attraction(Particle* _host_particle) :
 Interaction(_host_particle){
-    name = "Electrical_Attraction";
+    name = "I_ElectAttraction";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
@@ -85,7 +85,7 @@ void Electrical_Attraction::interact(Particle* actuated_particle){
 
 Wave_Source :: Wave_Source(Particle* _host_particle) :
 Interaction(_host_particle){
-    name = "Wave_Source";
+    name = "I_WaveSource";
     min_dist=80;
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
     weight_fact = 0.05;
@@ -161,11 +161,11 @@ Interaction* Interactions_Container::add_itemByName(string iName, Particle* _hos
        iName = default_addedItemName;
    } 
 
-   if (iName.compare("Electrical_Repulsion") == 0){
+   if (iName.compare("I_ElectRepulsion") == 0){
        newInteraction = new Electrical_Repulsion(_host_particle);
-   } else if (iName.compare("Electrical_Attraction") == 0){
+   } else if (iName.compare("I_ElectAttraction") == 0){
        newInteraction = new Electrical_Attraction(_host_particle);
-   } else if (iName.compare("Wave_Source") == 0){
+   } else if (iName.compare("I_WaveSource") == 0){
        newInteraction = new Wave_Source(_host_particle);
    }
    /*
