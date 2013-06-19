@@ -68,7 +68,6 @@ void Manager_KeyboardInterface::listen(int key){
 
            if(obj.compare("PARTICLE") == 0){
 
-cout<<"aqui"<<endl;
                switch(atoi(temp_msg.c_str())) {
                    case 1:
                        temp_msg = "P_Base";
@@ -265,9 +264,9 @@ cout<<"aqui"<<endl;
            }
        }
 
-       isListening = !isListening;
        temp_msg.erase();
-       cout<<(isListening?"INSERT":"EXIT INSERT")<<endl;
+       isListening = true;
+       cout<<"INSERT"<<endl;
 
    } else if(ofGetKeyPressed(103)){
        // G
@@ -287,9 +286,9 @@ cout<<"aqui"<<endl;
            }
        }
 
-       isListening = !isListening;
        temp_msg.erase();
-       cout<<(isListening?"INSERT":"EXIT INSERT")<<endl;
+       isListening = true;
+       cout<<"INSERT"<<endl;
 
    } else if(ofGetKeyPressed(98)){
        // B
@@ -309,9 +308,9 @@ cout<<"aqui"<<endl;
 
        }
 
-       isListening = !isListening;
        temp_msg.erase();
-       cout<<(isListening?"INSERT":"EXIT INSERT")<<endl;
+       isListening = true;
+       cout<<"INSERT"<<endl;
 
    } else if(ofGetKeyPressed(105)){
        // I
@@ -332,11 +331,10 @@ cout<<"aqui"<<endl;
 
        }
 
-       isListening = !isListening;
        temp_msg.erase();
-       cout<<(isListening?"INSERT":"EXIT INSERT")<<endl;
+       isListening = true;
+       cout<<"INSERT"<<endl;
    }
-
 
 }
 
