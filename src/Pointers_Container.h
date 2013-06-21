@@ -16,6 +16,7 @@ class Pointers_Container{
         IType pop(typename vector<IType>::iterator item_it, bool erase=true);
         IType pop_itemById(u_int id, bool erase=true);
         IType get_itemById(u_int id);
+        void show_items_name_and_id();
         vector <IType> pop_itemByName(string iName, bool erase=true);
         vector <IType> clear(bool erase=true);
         vector <IType> get_itemsByName(string iName="all");
@@ -130,12 +131,23 @@ in "freeIdBuff" vector for future added items.
 }
 
 template <typename IType> 
+void Pointers_Container<IType>::show_items_name_and_id(){
+    typename vector<IType>::iterator item_it;
+
+    for (item_it = itemsVector.begin();
+         item_it != itemsVector.end();
+         item_it++){
+
+        cout<<"name:"<<(*item_it)->name<<" id:"<<(*item_it)->id<<endl;
+    }
+
+}
+
+template <typename IType> 
 IType Pointers_Container<IType>::get_itemById(u_int id){
     IType item;
     IType result = (int)NULL;
     typename vector<IType>::iterator item_it;
-
-cout<<"get item id:"<<id<<endl;
 
     for (item_it = itemsVector.begin();
          item_it != itemsVector.end();
@@ -144,6 +156,7 @@ cout<<"get item id:"<<id<<endl;
         item = *item_it;
         if (item->id == id){
             result = item;
+            cout<<"got item - name:"<<item->name<<"; id:"<<id<<endl;
             break;
         }
     }

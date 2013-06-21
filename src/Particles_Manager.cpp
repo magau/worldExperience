@@ -61,22 +61,42 @@ Manager_KeyboardInterface::Manager_KeyboardInterface(){
     behavior_name["1"] = "B_GravityGlue";
     behavior_name["2"] = "B_MouseTracking";
 
-    create = false;
-    remove = false;
-    get    = false;
-    set    = false;
-    add    = false;
+    buffer_particle = int(NULL);
+    buffer_interaction = int(NULL);
+    buffer_behavior = int(NULL);
+
+    isListening = false;
+    msg.erase();
+    reset_objects();
+    reset_actions(); 
+} 
+
+void Manager_KeyboardInterface::get_availableItems_names(unordered_map<string,string> names_map){
+    unordered_map<string,string>::const_iterator item_name;
+    
+    for(item_name = names_map.begin();
+         item_name != names_map.end();
+         item_name++){
+        cout<<item_name->first<<" - "<<item_name->second<<endl;
+    }
+}
+
+void Manager_KeyboardInterface::reset_objects(){
 
     particle    = false;
     group       = false;
     behavior    = false;
     interaction = false;
+}
 
-    isListening = false;
-    obj.erase();
-    msg.erase();
-    action.erase();
-} 
+void Manager_KeyboardInterface::reset_actions(){
+
+    create = false;
+    remove = false;
+    get    = false;
+    set    = false;
+    add    = false;
+}
 
 void Manager_KeyboardInterface::start(World* _world){
     //can't add 'world' inside constructor because
@@ -87,17 +107,17 @@ void Manager_KeyboardInterface::start(World* _world){
 
 void Manager_KeyboardInterface::decode_kb_msg(string encoded_msg){
 
-    if (create || action.compare("CREATE") == 0){
+    if (create){
 
-        if(particle || obj.compare("PARTICLE") == 0){
+        if(particle){
             
             obj_name = particle_name[encoded_msg];
 
-        } else if(interaction || obj.compare("INTERACTION") == 0){
+        } else if(interaction){
 
             obj_name = interaction_name[encoded_msg];
 
-        } else if(behavior || obj.compare("BEHAVIOR") == 0){
+        } else if(behavior){
 
             obj_name = behavior_name[encoded_msg];
 
@@ -122,12 +142,18 @@ void Manager_KeyboardInterface::stateFabric_update(string _msg){
     // This method decodes OSC like messages with purpose of
     // update state variables.
     int pos;
-    string _action, _obj, _id, sub_str;
+    string _action, _obj, _id;
 
     pos = _msg.find("/");
     _action = _msg.substr(0,pos);
+    _msg.replace(0,pos+1,"");
+    pos = _msg.find("/");
+    _obj = _msg.substr(0,pos);
+    _msg.replace(0,pos+1,"");
+    _id = _msg;
 
     reset_actions();
+    reset_objects();
 
     if (_action.compare("CREATE") == 0){
         create = true;
@@ -141,12 +167,6 @@ void Manager_KeyboardInterface::stateFabric_update(string _msg){
         add    = true;
     }
 
-    _msg.replace(0,pos+1,"");
-    pos = _msg.find("/");
-    _obj = _msg.substr(0,pos);
-    
-    reset_objects();
-
     if (_obj.compare("PARTICLE") == 0){
         particle    = true;
     } else if (_obj.compare("GROUP") == 0) {
@@ -157,8 +177,6 @@ void Manager_KeyboardInterface::stateFabric_update(string _msg){
         interaction = true;
     }
 
-    _msg.replace(0,pos+1,"");
-    _id = _msg;
     
     cout<<"action:"<<_action<<" obj:"<<_obj<<" id:"<<_id<<endl;
 }
@@ -170,7 +188,9 @@ void Manager_KeyboardInterface::stateFabric_decode(){
            buffer_particle = world->create_particle(obj_name);
 
            if (buffer_group != int(NULL)){
+
                buffer_group->add(buffer_particle, false);
+ 
            }
 
            //provisorio...
@@ -227,23 +247,6 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
     msg.erase();
 
-}
-
-void Manager_KeyboardInterface::reset_objects(){
-
-    particle    = false;
-    group       = false;
-    behavior    = false;
-    interaction = false;
-}
-
-void Manager_KeyboardInterface::reset_actions(){
-
-    create = false;
-    remove = false;
-    get    = false;
-    set    = false;
-    add    = false;
 }
 
 void Manager_KeyboardInterface::listen(int key){
@@ -333,20 +336,14 @@ void Manager_KeyboardInterface::listen(int key){
        particle    = true;
        msg += "/PARTICLE";
 
-       if(action.compare("CREATE") == 0 || create){
+       if(create){
 
-           cout<<"1 - P_Base"<<endl;
-           cout<<"2 - P_Circle"<<endl;
-           cout<<"3 - MP_RegGrid"<<endl;
+           get_availableItems_names(particle_name);
 
-       } else if(action.compare("GET") == 0 || get) {
+       } else if(get) {
 
            cout<<"group:"<<(buffer_group->name)<<" size:"<<(buffer_group->itemsVector.size())<<endl;
-           for(IterPart = buffer_group->itemsVector.begin();
-                IterPart != buffer_group->itemsVector.end();
-                IterPart++){
-               cout<<"name:"<<(*IterPart)->name<<" id:"<<(*IterPart)->id<<endl;
-           }
+           buffer_group->show_items_name_and_id();
        }
 
        temp_msg.erase();
@@ -360,13 +357,11 @@ void Manager_KeyboardInterface::listen(int key){
        group       = true;
        msg += "/GROUP";
 
-       if(action.compare("GET") == 0 || get) {
+       if(get) {
+
            cout<<"name:"<<world->particles.name<<" id:-1"<<endl;
-           for(IterGroup = world->groups.itemsVector.begin();
-               IterGroup != world->groups.itemsVector.end();
-               IterGroup++){
-               cout<<"name:"<<(*IterGroup)->name<<" id:"<<(*IterGroup)->id<<endl;
-           }
+           world->groups.show_items_name_and_id();
+
        }
 
        temp_msg.erase();
@@ -380,10 +375,9 @@ void Manager_KeyboardInterface::listen(int key){
        behavior    = true;
        msg += "/BEHAVIOR";
 
-       if(action.compare("CREATE") == 0 || create){
+       if(create){
 
-           cout<<"1 - B_GravityGlue"<<endl;
-           cout<<"2 - B_MouseTracking"<<endl;
+           get_availableItems_names(behavior_name);
 
        }
 
@@ -398,11 +392,9 @@ void Manager_KeyboardInterface::listen(int key){
        interaction = true;
        msg += "/INTERACTION";
 
-       if(action.compare("CREATE") == 0 || create){
+       if(create){
 
-           cout<<"1 - I_ElectRepulsion"<<endl;
-           cout<<"2 - I_ElectAttraction"<<endl;
-           cout<<"3 - I_WaveSource"<<endl;
+           get_availableItems_names(interaction_name);
 
        }
 

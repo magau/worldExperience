@@ -26,6 +26,7 @@ class Manager_KeyboardInterface{
         Manager_KeyboardInterface(); 
         void start(World* _world);
         void listen(int key);
+        void get_availableItems_names(unordered_map<string,string> names_map);
         void reset_objects();
         void reset_actions();
         void decode_kb_msg(string encoded_msg);
