@@ -49,127 +49,235 @@ void World::draw(){
     }
 }
 
-void Manager_KeyboardInterface::start(World* _world){
-    world = _world;
+Manager_KeyboardInterface::Manager_KeyboardInterface(){
+    particle_name["1"] = "P_Base";
+    particle_name["2"] = "P_Circle";
+    particle_name["3"] = "MP_RegGrid";
+
+    interaction_name["1"] = "I_ElectRepulsion";
+    interaction_name["2"] = "I_ElectAttraction";
+    interaction_name["3"] = "I_WaveSource";
+ 
+    behavior_name["1"] = "B_GravityGlue";
+    behavior_name["2"] = "B_MouseTracking";
+
+    create = false;
+    remove = false;
+    get    = false;
+    set    = false;
+    add    = false;
+
+    particle    = false;
+    group       = false;
+    behavior    = false;
+    interaction = false;
+
     isListening = false;
     obj.erase();
     msg.erase();
+    action.erase();
+} 
+
+void Manager_KeyboardInterface::start(World* _world){
+    //can't add 'world' inside constructor because
+    //this class is instantiated at the testApp.h file.
+    world = _world;
+    buffer_group = &(world->particles);
+}
+
+void Manager_KeyboardInterface::decode_kb_msg(string encoded_msg){
+
+    if (create || action.compare("CREATE") == 0){
+
+        if(particle || obj.compare("PARTICLE") == 0){
+            
+            obj_name = particle_name[encoded_msg];
+
+        } else if(interaction || obj.compare("INTERACTION") == 0){
+
+            obj_name = interaction_name[encoded_msg];
+
+        } else if(behavior || obj.compare("BEHAVIOR") == 0){
+
+            obj_name = behavior_name[encoded_msg];
+
+        }
+
+        msg += "/" + obj_name;
+
+    } else {
+
+        obj_id = atoi(encoded_msg.c_str());
+
+        msg += "/" + encoded_msg;
+
+    }
+
+    isListening = false;
+    cout<<"END"<<endl;
+    cout<<"msg:"<<msg<<endl;
+}
+
+void Manager_KeyboardInterface::stateFabric_update(string _msg){
+    // This method decodes OSC like messages with purpose of
+    // update state variables.
+    int pos;
+    string _action, _obj, _id, sub_str;
+
+    pos = _msg.find("/");
+    _action = _msg.substr(0,pos);
+
+    reset_actions();
+
+    if (_action.compare("CREATE") == 0){
+        create = true;
+    } else if (_action.compare("REMOVE") == 0) {
+        remove = true;
+    } else if (_action.compare("GET") == 0) {
+        get    = true;
+    } else if (_action.compare("SET") == 0) {
+        set    = true;
+    } else if (_action.compare("ADD") == 0) {
+        add    = true;
+    }
+
+    _msg.replace(0,pos+1,"");
+    pos = _msg.find("/");
+    _obj = _msg.substr(0,pos);
+    
+    reset_objects();
+
+    if (_obj.compare("PARTICLE") == 0){
+        particle    = true;
+    } else if (_obj.compare("GROUP") == 0) {
+        group       = true;
+    } else if (_obj.compare("BEHAVIOR") == 0) {
+        behavior    = true;
+    } else if (_obj.compare("INTERACTION") == 0) {
+        interaction = true;
+    }
+
+    _msg.replace(0,pos+1,"");
+    _id = _msg;
+    
+    cout<<"action:"<<_action<<" obj:"<<_obj<<" id:"<<_id<<endl;
+}
+
+void Manager_KeyboardInterface::stateFabric_decode(){
+   if (create){
+       if (particle) {
+
+           buffer_particle = world->create_particle(obj_name);
+
+           if (buffer_group != int(NULL)){
+               buffer_group->add(buffer_particle, false);
+           }
+
+           //provisorio...
+           *(buffer_particle->ofColorPtr_map["color"]) = ofColor(255,0,0);
+           *(buffer_particle->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetMouseX(),ofGetMouseY());
+           *(buffer_particle->intPtr_map["rad"]) = 10;
+
+       } else if (behavior){
+
+           buffer_behavior = buffer_particle->behaviors.add_itemByName(obj_name,buffer_particle);
+
+       }
+
+   } else if (get){
+
+       if (particle) {
+
+           buffer_particle = buffer_group->get_itemById(obj_id);
+
+       } else if (group){
+
+           if(obj_id == -1){
+
+               buffer_group = &(world->particles);
+
+           } else {
+
+               buffer_group = world->groups.get_itemById(obj_id);
+
+           }
+
+       } else if (interaction){
+
+           buffer_interaction = buffer_particle->interactions.get_itemById(obj_id);
+
+       } else if (behavior){
+
+           buffer_behavior = buffer_particle->behaviors.get_itemById(obj_id);
+
+       }
+
+   }
+
+/*
+   if (!get) {
+
+       //buffer_group = int(NULL);
+       buffer_group = &(world->particles);
+       buffer_particle = int(NULL);
+       buffer_interaction = int(NULL);
+       buffer_behavior = int(NULL);
+   }
+*/
+
+    msg.erase();
+
+}
+
+void Manager_KeyboardInterface::reset_objects(){
+
+    particle    = false;
+    group       = false;
+    behavior    = false;
+    interaction = false;
+}
+
+void Manager_KeyboardInterface::reset_actions(){
+
+    create = false;
+    remove = false;
+    get    = false;
+    set    = false;
+    add    = false;
 }
 
 void Manager_KeyboardInterface::listen(int key){
    vector<Particle*> :: iterator IterPart;
    vector<Particles_Container*> :: iterator IterGroup;
-   Particles_Container* temp_groupPtr;
 
    if(ofGetKeyPressed(13)) {
        //RETURN
 
-       if(isListening && (create || action.compare("CREATE"))){
+       if(isListening){
+           decode_kb_msg(temp_msg);
+       } 
 
-           if(obj.compare("PARTICLE") == 0){
+       //stateFabric_update(msg);
 
-               switch(atoi(temp_msg.c_str())) {
-                   case 1:
-                       temp_msg = "P_Base";
-                       break;
-                   case 2:
-                       temp_msg = "P_Circle";
-                       break;
-                   case 3:
-                       temp_msg = "MP_RegGrid";
-                       break;
-               }
-
-           } else if(obj.compare("INTERACTION") == 0){
-
-               switch(atoi(temp_msg.c_str())) {
-                   case 1:
-                       temp_msg = "I_ElectRepulsion";
-                       break;
-                   case 2:
-                       temp_msg = "I_ElectAttraction";
-                       break;
-                   case 3:
-                       temp_msg = "I_WaveSource";
-                       break;
-               }
-
-           } else if(obj.compare("BEHAVIOR") == 0){
-
-               switch(atoi(temp_msg.c_str())) {
-                   case 1:
-                       temp_msg = "B_GravityGlue";
-                       break;
-                   case 2:
-                       temp_msg = "B_MouseTracking";
-                       break;
-               }
-
-           }
-       }
-
-       msg += "/" + temp_msg;
-       isListening = false;
-       cout<<"END"<<endl;
-       cout<<"temp_msg:"<<temp_msg<<endl;
-
-       if (create || action.compare("CREATE") == 0){
-           if (particle || obj.compare("PARTICLE") == 0) {
-
-               buffer_particle = world->create_particle(temp_msg);
-
-               if (buffer_group != int(NULL)){
-                   buffer_group->add(buffer_particle, false);
-               }
-
-               //provisorio...
-               *(buffer_particle->ofColorPtr_map["color"]) = ofColor(255,0,0);
-               *(buffer_particle->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetMouseX(),ofGetMouseY());
-               *(buffer_particle->intPtr_map["rad"]) = 10;
-
-           } else if (group || obj.compare("GROUP") == 0){
-
-               buffer_group = world->create_group(temp_msg);
-
-           }
-
-       } else if (get || action.compare("GET") == 0){
-
-           if (particle || obj.compare("PARTICLE") == 0) {
-
-               buffer_particle = world->particles.get_itemById(atoi(temp_msg.c_str()));
-
-           } else if (group || obj.compare("GROUP") == 0){
-
-               buffer_group = world->groups.get_itemById(atoi(temp_msg.c_str()));
-
-           }
-          
-       }
-
-       if (!get && action.compare("GET") != 0) {
-
-           buffer_group = int(NULL);
-           buffer_particle = int(NULL);
-           buffer_interaction = int(NULL);
-           buffer_behavior = int(NULL);
-       }
-
-       obj.erase();
-       msg.erase();
+       stateFabric_decode();
 
    } else if(ofGetKeyPressed(9)) {
        //CTRL + I
+
        isListening = !isListening;
        temp_msg.erase();
-       cout<<(isListening?"INSERT":"EXIT INSERT")<<endl;
+       cout<<(isListening?"INSERT MODE:":"EXIT INSERT")<<endl;
+
    } else if(ofGetKeyPressed(5)) {
        //CTRL + E
+
        msg += "/" + temp_msg;
        isListening = false;
        cout<<"END"<<endl;
        cout<<"temp_msg:"<<temp_msg<<endl;
+
    } else if(isListening){
+
        if( key != 8 ){
            temp_msg += key;
        } else if (!temp_msg.empty()){
@@ -177,88 +285,65 @@ void Manager_KeyboardInterface::listen(int key){
        }
        //cout<<key<<endl;
        cout<<temp_msg<<endl;
+
    } else if(ofGetKeyPressed(3)){
        //CTRL + C
+
+       reset_actions();
        create = true;
-       remove = false;
-       get    = false;
-       set    = false;
-       add    = false;
-       action = "CREATE";
-       cout<<action<<endl;
+       msg = "CREATE";
+       cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(18)){
        //CTRL + R
-       create = false;
-       remove = true;
-       get    = false;
-       set    = false;
-       add    = false;
-       action = "REMOVE";
-       cout<<action<<endl;
 
+       reset_actions();
+       remove = true;
+       msg ="REMOVE";
+       cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(7)){
        //CTRL + G
-       create = false;
-       remove = false;
-       get    = true;
-       set    = false;
-       add    = false;
-       action = "GET";
-       cout<<action<<endl;
 
+       reset_actions();
+       get    = true;
+       msg ="GET";
+       cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(19)){
        //CTRL + S
-       create = false;
-       remove = false;
-       get    = false;
+ 
+       reset_actions();
        set    = true;
-       add    = false;
-       action = "SET";
-       cout<<action<<endl;
-
+       msg ="SET";
+       cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(1)){
        //CTRL + A
-       create = false;
-       remove = false;
-       get    = false;
-       set    = false;
-       add    = true;
-       action = "ADD";
-       cout<<action<<endl;
 
+       reset_actions();
+       add    = true;
+       msg ="ADD";
+       cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(112)){
        // P
+
+       reset_objects();
        particle    = true;
-       group       = false;
-       behavior    = false;
-       interaction = false;
-       obj = "PARTICLE";
-       msg = action + "/" + obj;
-       cout<<obj<<endl;
-       cout<<msg<<endl;
+       msg += "/PARTICLE";
 
-       if (buffer_group == int(NULL)){
-           temp_groupPtr = &(world->particles);
-       } else {
-           temp_groupPtr = buffer_group;
-       }
-
-       if(action.compare("CREATE") || create){
+       if(action.compare("CREATE") == 0 || create){
 
            cout<<"1 - P_Base"<<endl;
            cout<<"2 - P_Circle"<<endl;
            cout<<"3 - MP_RegGrid"<<endl;
 
-       } else if(action.compare("GET") || get) {
+       } else if(action.compare("GET") == 0 || get) {
 
-           cout<<"group:"<<(temp_groupPtr->name)<<" size:"<<(temp_groupPtr->itemsVector.size())<<endl;
-           for(IterPart = temp_groupPtr->itemsVector.begin();
-                IterPart != temp_groupPtr->itemsVector.end();
+           cout<<"group:"<<(buffer_group->name)<<" size:"<<(buffer_group->itemsVector.size())<<endl;
+           for(IterPart = buffer_group->itemsVector.begin();
+                IterPart != buffer_group->itemsVector.end();
                 IterPart++){
                cout<<"name:"<<(*IterPart)->name<<" id:"<<(*IterPart)->id<<endl;
            }
@@ -266,19 +351,17 @@ void Manager_KeyboardInterface::listen(int key){
 
        temp_msg.erase();
        isListening = true;
-       cout<<"INSERT"<<endl;
+       cout<<"INSERT MODE:"<<endl;
 
    } else if(ofGetKeyPressed(103)){
        // G
-       particle    = false;
+
+       reset_objects();
        group       = true;
-       behavior    = false;
-       interaction = false;
-       obj = "GROUP";
-       msg = action + "/" + obj;
-       cout<<obj<<endl;
-       cout<<msg<<endl;
-       if(action.compare("GET") || get) {
+       msg += "/GROUP";
+
+       if(action.compare("GET") == 0 || get) {
+           cout<<"name:"<<world->particles.name<<" id:-1"<<endl;
            for(IterGroup = world->groups.itemsVector.begin();
                IterGroup != world->groups.itemsVector.end();
                IterGroup++){
@@ -288,20 +371,16 @@ void Manager_KeyboardInterface::listen(int key){
 
        temp_msg.erase();
        isListening = true;
-       cout<<"INSERT"<<endl;
+       cout<<"INSERT MODE:"<<endl;
 
    } else if(ofGetKeyPressed(98)){
        // B
-       particle    = false;
-       group       = false;
-       behavior    = true;
-       interaction = false;
-       obj = "BEHAVIOR";
-       msg = action + "/" + obj;
-       cout<<obj<<endl;
-       cout<<msg<<endl;
 
-       if(action.compare("CREATE") || create){
+       reset_objects();
+       behavior    = true;
+       msg += "/BEHAVIOR";
+
+       if(action.compare("CREATE") == 0 || create){
 
            cout<<"1 - B_GravityGlue"<<endl;
            cout<<"2 - B_MouseTracking"<<endl;
@@ -310,20 +389,16 @@ void Manager_KeyboardInterface::listen(int key){
 
        temp_msg.erase();
        isListening = true;
-       cout<<"INSERT"<<endl;
+       cout<<"INSERT MODE:"<<endl;
 
    } else if(ofGetKeyPressed(105)){
        // I
-       particle    = false;
-       group       = false;
-       behavior    = false;
-       interaction = true;
-       obj = "INTERACTION";
-       msg = action + "/" + obj;
-       cout<<obj<<endl;
-       cout<<msg<<endl;
 
-       if(action.compare("CREATE") || create){
+       reset_objects();
+       interaction = true;
+       msg += "/INTERACTION";
+
+       if(action.compare("CREATE") == 0 || create){
 
            cout<<"1 - I_ElectRepulsion"<<endl;
            cout<<"2 - I_ElectAttraction"<<endl;
@@ -333,7 +408,7 @@ void Manager_KeyboardInterface::listen(int key){
 
        temp_msg.erase();
        isListening = true;
-       cout<<"INSERT"<<endl;
+       cout<<"INSERT MODE:"<<endl;
    }
 
 }

@@ -22,7 +22,7 @@ void testApp::setup(){
     *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
     *(p->intPtr_map["rad"]) = 10;
 
-    p->behaviors.add_itemByName("B_MouseTracking",p);
+    //p->behaviors.add_itemByName("B_MouseTracking",p);
     
     g = world.create_group("G_dancers");
     g->add(p,false);
