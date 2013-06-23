@@ -232,6 +232,27 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
        }
 
+   } else if (remove){
+       if (particle){
+           if (buffer_group == &(world->particles)){
+               world->remove_particle(buffer_particle);
+           } else {
+               buffer_group->pop_itemById(buffer_particle->id,false);
+           }
+       } else if (interaction) {
+           if (buffer_particle == (int)NULL){
+              cout<<"ERROR - particle not in buffer";
+           } else {
+              buffer_particle->interactions.pop_itemById(buffer_interaction->id);
+           }
+       } else if (behavior) {
+           if (buffer_particle == (int)NULL){
+              cout<<"ERROR - particle not in buffer";
+           } else {
+              buffer_particle->behaviors.pop_itemById(buffer_behavior->id);
+           }
+       }
+
    }
 
 /*
@@ -379,7 +400,16 @@ void Manager_KeyboardInterface::listen(int key){
 
            get_availableItems_names(behavior_name);
 
+       } else if(get | remove) {
+
+           if (buffer_particle == (int)NULL){
+               cout<<"ERROR - particle not in buffer";
+           } else {
+               buffer_particle->behaviors.show_items_name_and_id();
+           }
        }
+
+
 
        temp_msg.erase();
        isListening = true;
@@ -396,7 +426,15 @@ void Manager_KeyboardInterface::listen(int key){
 
            get_availableItems_names(interaction_name);
 
+       } else if(get | remove) {
+
+           if (buffer_particle == (int)NULL){
+               cout<<"ERROR - particle not in buffer";
+           } else {
+               buffer_particle->interactions.show_items_name_and_id();
+           }
        }
+
 
        temp_msg.erase();
        isListening = true;
