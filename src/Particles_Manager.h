@@ -15,6 +15,8 @@ class Manager_KeyboardInterface{
     public:
         World* world;
         Particles_Container* buffer_group;
+        Interactions_Container buffer_interactions;
+        Behaviors_Container buffer_behaviors;
         Particle* buffer_particle;
         Interaction* buffer_interaction;
         Behavior* buffer_behavior; 

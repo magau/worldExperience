@@ -6,7 +6,7 @@ class Groups_Container : public Pointers_Container<Particles_Container*>{
 
 class Particle{
     public:
-        u_int id;
+        int id;
         string name;
         World* world;
         ofVec3f locat, veloc, accel;

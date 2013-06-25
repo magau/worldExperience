@@ -4,6 +4,7 @@ Interaction::Interaction(Particle* _host_particle){
     host_particle = _host_particle;
     isAlive = true;
     isActive = true;
+    actuated_particles = (int)NULL;
 }
 
 void Interaction::interact(Particle* actuated_particle){
@@ -12,12 +13,13 @@ void Interaction::interact(Particle* actuated_particle){
 
 void Interaction::run(){
     vector<Particle*>::iterator actuatedParticle_it;
+    if (actuated_particles != (int)NULL) {
+        for (actuatedParticle_it = actuated_particles->itemsVector.begin();
+             actuatedParticle_it != actuated_particles->itemsVector.end();
+             actuatedParticle_it++){
 
-    for (actuatedParticle_it = actuated_particles->itemsVector.begin();
-         actuatedParticle_it != actuated_particles->itemsVector.end();
-         actuatedParticle_it++){
-
-         interact(*actuatedParticle_it);
+             interact(*actuatedParticle_it);
+        }
     }
 }
 

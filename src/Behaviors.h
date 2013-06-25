@@ -3,7 +3,7 @@
 
 class Behavior{
     public:
-        u_int id;
+        int id;
         string name;
         Particle* host_particle;
         bool isAlive, isActive;

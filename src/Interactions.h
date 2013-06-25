@@ -2,7 +2,7 @@ class Particles_Container;
 
 class Interaction {
     public:
-        u_int id;
+        int id;
         string name;
         bool isAlive, isActive;
         Particle* host_particle;

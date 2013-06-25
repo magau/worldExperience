@@ -20,6 +20,7 @@ void testApp::setup(){
     p = world.create_particle("P_Circle");
 
     *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
+    *(p->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
     *(p->intPtr_map["rad"]) = 10;
 
     //p->behaviors.add_itemByName("B_MouseTracking",p);

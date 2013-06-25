@@ -2,6 +2,8 @@
 
 World :: World() {
     particles.name = "C_World";
+    particles.id = -1;
+    groups.add(&particles,false);
 }
 
 Particles_Container* World::create_group(string iName){
@@ -61,9 +63,10 @@ Manager_KeyboardInterface::Manager_KeyboardInterface(){
     behavior_name["1"] = "B_GravityGlue";
     behavior_name["2"] = "B_MouseTracking";
 
-    buffer_particle = int(NULL);
-    buffer_interaction = int(NULL);
-    buffer_behavior = int(NULL);
+    buffer_particle    = (int)NULL;
+    buffer_interaction = (int)NULL;
+    buffer_behavior    = (int)NULL;
+    buffer_group       = (int)NULL;
 
     isListening = false;
     msg.erase();
@@ -99,10 +102,10 @@ void Manager_KeyboardInterface::reset_actions(){
 }
 
 void Manager_KeyboardInterface::start(World* _world){
-    //can't add 'world' inside constructor because
+    //Can't add 'world' inside constructor because
     //this class is instantiated at the testApp.h file.
     world = _world;
-    buffer_group = &(world->particles);
+    //buffer_group = &(world->particles);
 }
 
 void Manager_KeyboardInterface::decode_kb_msg(string encoded_msg){
@@ -120,6 +123,10 @@ void Manager_KeyboardInterface::decode_kb_msg(string encoded_msg){
         } else if(behavior){
 
             obj_name = behavior_name[encoded_msg];
+
+        } else if(group){
+
+            obj_name = encoded_msg;
 
         }
 
@@ -182,12 +189,15 @@ void Manager_KeyboardInterface::stateFabric_update(string _msg){
 }
 
 void Manager_KeyboardInterface::stateFabric_decode(){
+   vector<Particle*>::iterator iterPart;
+
    if (create){
+
        if (particle) {
 
            buffer_particle = world->create_particle(obj_name);
 
-           if (buffer_group != int(NULL)){
+           if (buffer_group != int(NULL) && buffer_group != &(world->particles)){
 
                buffer_group->add(buffer_particle, false);
  
@@ -198,9 +208,79 @@ void Manager_KeyboardInterface::stateFabric_decode(){
            *(buffer_particle->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetMouseX(),ofGetMouseY());
            *(buffer_particle->intPtr_map["rad"]) = 10;
 
+           buffer_group = (int)NULL;
+
+       } else if (group){
+
+           buffer_group = world->create_group(obj_name);
+
+           buffer_particle = (int)NULL;
+           
        } else if (behavior){
 
-           buffer_behavior = buffer_particle->behaviors.add_itemByName(obj_name,buffer_particle);
+           if (buffer_particle != (int)NULL) {
+
+               cout<<"create buffer_behavior..."<<endl;
+               buffer_behavior = buffer_particle->behaviors.add_itemByName(obj_name,buffer_particle);
+               buffer_interaction = (int)NULL;
+
+           } else if (buffer_group != (int)NULL) {
+
+               cout<<"create buffer_behaviors..."<<endl;
+               buffer_behaviors.clear();
+
+               for(iterPart = buffer_group->itemsVector.begin();
+                    iterPart != buffer_group->itemsVector.end();
+                    iterPart++){
+                   cout<<"iter name:"<<(*iterPart)->name<<" iter id:"<<(*iterPart)->id<<endl;
+                   buffer_behaviors.add((*iterPart)->behaviors.add_itemByName(obj_name,*iterPart),false);
+               }
+
+               cout<<"end create buffer_behaviors."<<endl;
+               buffer_interactions.clear();
+
+           }
+
+       } else if (interaction){
+
+           if (buffer_particle != (int)NULL) {
+
+               buffer_interaction = buffer_particle->interactions.add_itemByName(obj_name,buffer_particle);
+               buffer_behavior = (int)NULL;
+
+           } else if (buffer_group != (int)NULL) {
+
+               buffer_interactions.clear();
+
+               for(iterPart = buffer_group->itemsVector.begin();
+                    iterPart != buffer_group->itemsVector.end();
+                    iterPart++){
+                   buffer_interactions.add((*iterPart)->interactions.add_itemByName(obj_name,*iterPart),false);
+               }
+
+               buffer_behaviors.clear();
+
+           }
+
+       }
+
+   } else if (add){
+
+       if (particle) {
+
+           if (buffer_group != (int)NULL && buffer_particle != (int)NULL) {
+
+               buffer_group->add(buffer_particle,false);
+
+           }
+
+       } else if (group) {
+           
+           if (buffer_interaction != (int)NULL) {
+               
+               buffer_interaction->actuated_particles = world->groups.get_itemById(obj_id);
+
+           }
 
        }
 
@@ -208,49 +288,76 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
        if (particle) {
 
-           buffer_particle = buffer_group->get_itemById(obj_id);
+           if (buffer_group != (int)NULL){
 
-       } else if (group){
-
-           if(obj_id == -1){
-
-               buffer_group = &(world->particles);
+               buffer_particle = buffer_group->get_itemById(obj_id);
+               buffer_group = (int)NULL;
 
            } else {
 
-               buffer_group = world->groups.get_itemById(obj_id);
+               cout<<"ERROR - group not in buffer";
 
            }
+
+       } else if (group){
+
+           buffer_group = world->groups.get_itemById(obj_id);
+           buffer_particle = (int)NULL;
 
        } else if (interaction){
 
            buffer_interaction = buffer_particle->interactions.get_itemById(obj_id);
+           buffer_behavior = (int)NULL;
 
        } else if (behavior){
 
            buffer_behavior = buffer_particle->behaviors.get_itemById(obj_id);
+           buffer_interaction = (int)NULL;
 
        }
 
    } else if (remove){
+
        if (particle){
+
+           cout<<"group id:"<<buffer_group->id<<endl;
+
            if (buffer_group == &(world->particles)){
+
                world->remove_particle(buffer_particle);
+
            } else {
+
                buffer_group->pop_itemById(buffer_particle->id,false);
+
            }
+
        } else if (interaction) {
+
            if (buffer_particle == (int)NULL){
+
               cout<<"ERROR - particle not in buffer";
+
            } else {
+
+              cout<<"particle id:"<<buffer_particle->id<<endl;
               buffer_particle->interactions.pop_itemById(buffer_interaction->id);
+
            }
+
        } else if (behavior) {
+
            if (buffer_particle == (int)NULL){
+
               cout<<"ERROR - particle not in buffer";
+
            } else {
+
+              cout<<"particle id:"<<buffer_particle->id<<endl;
               buffer_particle->behaviors.pop_itemById(buffer_behavior->id);
+
            }
+
        }
 
    }
@@ -365,6 +472,7 @@ void Manager_KeyboardInterface::listen(int key){
 
            cout<<"group:"<<(buffer_group->name)<<" size:"<<(buffer_group->itemsVector.size())<<endl;
            buffer_group->show_items_name_and_id();
+
        }
 
        temp_msg.erase();
@@ -380,10 +488,14 @@ void Manager_KeyboardInterface::listen(int key){
 
        if(get) {
 
-           cout<<"name:"<<world->particles.name<<" id:-1"<<endl;
+           world->groups.show_items_name_and_id();
+
+       } else if(add) {
+
            world->groups.show_items_name_and_id();
 
        }
+
 
        temp_msg.erase();
        isListening = true;
