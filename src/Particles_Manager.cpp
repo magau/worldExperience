@@ -105,12 +105,11 @@ void Manager_KeyboardInterface::start(World* _world){
     //Can't add 'world' inside constructor because
     //this class is instantiated at the testApp.h file.
     world = _world;
-    //buffer_group = &(world->particles);
 }
 
 void Manager_KeyboardInterface::decode_kb_msg(string encoded_msg){
 
-    if (create){
+    //if (create){
 
         if(particle){
             
@@ -130,19 +129,19 @@ void Manager_KeyboardInterface::decode_kb_msg(string encoded_msg){
 
         }
 
-        msg += "/" + obj_name;
+    //    msg += "/" + obj_name;
 
-    } else {
+    //} else {
 
         obj_id = atoi(encoded_msg.c_str());
 
-        msg += "/" + encoded_msg;
+    //    msg += "/" + encoded_msg;
 
-    }
+    //}
 
     isListening = false;
     cout<<"END"<<endl;
-    cout<<"msg:"<<msg<<endl;
+    //cout<<"msg:"<<msg<<endl;
 }
 
 void Manager_KeyboardInterface::stateFabric_update(string _msg){
@@ -191,187 +190,217 @@ void Manager_KeyboardInterface::stateFabric_update(string _msg){
 void Manager_KeyboardInterface::stateFabric_decode(){
    vector<Particle*>::iterator iterPart;
 
-   if (create){
+    if (create) {
 
-       if (particle) {
+        if (behavior) {
 
-           buffer_particle = world->create_particle(obj_name);
+            if (buffer_particle != (int)NULL) {
 
-           if (buffer_group != int(NULL) && buffer_group != &(world->particles)){
+                cout<<"create buffer_behavior..."<<endl;
+                buffer_behavior = buffer_particle->behaviors.add_itemByName(obj_name,buffer_particle);
+                buffer_interaction = (int)NULL;
 
-               buffer_group->add(buffer_particle, false);
+            } else if (buffer_group != (int)NULL) {
+
+                cout<<"create buffer_behaviors..."<<endl;
+                buffer_behaviors.clear(false);
+
+                for(iterPart = buffer_group->itemsVector.begin();
+                     iterPart != buffer_group->itemsVector.end();
+                     iterPart++){
+                    cout<<"iter name:"<<(*iterPart)->name<<" iter id:"<<(*iterPart)->id<<endl;
+                    buffer_behaviors.add((*iterPart)->behaviors.add_itemByName(obj_name,*iterPart),false);
+                }
+
+                buffer_interactions.clear(false);
+
+            }
+
+        } else if (interaction) {
+
+            if (buffer_particle != (int)NULL) {
+
+                buffer_interaction = buffer_particle->interactions.add_itemByName(obj_name,buffer_particle);
+                buffer_behavior = (int)NULL;
+
+            } else if (buffer_group != (int)NULL) {
+
+                buffer_interactions.clear(false);
+
+                for(iterPart = buffer_group->itemsVector.begin();
+                     iterPart != buffer_group->itemsVector.end();
+                     iterPart++){
+                    buffer_interactions.add((*iterPart)->interactions.add_itemByName(obj_name,*iterPart),false);
+                }
+
+                buffer_behaviors.clear(false);
+
+            }
+
+        } else if (particle) {
+
+            buffer_particle = world->create_particle(obj_name);
+
+            if (buffer_group != int(NULL) && buffer_group != &(world->particles)){
+
+                buffer_group->add(buffer_particle, false);
  
-           }
+            }
 
-           //provisorio...
-           *(buffer_particle->ofColorPtr_map["color"]) = ofColor(255,0,0);
-           *(buffer_particle->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetMouseX(),ofGetMouseY());
-           *(buffer_particle->intPtr_map["rad"]) = 10;
+            //provisorio...
+            *(buffer_particle->ofColorPtr_map["color"]) = ofColor(255,0,0);
+            *(buffer_particle->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetMouseX(),ofGetMouseY());
+            *(buffer_particle->intPtr_map["rad"]) = 10;
 
-           buffer_group = (int)NULL;
+            buffer_group = (int)NULL;
 
-       } else if (group){
+        } else if (group) {
 
-           buffer_group = world->create_group(obj_name);
+            buffer_group = world->create_group(obj_name);
+            buffer_particle = (int)NULL;
+            
+        }
 
-           buffer_particle = (int)NULL;
-           
-       } else if (behavior){
+    } else if (get) {
 
-           if (buffer_particle != (int)NULL) {
+        if (behavior) {
 
-               cout<<"create buffer_behavior..."<<endl;
-               buffer_behavior = buffer_particle->behaviors.add_itemByName(obj_name,buffer_particle);
-               buffer_interaction = (int)NULL;
+            if (buffer_particle != (int)NULL) {
 
-           } else if (buffer_group != (int)NULL) {
+                buffer_behavior = buffer_particle->behaviors.get_itemById(obj_id);
+                buffer_interaction = (int)NULL;
 
-               cout<<"create buffer_behaviors..."<<endl;
-               buffer_behaviors.clear();
+            } else if (buffer_group != (int)NULL) {
 
-               for(iterPart = buffer_group->itemsVector.begin();
-                    iterPart != buffer_group->itemsVector.end();
-                    iterPart++){
-                   cout<<"iter name:"<<(*iterPart)->name<<" iter id:"<<(*iterPart)->id<<endl;
-                   buffer_behaviors.add((*iterPart)->behaviors.add_itemByName(obj_name,*iterPart),false);
-               }
+                buffer_behaviors.clear(false);
 
-               cout<<"end create buffer_behaviors."<<endl;
-               buffer_interactions.clear();
+                for(iterPart = buffer_group->itemsVector.begin();
+                     iterPart != buffer_group->itemsVector.end();
+                     iterPart++){
 
-           }
+                    vector <Behavior*> temp_behaviors = (*iterPart)->behaviors.get_itemsByName(obj_name);
+                    if ((int)temp_behaviors.size() > 0) {
+                        buffer_behaviors.add(temp_behaviors[0]);
+                    }
 
-       } else if (interaction){
+                }
 
-           if (buffer_particle != (int)NULL) {
+                buffer_interactions.clear(false);
 
-               buffer_interaction = buffer_particle->interactions.add_itemByName(obj_name,buffer_particle);
-               buffer_behavior = (int)NULL;
+            }
 
-           } else if (buffer_group != (int)NULL) {
+        } else if (interaction) {
 
-               buffer_interactions.clear();
+            if (buffer_particle != (int)NULL) {
 
-               for(iterPart = buffer_group->itemsVector.begin();
-                    iterPart != buffer_group->itemsVector.end();
-                    iterPart++){
-                   buffer_interactions.add((*iterPart)->interactions.add_itemByName(obj_name,*iterPart),false);
-               }
+                buffer_interaction = buffer_particle->interactions.get_itemById(obj_id);
+                buffer_behavior = (int)NULL;
 
-               buffer_behaviors.clear();
+            } else if (buffer_group != (int)NULL) {
 
-           }
+                buffer_interactions.clear(false);
 
-       }
+                for(iterPart = buffer_group->itemsVector.begin();
+                     iterPart != buffer_group->itemsVector.end();
+                     iterPart++){
 
-   } else if (add){
+                    vector <Interaction*> temp_interactions = (*iterPart)->interactions.get_itemsByName(obj_name);
+                    if ((int)temp_interactions.size() > 0) {
+                        buffer_interactions.add(temp_interactions[0]);
+                    }
 
-       if (particle) {
+                }
 
-           if (buffer_group != (int)NULL && buffer_particle != (int)NULL) {
+                buffer_behaviors.clear(false);
 
-               buffer_group->add(buffer_particle,false);
+            }
 
-           }
+        } else if (particle) {
 
-       } else if (group) {
-           
-           if (buffer_interaction != (int)NULL) {
+            if (buffer_group != (int)NULL){
+
+                buffer_particle = buffer_group->get_itemById(obj_id);
+                buffer_group = (int)NULL;
+
+            } else {
+
+                cout<<"ERROR - group not in buffer";
+
+            }
+
+        } else if (group) {
+
+            buffer_group = world->groups.get_itemById(obj_id);
+            buffer_particle = (int)NULL;
+
+        }
+
+    
+    } else if (add) {
+
+        if (particle) {
+
+            if (buffer_group != (int)NULL && buffer_particle != (int)NULL) {
+
+                buffer_group->add(buffer_particle,false);
+
+            }
+
+        } else if (group) {
+            
+            if (buffer_interaction != (int)NULL) {
+                
+                buffer_interaction->actuated_particles = world->groups.get_itemById(obj_id);
+
+            }
+
+        }
+
+    } else if (remove) {
+
+        if (behavior) {
+
+            if (buffer_particle == (int)NULL){
+
+               cout<<"ERROR - particle not in buffer";
+
+            } else {
+
+               buffer_behavior = buffer_particle->behaviors.get_itemById(obj_id);
+               buffer_particle->behaviors.pop_itemById(buffer_behavior->id);
                
-               buffer_interaction->actuated_particles = world->groups.get_itemById(obj_id);
+            }
 
-           }
+        } else if (interaction) {
 
-       }
+            if (buffer_particle == (int)NULL){
 
-   } else if (get){
+               cout<<"ERROR - particle not in buffer";
 
-       if (particle) {
+            } else {
 
-           if (buffer_group != (int)NULL){
+               buffer_interaction = buffer_particle->interactions.get_itemById(obj_id);
+               buffer_particle->interactions.pop_itemById(buffer_interaction->id);
 
-               buffer_particle = buffer_group->get_itemById(obj_id);
-               buffer_group = (int)NULL;
+            }
 
-           } else {
+        } else if (particle){
 
-               cout<<"ERROR - group not in buffer";
+            cout<<"group id:"<<buffer_group->id<<endl;
 
-           }
+            if (buffer_group == &(world->particles)){
 
-       } else if (group){
+                world->remove_particle(buffer_particle);
 
-           buffer_group = world->groups.get_itemById(obj_id);
-           buffer_particle = (int)NULL;
+            } else {
 
-       } else if (interaction){
+                buffer_group->pop_itemById(buffer_particle->id,false);
 
-           buffer_interaction = buffer_particle->interactions.get_itemById(obj_id);
-           buffer_behavior = (int)NULL;
+            }
 
-       } else if (behavior){
+        }
 
-           buffer_behavior = buffer_particle->behaviors.get_itemById(obj_id);
-           buffer_interaction = (int)NULL;
-
-       }
-
-   } else if (remove){
-
-       if (particle){
-
-           cout<<"group id:"<<buffer_group->id<<endl;
-
-           if (buffer_group == &(world->particles)){
-
-               world->remove_particle(buffer_particle);
-
-           } else {
-
-               buffer_group->pop_itemById(buffer_particle->id,false);
-
-           }
-
-       } else if (interaction) {
-
-           if (buffer_particle == (int)NULL){
-
-              cout<<"ERROR - particle not in buffer";
-
-           } else {
-
-              cout<<"particle id:"<<buffer_particle->id<<endl;
-              buffer_particle->interactions.pop_itemById(buffer_interaction->id);
-
-           }
-
-       } else if (behavior) {
-
-           if (buffer_particle == (int)NULL){
-
-              cout<<"ERROR - particle not in buffer";
-
-           } else {
-
-              cout<<"particle id:"<<buffer_particle->id<<endl;
-              buffer_particle->behaviors.pop_itemById(buffer_behavior->id);
-
-           }
-
-       }
-
-   }
-
-/*
-   if (!get) {
-
-       //buffer_group = int(NULL);
-       buffer_group = &(world->particles);
-       buffer_particle = int(NULL);
-       buffer_interaction = int(NULL);
-       buffer_behavior = int(NULL);
-   }
-*/
+    }
 
     msg.erase();
 
@@ -470,9 +499,16 @@ void Manager_KeyboardInterface::listen(int key){
 
        } else if(get) {
 
-           cout<<"group:"<<(buffer_group->name)<<" size:"<<(buffer_group->itemsVector.size())<<endl;
-           buffer_group->show_items_name_and_id();
+           if (buffer_group != (int)NULL) {
 
+               cout<<"group:"<<(buffer_group->name)<<" size:"<<(buffer_group->itemsVector.size())<<endl;
+               buffer_group->show_items_name_and_id();
+
+           } else {
+
+               cout<<"ERROR - group not in buffer";
+
+           }
        }
 
        temp_msg.erase();

@@ -119,13 +119,13 @@ in "freeIdBuff" vector for future added items.
 
     if (index >= 0 && index < itemsVector.size() && itemsVector.size() > 0) {
         item = itemsVector[index];
+        itemsVector.erase(itemsVector.begin() + index);
         if (erase) {
-            if (item->id < (int)(itemsVector.size() - 1)) {
+            if (item->id < (int)(itemsVector.size())) {
                 freeIdBuff.push_back(item->id);
             }
             delete item;
         }
-        itemsVector.erase(itemsVector.begin() + index);
     }
     return item;
 }
@@ -156,7 +156,7 @@ IType Pointers_Container<IType>::get_itemById(int id){
         item = *item_it;
         if (item->id == id){
             result = item;
-            cout<<"got item - name:"<<item->name<<"; id:"<<id<<endl;
+            //cout<<"got item - name:"<<item->name<<"; id:"<<id<<endl;
             break;
         }
     }
@@ -175,15 +175,15 @@ IType Pointers_Container<IType>::pop_itemById(int id, bool erase){
 
         item = *item_it;
         if (item->id == id){
+            itemsVector.erase(item_it);
             if (erase){
-                if (item->id < (int)itemsVector.size() - 1) {
+                if (item->id < (int)itemsVector.size()) {
                     freeIdBuff.push_back(id);
                 }
                 delete item;
             } else {
                 result = item;
             }
-            itemsVector.erase(item_it);
             break;
         }
     }
@@ -203,13 +203,13 @@ vector<IType> Pointers_Container<IType>::pop_itemByName(string iName, bool erase
 
             item = *item_it;
             if (iName.compare(item->name) == 0) {
+                itemsVector.erase(item_it);
                 if (erase){
-                    if (item->id < itemsVector.size() - 1) {
+                    if (item->id < itemsVector.size()) {
                         freeIdBuff.push_back(item->id);
                     }
                     delete item;
                 }
-                itemsVector.erase(item_it);
                 result.push_back(item);
             }
         }
