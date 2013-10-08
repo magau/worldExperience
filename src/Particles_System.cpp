@@ -17,9 +17,10 @@ void Master_Particle::run(){
 
 Particles_Container* Master_Particle::create_slaveContainer(){
     //create System slaveParticles Particles_Container.
-    slaveParticles = new Particles_Container;
-    slaveParticles->name = "C_" + name;
-    world->groups.add(slaveParticles); 
+    //slaveParticles = new Particles_Container;
+    //slaveParticles->name = "C_" + name;
+    //world->groups.add(slaveParticles); 
+    slaveParticles = world->create_group("C_" + name);
     return slaveParticles;
 }
 

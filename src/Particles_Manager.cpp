@@ -39,7 +39,7 @@ Particles_Container* World :: update(){
 
 void World :: remove_particle(Particle* particle_ptr){
    
-    particles.pop_itemById(particle_ptr->id);
+    particles.erase_itemById(particle_ptr->id);
 
 }
 
@@ -86,10 +86,14 @@ void Manager_KeyboardInterface::get_availableItems_names(unordered_map<string,st
 
 void Manager_KeyboardInterface::reset_objects(){
 
-    particle    = false;
-    group       = false;
-    behavior    = false;
-    interaction = false;
+    particle     = false;
+    particles    = false;
+    group        = false;
+    groups       = false;
+    behavior     = false;
+    behaviors    = false;
+    interaction  = false;
+    interactions = false;
 }
 
 void Manager_KeyboardInterface::reset_actions(){
@@ -109,7 +113,7 @@ void Manager_KeyboardInterface::start(World* _world){
 
 void Manager_KeyboardInterface::decode_kb_msg(string encoded_msg){
 
-    //if (create){
+    if (by_name){
 
         if(particle){
             
@@ -129,19 +133,21 @@ void Manager_KeyboardInterface::decode_kb_msg(string encoded_msg){
 
         }
 
-    //    msg += "/" + obj_name;
+        msg += "/" + obj_name;
 
-    //} else {
+        cout<<"aqui by_name"<<endl;
+
+    } else if (by_id) {
 
         obj_id = atoi(encoded_msg.c_str());
 
-    //    msg += "/" + encoded_msg;
+        msg += "/" + encoded_msg;
 
-    //}
+    }
 
     isListening = false;
     cout<<"END"<<endl;
-    //cout<<"msg:"<<msg<<endl;
+    cout<<"msg:"<<msg<<endl;
 }
 
 void Manager_KeyboardInterface::stateFabric_update(string _msg){
@@ -158,33 +164,77 @@ void Manager_KeyboardInterface::stateFabric_update(string _msg){
     _msg.replace(0,pos+1,"");
     _id = _msg;
 
-    reset_actions();
-    reset_objects();
 
     if (_action.compare("CREATE") == 0){
+        reset_actions();
         create = true;
     } else if (_action.compare("REMOVE") == 0) {
+        reset_actions();
         remove = true;
     } else if (_action.compare("GET") == 0) {
+        reset_actions();
         get    = true;
     } else if (_action.compare("SET") == 0) {
+        reset_actions();
         set    = true;
     } else if (_action.compare("ADD") == 0) {
+        reset_actions();
         add    = true;
     }
 
-    if (_obj.compare("PARTICLE") == 0){
-        particle    = true;
+    if (_obj.compare("PARTICLE") == 0) {
+        reset_objects();
+        if (by_name){
+            particles    = true;
+        } else (by_id){
+            particle     = true;
+        }
     } else if (_obj.compare("GROUP") == 0) {
-        group       = true;
+        reset_objects();
+        if (by_name){
+            groups       = true;
+        } else (by_id){
+            group        = true;
+        }
     } else if (_obj.compare("BEHAVIOR") == 0) {
-        behavior    = true;
+        reset_objects();
+        if (by_name){
+            behaviors    = true;
+        } else (by_id){
+            behavior     = true;
+        }
     } else if (_obj.compare("INTERACTION") == 0) {
-        interaction = true;
+        reset_objects();
+        if (by_name){
+            interactions = true;
+        } else (by_id){
+            interaction  = true;
+        }
     }
 
     
     cout<<"action:"<<_action<<" obj:"<<_obj<<" id:"<<_id<<endl;
+}
+
+void Manager_KeyboardInterface::update_availableItems_names(unordered_map<string,string>* names_map, string new_entry){
+    unordered_map<string,string>::const_iterator item_name;
+    bool found_entry = false;
+    ostringstream new_key;
+
+    for(item_name = names_map->begin();
+         item_name != names_map->end();
+         item_name++){
+        if(item_name->second.compare(new_entry)==0) {
+            found_entry = true;
+            break;
+        }
+    }
+
+    if(!found_entry){
+        new_key<<names_map->size()+1;
+        (*names_map)[new_key.str()] = new_entry;
+        get_availableItems_names(*names_map);
+    }
 }
 
 void Manager_KeyboardInterface::stateFabric_decode(){
@@ -194,15 +244,17 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
         if (behavior) {
 
+            cout<<"create buffer_behavior "<<obj_name<<" at ";
+
             if (buffer_particle != (int)NULL) {
 
-                cout<<"create buffer_behavior..."<<endl;
+                cout<<buffer_particle->name<<": "<<buffer_particle->id<<endl;
                 buffer_behavior = buffer_particle->behaviors.add_itemByName(obj_name,buffer_particle);
                 buffer_interaction = (int)NULL;
 
             } else if (buffer_group != (int)NULL) {
 
-                cout<<"create buffer_behaviors..."<<endl;
+                cout<<buffer_group->name<<": "<<buffer_group->id<<endl;
                 buffer_behaviors.clear(false);
 
                 for(iterPart = buffer_group->itemsVector.begin();
@@ -240,6 +292,9 @@ void Manager_KeyboardInterface::stateFabric_decode(){
         } else if (particle) {
 
             buffer_particle = world->create_particle(obj_name);
+            if(strncmp(obj_name.c_str(),"MP_",3) == 0){
+                update_availableItems_names(&group_name,obj_name);
+            }
 
             if (buffer_group != int(NULL) && buffer_group != &(world->particles)){
 
@@ -257,6 +312,7 @@ void Manager_KeyboardInterface::stateFabric_decode(){
         } else if (group) {
 
             buffer_group = world->create_group(obj_name);
+            update_availableItems_names(&group_name,obj_name);
             buffer_particle = (int)NULL;
             
         }
@@ -280,7 +336,7 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
                     vector <Behavior*> temp_behaviors = (*iterPart)->behaviors.get_itemsByName(obj_name);
                     if ((int)temp_behaviors.size() > 0) {
-                        buffer_behaviors.add(temp_behaviors[0]);
+                        buffer_behaviors.add(temp_behaviors[0],false);
                     }
 
                 }
@@ -306,7 +362,7 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
                     vector <Interaction*> temp_interactions = (*iterPart)->interactions.get_itemsByName(obj_name);
                     if ((int)temp_interactions.size() > 0) {
-                        buffer_interactions.add(temp_interactions[0]);
+                        buffer_interactions.add(temp_interactions[0],false);
                     }
 
                 }
@@ -319,8 +375,19 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
             if (buffer_group != (int)NULL){
 
-                buffer_particle = buffer_group->get_itemById(obj_id);
-                buffer_group = (int)NULL;
+                if (by_id) {
+                    buffer_particle = buffer_group->get_itemById(obj_id);
+                    buffer_group = (int)NULL;
+                } else if (by_name) {
+                    particles_vector = buffer_group->get_itemsByName(obj_name);
+
+                    for (u_int i = 0; i < particles_vector.size(); i++ ){
+                        cout<<particles_vector[i]->name<<" id:"<<particles_vector[i]->id<<endl;
+                    }
+
+                    buffer_particle = (int)NULL;
+                    buffer_group = (int)NULL;
+                } 
 
             } else {
 
@@ -330,7 +397,11 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
         } else if (group) {
 
-            buffer_group = world->groups.get_itemById(obj_id);
+            if (by_id) {
+                buffer_group = world->groups.get_itemById(obj_id);
+            } else if (by_name) {
+                groups_vector = world->groups.get_itemsByName(obj_name);
+            }
             buffer_particle = (int)NULL;
 
         }
@@ -360,43 +431,61 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
         if (behavior) {
 
-            if (buffer_particle == (int)NULL){
+            if (buffer_particle != (int)NULL){
 
-               cout<<"ERROR - particle not in buffer";
+               if (by_id) {
 
-            } else {
+                   buffer_particle->behaviors.erase_itemById(obj_id);
 
-               buffer_behavior = buffer_particle->behaviors.get_itemById(obj_id);
-               buffer_particle->behaviors.pop_itemById(buffer_behavior->id);
-               
+               } else if (by_name) {
+
+                   buffer_particle->behaviors.erase_itemsByName(obj_name);
+
+               }
+
+            } else if (buffer_group != (int)NULL) {
+
+                for(iterPart = buffer_group->itemsVector.begin();
+                     iterPart != buffer_group->itemsVector.end();
+                     iterPart++){
+
+                    (*iterPart)->behaviors.erase_itemsByName(obj_name);
+
+                }
+
             }
 
         } else if (interaction) {
 
-            if (buffer_particle == (int)NULL){
+            if (buffer_particle != (int)NULL){
 
-               cout<<"ERROR - particle not in buffer";
+               if (by_id) {
 
-            } else {
+                   buffer_particle->interactions.erase_itemById(obj_id);
 
-               buffer_interaction = buffer_particle->interactions.get_itemById(obj_id);
-               buffer_particle->interactions.pop_itemById(buffer_interaction->id);
+               } else if (by_name) {
+
+                   buffer_particle->interactions.erase_itemsByName(obj_name);
+
+               }
+
+            } else if ( buffer_group != (int)NULL) {
+
+                for(iterPart = buffer_group->itemsVector.begin();
+                     iterPart != buffer_group->itemsVector.end();
+                     iterPart++){
+
+                    (*iterPart)->interactions.erase_itemsByName(obj_name);
+
+                }
+
 
             }
 
         } else if (particle){
 
             cout<<"group id:"<<buffer_group->id<<endl;
-
-            if (buffer_group == &(world->particles)){
-
-                world->remove_particle(buffer_particle);
-
-            } else {
-
-                buffer_group->pop_itemById(buffer_particle->id,false);
-
-            }
+            buffer_group->erase_itemById(buffer_particle->id);
 
         }
 
@@ -422,14 +511,14 @@ void Manager_KeyboardInterface::listen(int key){
        stateFabric_decode();
 
    } else if(ofGetKeyPressed(9)) {
-       //CTRL + I
+       //CTRL + i
 
        isListening = !isListening;
        temp_msg.erase();
        cout<<(isListening?"INSERT MODE:":"EXIT INSERT")<<endl;
 
    } else if(ofGetKeyPressed(5)) {
-       //CTRL + E
+       //CTRL + e
 
        msg += "/" + temp_msg;
        isListening = false;
@@ -443,11 +532,11 @@ void Manager_KeyboardInterface::listen(int key){
        } else if (!temp_msg.empty()){
            temp_msg.erase(temp_msg.end() - 1);
        }
-       //cout<<key<<endl;
+       cout<<key<<endl;
        cout<<temp_msg<<endl;
 
    } else if(ofGetKeyPressed(3)){
-       //CTRL + C
+       //CTRL + c
 
        reset_actions();
        create = true;
@@ -455,7 +544,7 @@ void Manager_KeyboardInterface::listen(int key){
        cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(18)){
-       //CTRL + R
+       //CTRL + r
 
        reset_actions();
        remove = true;
@@ -463,7 +552,7 @@ void Manager_KeyboardInterface::listen(int key){
        cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(7)){
-       //CTRL + G
+       //CTRL + g
 
        reset_actions();
        get    = true;
@@ -471,7 +560,7 @@ void Manager_KeyboardInterface::listen(int key){
        cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(19)){
-       //CTRL + S
+       //CTRL + s
  
        reset_actions();
        set    = true;
@@ -479,7 +568,7 @@ void Manager_KeyboardInterface::listen(int key){
        cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(1)){
-       //CTRL + A
+       //CTRL + a
 
        reset_actions();
        add    = true;
@@ -487,102 +576,158 @@ void Manager_KeyboardInterface::listen(int key){
        cout<<msg<<endl;
 
    } else if(ofGetKeyPressed(112)){
+       // p
+
+       reset_objects();
+       particle    = true;
+       msg += "/PARTICLE/BY_ID";
+
+       by_name = false;
+       by_id   = true;
+
+
+       if (buffer_group == (int)NULL) {
+
+           cout<<"ERROR - group not in buffer";
+
+       } else {
+
+           buffer_group->show_items_name_and_id();
+           cout<<"group:"<<(buffer_group->name)<<" size:"<<(buffer_group->itemsVector.size())<<endl;
+
+       }
+
+       temp_msg.erase();
+       isListening = true;
+       cout<<"INSERT MODE:"<<endl;
+
+   } else if(ofGetKeyPressed(80)){
        // P
 
        reset_objects();
        particle    = true;
-       msg += "/PARTICLE";
+       msg += "/PARTICLE/BY_NAME";
 
-       if(create){
+       by_name = true;
+       by_id   = false;
 
-           get_availableItems_names(particle_name);
-
-       } else if(get) {
-
-           if (buffer_group != (int)NULL) {
-
-               cout<<"group:"<<(buffer_group->name)<<" size:"<<(buffer_group->itemsVector.size())<<endl;
-               buffer_group->show_items_name_and_id();
-
-           } else {
-
-               cout<<"ERROR - group not in buffer";
-
-           }
-       }
+       get_availableItems_names(particle_name);
 
        temp_msg.erase();
        isListening = true;
        cout<<"INSERT MODE:"<<endl;
 
    } else if(ofGetKeyPressed(103)){
+       // g
+
+       reset_objects();
+       group       = true;
+       msg += "/GROUP/BY_ID";
+
+       by_name = false;
+       by_id   = true;
+
+       world->groups.show_items_name_and_id();
+       cout<<"group:"<<(world->groups.name)<<" size:"<<(world->groups.itemsVector.size())<<endl;
+
+       temp_msg.erase();
+       isListening = true;
+       cout<<"INSERT MODE:"<<endl;
+
+   } else if(ofGetKeyPressed(71)){
        // G
 
        reset_objects();
        group       = true;
-       msg += "/GROUP";
+       msg += "/GROUP/BY_NAME";
 
-       if(get) {
+       by_name = true;
+       by_id   = false;
 
-           world->groups.show_items_name_and_id();
-
-       } else if(add) {
-
-           world->groups.show_items_name_and_id();
-
-       }
-
+       world->groups.show_items_name_and_id();
+       cout<<"group:"<<(world->groups.name)<<" size:"<<(world->groups.itemsVector.size())<<endl;
 
        temp_msg.erase();
        isListening = true;
        cout<<"INSERT MODE:"<<endl;
 
    } else if(ofGetKeyPressed(98)){
+       // b
+
+       reset_objects();
+       behavior    = true;
+       msg += "/BEHAVIOR/BY_ID";
+
+       by_name = false;
+       by_id   = true;
+
+       if (buffer_particle == (int)NULL){
+
+           cout<<"ERROR - particle not in buffer";
+
+       } else {
+
+           buffer_particle->behaviors.show_items_name_and_id();
+           cout<<"particle:"<<(buffer_particle->name)<<" size:"<<(buffer_particle->behaviors.itemsVector.size())<<endl;
+
+       }
+
+       temp_msg.erase();
+       isListening = true;
+       cout<<"INSERT MODE:"<<endl;
+
+   } else if(ofGetKeyPressed(66)){
        // B
 
        reset_objects();
        behavior    = true;
-       msg += "/BEHAVIOR";
+       msg += "/BEHAVIOR/BY_NAME";
 
-       if(create){
+       by_name = true;
+       by_id   = false;
 
-           get_availableItems_names(behavior_name);
-
-       } else if(get | remove) {
-
-           if (buffer_particle == (int)NULL){
-               cout<<"ERROR - particle not in buffer";
-           } else {
-               buffer_particle->behaviors.show_items_name_and_id();
-           }
-       }
-
-
+       get_availableItems_names(behavior_name);
 
        temp_msg.erase();
        isListening = true;
        cout<<"INSERT MODE:"<<endl;
 
    } else if(ofGetKeyPressed(105)){
-       // I
+       // i
+
+       by_name = false;
+       by_id   = true;
 
        reset_objects();
        interaction = true;
-       msg += "/INTERACTION";
+       msg += "/INTERACTION/BY_ID";
 
-       if(create){
+       if (buffer_particle == (int)NULL){
 
-           get_availableItems_names(interaction_name);
+           cout<<"ERROR - particle not in buffer";
 
-       } else if(get | remove) {
+       } else {
 
-           if (buffer_particle == (int)NULL){
-               cout<<"ERROR - particle not in buffer";
-           } else {
-               buffer_particle->interactions.show_items_name_and_id();
-           }
+           buffer_particle->interactions.show_items_name_and_id();
+           cout<<"particle:"<<(buffer_particle->name)<<" size:"<<(buffer_particle->interactions.itemsVector.size())<<endl;
+
        }
 
+       temp_msg.erase();
+       isListening = true;
+       cout<<"INSERT MODE:"<<endl;
+
+   } else if(ofGetKeyPressed(73)){
+       // I
+
+       by_name = true;
+       by_id   = false;
+
+       reset_objects();
+       interaction = true;
+       msg += "/INTERACTION/BY_NAME";
+
+       get_availableItems_names(interaction_name);
 
        temp_msg.erase();
        isListening = true;

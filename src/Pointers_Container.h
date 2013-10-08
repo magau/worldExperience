@@ -12,13 +12,18 @@ class Pointers_Container{
         //virtual void del(IType item);
         virtual IType add_itemByName(string iName, Particle* _host_particle);
         virtual IType add_itemByName(string iName, World* _world);
-        IType pop(u_int index=(u_int)NULL, bool erase=true);
-        IType pop(typename vector<IType>::iterator item_it, bool erase=true);
-        IType pop_itemById(int id, bool erase=true);
+        IType pop(u_int index=(u_int)NULL, bool erase=false);
+        void erase(u_int index=(u_int)NULL);
+        IType pop(typename vector<IType>::iterator item_it, bool erase=false);
+        void erase(typename vector<IType>::iterator item_it);
+        IType pop_itemById(int id, bool erase=false);
+        void erase_itemById(int id);
         IType get_itemById(int id);
         void show_items_name_and_id();
-        vector <IType> pop_itemByName(string iName, bool erase=true);
-        vector <IType> clear(bool erase=true);
+        vector <IType> pop_itemsByName(string iName, bool erase=false);
+        void erase_itemsByName(string iName);
+        vector <IType> clear(bool erase=false);
+        void erase_all();
         vector <IType> get_itemsByName(string iName="all");
         /*
          "reset_itemTypeById" should be implemented in order to replace
@@ -40,6 +45,8 @@ Pointers_Container<IType>::Pointers_Container(){
 template <typename IType> 
 void Pointers_Container<IType>::add(IType item,bool mainContainer){
     itemsVector.push_back(item);
+    // If 'mainContainer' is setted true we give an id number to the added item.
+    // The mainContainer is setted true wen a particle is added to 'world.groups'.
     if (mainContainer) {
         if (freeIdBuff.size() > 0){
             itemsVector.back()->id = freeIdBuff.back();
@@ -106,6 +113,17 @@ in "freeIdBuff" vector for future added items.
     return *item_it;
 }
 
+template <typename IType>
+void Pointers_Container<IType>::erase(typename vector<IType>::iterator item_it){
+/*
+ * Erase element from "itemsVector" pointers vector after
+ * deallocate the respective memory using the "delete"
+ * function. Also keep "id" value of each erased element
+ * in "freeIdBuff" vector for future added items.
+ * */
+    pop(item_it,true);
+}
+
 template <typename IType> 
 IType Pointers_Container<IType>::pop(u_int index, bool erase){
 /*
@@ -128,6 +146,17 @@ in "freeIdBuff" vector for future added items.
         }
     }
     return item;
+}
+
+template <typename IType> 
+void Pointers_Container<IType>::erase(u_int index){
+/*
+Erase element from "itemsVector" pointers vector after
+deallocate the respective memory using the "delete"
+function. Also keep "id" value of each erased element
+in "freeIdBuff" vector for future added items.
+*/
+    pop(index,true);
 }
 
 template <typename IType> 
@@ -191,7 +220,12 @@ IType Pointers_Container<IType>::pop_itemById(int id, bool erase){
 }
 
 template <typename IType> 
-vector<IType> Pointers_Container<IType>::pop_itemByName(string iName, bool erase){
+void Pointers_Container<IType>::erase_itemById(int id){
+    pop_itemById(id, true); 
+}
+
+template <typename IType> 
+vector<IType> Pointers_Container<IType>::pop_itemsByName(string iName, bool erase){
     IType item;
     typename vector<IType>::iterator item_it;
     vector<IType> result;
@@ -205,7 +239,7 @@ vector<IType> Pointers_Container<IType>::pop_itemByName(string iName, bool erase
             if (iName.compare(item->name) == 0) {
                 itemsVector.erase(item_it);
                 if (erase){
-                    if (item->id < itemsVector.size()) {
+                    if (item->id < (int)itemsVector.size()) {
                         freeIdBuff.push_back(item->id);
                     }
                     delete item;
@@ -215,6 +249,12 @@ vector<IType> Pointers_Container<IType>::pop_itemByName(string iName, bool erase
         }
     }
     return result;
+}
+
+
+template <typename IType> 
+void Pointers_Container<IType>::erase_itemsByName(string iName){
+    pop_itemsByName(iName,true);
 }
 
 /*
@@ -269,3 +309,7 @@ vector<IType> Pointers_Container<IType>::clear(bool erase){
     return result; 
 }
 
+template <typename IType> 
+void Pointers_Container<IType>::erase_all(){
+    clear(true);
+}

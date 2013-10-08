@@ -17,6 +17,9 @@ void testApp::setup(){
     
     p = world.create_particle("MP_RegGrid");
 
+    if(strncmp("MP_RegGrid","MP_",3) == 0){
+        managerInterface.update_availableItems_names(&(managerInterface.group_name),"C_MP_RegGrid");
+    }
     p = world.create_particle("P_Circle");
 
     *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
@@ -26,6 +29,7 @@ void testApp::setup(){
     //p->behaviors.add_itemByName("B_MouseTracking",p);
     
     g = world.create_group("G_dancers");
+    managerInterface.update_availableItems_names(&(managerInterface.group_name),"G_dancers");
     g->add(p,false);
 
     //world.remove_particle(p);

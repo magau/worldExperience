@@ -24,7 +24,7 @@ Particle :: ~Particle (){
     for (iterGroup = groups.itemsVector.begin();
          iterGroup != groups.itemsVector.end();
          iterGroup++){
-        (*iterGroup)->pop_itemById(id, false);
+        (*iterGroup)->pop_itemById(id);
     }
 
     behaviors.clear();
@@ -79,8 +79,8 @@ void Particle :: interact() {
             temp_interaction_ptr = *IterInterac;
             temp_interaction_ptr->run();
             if(!temp_interaction_ptr->isAlive) {
-cout<<"pop dead interaction"<<endl;
-                interactions.pop(IterInterac);
+cout<<"erase dead interaction"<<endl;
+                interactions.erase(IterInterac);
             }
         }
     }
