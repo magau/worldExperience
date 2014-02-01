@@ -11,6 +11,7 @@ using namespace tr1;
 #include "Particles.h"
 #include "Particles_System.h"
 #include "Particles_Manager.h"
+#include "Tags.h"
 
 
 //#define SYPHON

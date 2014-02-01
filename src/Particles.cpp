@@ -27,8 +27,8 @@ Particle :: ~Particle (){
         (*iterGroup)->pop_itemById(id);
     }
 
-    behaviors.clear();
-    interactions.clear();
+    behaviors.erase_all();
+    interactions.erase_all();
 }
 
 void Particle :: setup() {
