@@ -1,8 +1,8 @@
 class Particles_Container;
+class Groups_Container : public Pointers_Container<Particles_Container*>{};
 
-class Groups_Container : public Pointers_Container<Particles_Container*>{
-
-};
+//class Tag;
+//class Tags_Container : public Pointers_Container<Tag*>{};
 
 class Particle{
     public:
@@ -22,10 +22,13 @@ class Particle{
         unordered_map<string, bool*> boolPtr_map;
 
         Groups_Container groups;
+        Tags_Container tags;
         Interactions_Container interactions;
         Behaviors_Container behaviors;
         Particle (World* _world);
         ~Particle();
+        void set_var(string var_name, ofVec3f var_val);
+        ofVec3f* get_ofVec3f(string var_name);
         virtual void setup();
         virtual void run();
         virtual void behave();

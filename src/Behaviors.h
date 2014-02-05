@@ -12,28 +12,30 @@ class Behavior{
         int timer;
         float weigth_fact;
         World* world;
-        Behavior(Particle* host_particle);
         Behavior();
+        Behavior(Particle* host_particle);
+        virtual void setup(Particle* _host_particle);
         virtual void run(Particle* _host_particle = (Particle*)NULL);
 };
 
 class GravityGlue : public Behavior{
     public:
         ofVec3f locat;
-        GravityGlue(Particle* host_particle);
         GravityGlue();
+        GravityGlue(Particle* host_particle);
         void run(Particle* _host_particle = (Particle*)NULL);
+        void setup(Particle* _host_particle);
 };
 
 class MouseTracking : public Behavior{
     public:
-        MouseTracking(Particle* host_particle);
         MouseTracking();
+        MouseTracking(Particle* host_particle);
         void run(Particle* _host_particle = (Particle*)NULL);
 };
 
 class Behaviors_Container : public Pointers_Container<Behavior*>{
     public:
-        Behavior* add_itemByName(string iName, Particle* host_particle);
-        Behavior* add_itemByName(string iName);
+        Behavior* add_itemByName(string iName, Particle* host_particle=(Particle*)NULL);
+        //Behavior* add_itemByName(string iName);
 };

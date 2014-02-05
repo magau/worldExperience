@@ -64,8 +64,8 @@ void RegularGrid_MP::setup(){
 
     create_slaveContainer();
 
-grid_num.x = 2;
-grid_num.y = 2;
+//grid_num.x = 1;
+//grid_num.y = 2;
 
     for (i=0; i<grid_num.y; i++){
 

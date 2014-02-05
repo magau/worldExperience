@@ -5,7 +5,7 @@ getMouseLocation mouse;
 
 void testApp::setup(){
     Particle* p;
-    Particles_Container* g;
+    //Particles_Container* g;
     //ofSetFrameRate(1);
     ofSetVerticalSync(true);
     ofEnableSmoothing();
@@ -20,17 +20,41 @@ void testApp::setup(){
     if(strncmp("MP_RegGrid","MP_",3) == 0){
         managerInterface.update_availableItems_names(&(managerInterface.group_name),"C_MP_RegGrid");
     }
-    p = world.create_particle("P_Circle");
 
+
+
+
+    Tag* t0 = world.create_tag();
+
+    t0->add_behavior("B_GravityGlue");
+    t0->add_particles(world.particles.get_itemsByName("P_Circle"));
+
+    p = world.create_particle("P_Circle");
     *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
     *(p->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
     *(p->intPtr_map["rad"]) = 10;
+    
+    Tag* t1 = world.create_tag();
+
+    t1->add_behavior("B_MouseTracking");
+    Interaction* i0 = t1->add_interaction("I_ElectRepulsion");
+    i0->add_tag(t0);
+
+    t1->add_particle(p);
+
+
+
+
 
     //p->behaviors.add_itemByName("B_MouseTracking",p);
-    
-    g = world.create_group("G_dancers");
-    managerInterface.update_availableItems_names(&(managerInterface.group_name),"G_dancers");
-    g->add(p,false);
+
+    //p->set_var( b->name+"_loc", *(p->ofVec3fPtr_map["loc"]) );
+    //ofVec3f* v_ptr;
+    //p->get_var( b->name+"_loc",v_ptr);
+
+//    g = world.create_group("G_dancers");
+//    managerInterface.update_availableItems_names(&(managerInterface.group_name),"G_dancers");
+//    g->add(p,false);
 
     //world.remove_particle(p);
     //for (u_int i=0; i<world.groups.itemsVector.size(); i++){

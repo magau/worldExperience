@@ -118,17 +118,43 @@ void Particle :: set_speedLimit(int maxSpeed){
 */
 
 void Particle :: elastic_boundery(){
-   int offset = rad;
+    int offset = rad;
 
-   //Elastic bounds
-   if ( (locat.x <= offset &&  veloc.x < 0) ||
-        (locat.x >= ofGetWindowWidth()-offset &&  veloc.x > 0) ){
-       veloc.x *= -1;
-   }
-   if ( (locat.y <= offset && veloc.y < 0) ||
-        (locat.y >= ofGetWindowHeight()-offset && veloc.y > 0) ){
-       veloc.y *= -1;
-   }
+    //Elastic bounds
+    if ( (locat.x <= offset &&  veloc.x < 0) ||
+         (locat.x >= ofGetWindowWidth()-offset &&  veloc.x > 0) ){
+        veloc.x *= -1;
+    }
+    if ( (locat.y <= offset && veloc.y < 0) ||
+         (locat.y >= ofGetWindowHeight()-offset && veloc.y > 0) ){
+        veloc.y *= -1;
+    }
+}
+
+void Particle::set_var(string var_name, ofVec3f var_ptr){
+
+    ofVec3fPtr_map[var_name] = new ofVec3f(var_ptr); 
+    
+}
+
+ofVec3f* Particle::get_ofVec3f(string var_name){
+    //cout << var_name << ": " << (*(ofVec3fPtr_map[var_name])) << endl;
+    return ofVec3fPtr_map[var_name];
+    //unordered_map<string, ofVec3f*>::iterator iter_map_ptr = ofVec3fPtr_map.find(var_name);
+    //if (iter_map_ptr == ofVec3fPtr_map.end()) {
+    //    var_ptr = (ofVec3f*)NULL;
+    //} else {
+    //    cout << "var_name:" << var_name << " var_value:" << *(ofVec3fPtr_map[var_name]) << endl;
+    //    var_ptr = ofVec3fPtr_map[var_name];
+    //}
+    //return;
+    //for( iter_map_ptr = ofVec3fPtr_map.begin();
+    //     iter_map_ptr < ofVec3fPtr_map.end();
+    //     iter_map_ptr++ ){
+    //    if(iter_map_ptr->first == var_name)
+    //        var_ptr = iter_map_ptr->second;
+    //        return;
+    //} 
 }
 
 Circle::Circle(World* _world) : Particle(_world){

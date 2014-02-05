@@ -10,9 +10,12 @@ class Tag{
         Behaviors_Container behaviors;
         Tag (World* _world);
         ~Tag();
-        void add_Particle(Particle* particle);
-        void add_Interaction(Interaction* interaction);
-        void add_Behavior(Behavior* behavior);
+        void add_particle(Particle* particle);
+        void add_particles(vector<Particle*> added_particles);
+        void add_interaction(Interaction* interaction);
+        Interaction* add_interaction(string interaction_name);
+        void add_behavior(Behavior* behavior);
+        Behavior* add_behavior(string behavior_name);
         void run();
         void behave();
         void interact();

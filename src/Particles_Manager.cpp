@@ -6,6 +6,24 @@ World :: World() {
     groups.add(&particles,false);
 }
 
+Tag* World::create_tag(string iName){
+    //create a new tag in the tags container of the world.
+    Tag* newTag;
+    newTag = new Tag(this);
+    tags.add(newTag);
+
+    if (iName.size() != 0) {
+        newTag->name = iName ;
+    } else {
+        char tmp[9];
+        sprintf(tmp,"tag_%04d",newTag->id);
+        newTag->name = tmp;
+    }
+    cout << newTag->name << " tag created" << endl;
+
+    return newTag;
+}
+
 Particles_Container* World::create_group(string iName){
     //create System systemParticles Particles_Container.
     Particles_Container* newGroup;
@@ -16,14 +34,20 @@ Particles_Container* World::create_group(string iName){
 }
 
 Particle* World::create_particle(string iName){
-    //create newParticle add particle to worldParticles and 
-    //systemParticles Particles_Container
+    //create newParticle add particle to worldParticles
     Particle* newParticle;
     newParticle = particles.add_itemByName(iName, this);
     return newParticle;
 }
 
 Particles_Container* World :: update(){
+
+    for(vector<Tag*>::iterator iter_tag = tags.itemsVector.begin();
+                                    iter_tag != tags.itemsVector.end();
+                                    iter_tag++){
+        (*iter_tag)->run();
+    }
+
     Particle* temp_particle_ptr;
     for(vector<Particle*>::iterator IterPart = particles.itemsVector.begin();
                                     IterPart != particles.itemsVector.end();
@@ -34,7 +58,19 @@ Particles_Container* World :: update(){
             remove_particle(temp_particle_ptr);
         }
     }
+
     return &(particles);
+}
+
+void World :: remove_tag(Tag* tag){
+    tags.erase_itemById(tag->id);
+
+    vector<Particle*>::iterator iter_particle;
+    for (iter_particle = tag->particles.itemsVector.begin();
+         iter_particle < tag->particles.itemsVector.end();
+         iter_particle++){
+        (*iter_particle)->tags.erase_itemById(tag->id);
+    }
 }
 
 void World :: remove_particle(Particle* particle_ptr){

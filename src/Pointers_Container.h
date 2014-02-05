@@ -10,7 +10,7 @@ class Pointers_Container{
         void set_default_itemName(string iName);
         void add(IType item,bool mainContainer=true);
         //virtual void del(IType item);
-        virtual IType add_itemByName(string iName, Particle* _host_particle);
+        virtual IType add_itemByName(string iName, Particle* _host_particle=(Particle*)NULL);
         virtual IType add_itemByName(string iName, World* _world);
         IType pop(u_int index=(u_int)NULL, bool erase=false);
         void erase(u_int index=(u_int)NULL);

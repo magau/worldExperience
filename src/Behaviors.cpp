@@ -15,6 +15,9 @@ Behavior::Behavior(Particle* _host_particle){
 void Behavior::run(Particle* _host_particle){
 }
 
+void Behavior::setup(Particle* _host_particle){
+}
+
 GravityGlue::GravityGlue() : Behavior(){
 
     name = "B_GravityGlue";
@@ -29,20 +32,35 @@ GravityGlue::GravityGlue(Particle* _host_particle) : Behavior(_host_particle){
     locat = _host_particle->locat;
 }
 
+void GravityGlue::setup(Particle* _host_particle){
+    _host_particle->set_var(name+"_loc", _host_particle->locat);
+    //ofVec3f* var_ptr;
+    //var_ptr = _host_particle->get_ofVec3f(name+"_loc");
+    //cout << "var loc seted:" << (*var_ptr) << endl;
+}
+
 void GravityGlue::run(Particle* _host_particle){
     float dist,dx,dy,weight,weight_fact,acc;
+    ofVec3f* _locat;
+
+    //cout << "run behavior:" << name << endl;
 
     if(_host_particle == (Particle*)NULL){
         _host_particle = host_particle;
+        _locat = &locat;
+    } else {
+        _locat = _host_particle->get_ofVec3f(name+"_loc");
+        //cout << "locat:" << (*_locat) << endl;
+    }
 
     weight_fact = 0.1;
     min_dist = 40;
 
     weight = max_dist*weight_fact;
 
-    dist = locat.distance(_host_particle->locat);
-    dx = _host_particle->locat.x - locat.x;
-    dy = _host_particle->locat.y - locat.y;
+    dist = _locat->distance(_host_particle->locat);
+    dx = _host_particle->locat.x - _locat->x;
+    dy = _host_particle->locat.y - _locat->y;
 
     if (dist < min_dist) dist = min_dist;
 
@@ -60,9 +78,6 @@ void GravityGlue::run(Particle* _host_particle){
 
     _host_particle->relax_fact = 0.7;
     //}
-    } else {
-        cout << "behavior runing in dead mode..." << endl;
-    }
 }
 
 MouseTracking::MouseTracking() : Behavior(){
@@ -88,9 +103,15 @@ Behavior* Behaviors_Container::add_itemByName(string iName, Particle* _host_part
    if (iName.size() == 0) iName = default_addedItemName;
 
    if (iName.compare("B_GravityGlue") == 0){
-       newBehavior = new GravityGlue(_host_particle);
+       if(_host_particle != (Particle*)NULL)
+           newBehavior = new GravityGlue(_host_particle);
+       else
+           newBehavior = new GravityGlue();
    } else if (iName.compare("B_MouseTracking") == 0){
-       newBehavior = new MouseTracking(_host_particle);
+       if(_host_particle != (Particle*)NULL)
+           newBehavior = new MouseTracking(_host_particle);
+       else
+           newBehavior = new MouseTracking();
    }
    /*
     .
