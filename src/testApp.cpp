@@ -26,13 +26,10 @@ void testApp::setup(){
 
     Tag* t0 = world.create_tag();
 
-    t0->add_behavior("B_GravityGlue");
     t0->add_particles(world.particles.get_itemsByName("P_Circle"));
+    t0->add_behavior("B_GravityGlue");
 
     p = world.create_particle("P_Circle");
-    *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
-    *(p->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
-    *(p->intPtr_map["rad"]) = 10;
     
     Tag* t1 = world.create_tag();
 
@@ -42,8 +39,15 @@ void testApp::setup(){
 
     t1->add_particle(p);
 
+    // testing remove particle
+    world.remove_particle(p);
 
+    p = world.create_particle("P_Circle");
+    *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
+    *(p->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
+    *(p->intPtr_map["rad"]) = 10;
 
+    t1->add_particle(p);
 
 
     //p->behaviors.add_itemByName("B_MouseTracking",p);

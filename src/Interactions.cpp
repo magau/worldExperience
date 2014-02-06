@@ -15,6 +15,8 @@ Interaction::Interaction(Particle* _host_particle){
 
 void Interaction::setup(Particle* _host_particle){};
 
+void Interaction::free(Particle* _host_particle){};
+
 void Interaction::interact(Particle* actuated_particle, Particle* _host_particle){}
 
 void Interaction::run(Particle* _host_particle){

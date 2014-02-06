@@ -3,7 +3,8 @@
 
 Particle :: Particle (World* _world){
 
-    name="P_Base";
+    name = "P_Base";
+    rad = 6;
     world = _world;
     ofVec3fPtr_map["loc"]      = &locat;
     ofVec3fPtr_map["vel"]      = &veloc;

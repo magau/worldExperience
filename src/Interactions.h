@@ -19,6 +19,7 @@ class Interaction {
         Interaction();
         Interaction(Particle* _host_particle);
         virtual void setup(Particle* _host_particle);
+        virtual void free(Particle* _host_particle);
         virtual void run(Particle* _host_particle=(Particle*)NULL);
         virtual void interact(Particle* actuated_particle, Particle* _host_particle=(Particle*)NULL);
         void add_tag(Tag* tag);

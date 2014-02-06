@@ -12,11 +12,11 @@ Behavior::Behavior(Particle* _host_particle){
     isActive = true;
 }
 
-void Behavior::run(Particle* _host_particle){
-}
+void Behavior::run(Particle* _host_particle){}
 
-void Behavior::setup(Particle* _host_particle){
-}
+void Behavior::setup(Particle* _host_particle){}
+
+void Behavior::free(Particle* _host_particle){}
 
 GravityGlue::GravityGlue() : Behavior(){
 
@@ -34,9 +34,11 @@ GravityGlue::GravityGlue(Particle* _host_particle) : Behavior(_host_particle){
 
 void GravityGlue::setup(Particle* _host_particle){
     _host_particle->set_var(name+"_loc", _host_particle->locat);
-    //ofVec3f* var_ptr;
-    //var_ptr = _host_particle->get_ofVec3f(name+"_loc");
-    //cout << "var loc seted:" << (*var_ptr) << endl;
+}
+
+void GravityGlue::free(Particle* _host_particle){
+    delete _host_particle->ofVec3fPtr_map[name+"_loc"]; 
+    _host_particle->ofVec3fPtr_map.erase(name+"_loc");    
 }
 
 void GravityGlue::run(Particle* _host_particle){

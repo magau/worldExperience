@@ -47,7 +47,6 @@ Particles_Container* World :: update(){
                                     iter_tag++){
         (*iter_tag)->run();
     }
-
     Particle* temp_particle_ptr;
     for(vector<Particle*>::iterator IterPart = particles.itemsVector.begin();
                                     IterPart != particles.itemsVector.end();
@@ -58,25 +57,25 @@ Particles_Container* World :: update(){
             remove_particle(temp_particle_ptr);
         }
     }
-
     return &(particles);
 }
 
 void World :: remove_tag(Tag* tag){
     tags.erase_itemById(tag->id);
-
-    vector<Particle*>::iterator iter_particle;
-    for (iter_particle = tag->particles.itemsVector.begin();
-         iter_particle < tag->particles.itemsVector.end();
-         iter_particle++){
-        (*iter_particle)->tags.erase_itemById(tag->id);
-    }
 }
 
-void World :: remove_particle(Particle* particle_ptr){
-   
-    particles.erase_itemById(particle_ptr->id);
-
+void World :: remove_particle(Particle* particle){
+    vector<Tag*>::iterator iter_tag;
+    for (iter_tag = particle->tags.itemsVector.begin();
+         iter_tag < particle->tags.itemsVector.end();
+         iter_tag++){
+        // Free the particle variables seted by this tag's behaviors.
+        (*iter_tag)->free_particle_vars(particle);
+        // Remove the particle from this tag's particles container.
+        (*iter_tag)->particles.pop_itemById(particle->id); 
+    }
+    // Remove the particle from the world particles container.
+    particles.erase_itemById(particle->id);
 }
 
 void World::draw(){
