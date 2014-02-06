@@ -39,6 +39,7 @@ void testApp::setup(){
 
     t1->add_particle(p);
 
+    cout << "hello dynamicWorld!!" << endl;
     // testing remove particle
     world.remove_particle(p);
 
