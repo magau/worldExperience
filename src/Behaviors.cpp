@@ -13,7 +13,7 @@ GravityGlue::GravityGlue() : Behavior(){
 
 void GravityGlue::setup(Particle* _host_particle){
     ofVec3f var_value = _host_particle->locat;
-    _host_particle->set_ofVec3f(location_key, var_value);
+    _host_particle->create_ofVec3f(location_key, var_value);
 }
 
 void GravityGlue::free(Particle* _host_particle){

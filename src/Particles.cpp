@@ -123,33 +123,38 @@ void Particle :: elastic_boundery(){
     }
 }
 
-void Particle::set_ofVec3f(string var_name, ofVec3f var_ptr){
-    ofVec3fPtr_map[var_name] = new ofVec3f(var_ptr); 
+void Particle::create_ofColor(string var_name, ofColor var_val){
+    ofColorPtr_map[var_name] = new ofColor(var_val); 
+}
+
+void Particle::set_ofColor(string var_name, ofColor var_val){
+    *(ofColorPtr_map[var_name]) = var_val; 
+}
+
+ofColor* Particle::get_ofColor(string var_name){
+    return ofColorPtr_map[var_name];
+}
+
+void Particle::delete_ofColor(string var_name){
+    delete ofColorPtr_map[var_name]; 
+    ofColorPtr_map.erase(var_name);    
+}
+
+void Particle::create_ofVec3f(string var_name, ofVec3f var_val){
+    ofVec3fPtr_map[var_name] = new ofVec3f(var_val); 
+}
+
+void Particle::set_ofVec3f(string var_name, ofVec3f var_val){
+    *(ofVec3fPtr_map[var_name]) = var_val; 
+}
+
+ofVec3f* Particle::get_ofVec3f(string var_name){
+    return ofVec3fPtr_map[var_name];
 }
 
 void Particle::delete_ofVec3f(string var_name){
     delete ofVec3fPtr_map[var_name]; 
     ofVec3fPtr_map.erase(var_name);    
-}
-
-ofVec3f* Particle::get_ofVec3f(string var_name){
-    //cout << var_name << ": " << (*(ofVec3fPtr_map[var_name])) << endl;
-    return ofVec3fPtr_map[var_name];
-    //unordered_map<string, ofVec3f*>::iterator iter_map_ptr = ofVec3fPtr_map.find(var_name);
-    //if (iter_map_ptr == ofVec3fPtr_map.end()) {
-    //    var_ptr = (ofVec3f*)NULL;
-    //} else {
-    //    cout << "var_name:" << var_name << " var_value:" << *(ofVec3fPtr_map[var_name]) << endl;
-    //    var_ptr = ofVec3fPtr_map[var_name];
-    //}
-    //return;
-    //for( iter_map_ptr = ofVec3fPtr_map.begin();
-    //     iter_map_ptr < ofVec3fPtr_map.end();
-    //     iter_map_ptr++ ){
-    //    if(iter_map_ptr->first == var_name)
-    //        var_ptr = iter_map_ptr->second;
-    //        return;
-    //} 
 }
 
 //Circle::Circle(World* _world) : Particle(){

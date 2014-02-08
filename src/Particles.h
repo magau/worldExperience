@@ -20,9 +20,17 @@ class Particle : public Item {
         Particle ();
         Particle (World* _world);
         ~Particle();
+
+        void create_ofColor(string var_name, ofColor var_val);
+        void set_ofColor(string var_name, ofColor var_val);
+        void delete_ofColor(string var_name);
+        ofColor* get_ofColor(string var_name);
+
+        void create_ofVec3f(string var_name, ofVec3f var_val);
         void set_ofVec3f(string var_name, ofVec3f var_val);
         void delete_ofVec3f(string var_name);
         ofVec3f* get_ofVec3f(string var_name);
+
         virtual void setup();
         virtual void run();
         virtual void behave();

@@ -22,7 +22,7 @@ void testApp::setup(){
 
     // Cria uma nova particula vermelha.
     p = world.create_particle("P_Circle");
-    *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
+    p->set_ofColor("color",ofColor(255,0,0));
     
     // Cria uma nova tag t1 à qual adiciona a particula vermelha
     // e o comportamento "B_MouseTracking".
