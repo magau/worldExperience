@@ -123,6 +123,57 @@ void Particle :: elastic_boundery(){
     }
 }
 
+void Particle::create_bool(string var_name, bool var_val){
+    boolPtr_map[var_name] = new bool(var_val); 
+}
+
+void Particle::set_bool(string var_name, bool var_val){
+    *(boolPtr_map[var_name]) = var_val; 
+}
+
+bool* Particle::get_bool(string var_name){
+    return boolPtr_map[var_name];
+}
+
+void Particle::delete_bool(string var_name){
+    delete boolPtr_map[var_name]; 
+    boolPtr_map.erase(var_name);    
+}
+
+void Particle::create_int(string var_name, int var_val){
+    intPtr_map[var_name] = new int(var_val); 
+}
+
+void Particle::set_int(string var_name, int var_val){
+    *(intPtr_map[var_name]) = var_val; 
+}
+
+int* Particle::get_int(string var_name){
+    return intPtr_map[var_name];
+}
+
+void Particle::delete_int(string var_name){
+    delete intPtr_map[var_name]; 
+    intPtr_map.erase(var_name);    
+}
+
+void Particle::create_float(string var_name, float var_val){
+    floatPtr_map[var_name] = new float(var_val); 
+}
+
+void Particle::set_float(string var_name, float var_val){
+    *(floatPtr_map[var_name]) = var_val; 
+}
+
+float* Particle::get_float(string var_name){
+    return floatPtr_map[var_name];
+}
+
+void Particle::delete_float(string var_name){
+    delete floatPtr_map[var_name]; 
+    floatPtr_map.erase(var_name);    
+}
+
 void Particle::create_ofColor(string var_name, ofColor var_val){
     ofColorPtr_map[var_name] = new ofColor(var_val); 
 }

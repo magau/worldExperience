@@ -21,6 +21,21 @@ class Particle : public Item {
         Particle (World* _world);
         ~Particle();
 
+        void create_bool(string var_name, bool var_val);
+        void set_bool(string var_name, bool var_val);
+        void delete_bool(string var_name);
+        bool* get_bool(string var_name);
+
+        void create_int(string var_name, int var_val);
+        void set_int(string var_name, int var_val);
+        void delete_int(string var_name);
+        int* get_int(string var_name);
+
+        void create_float(string var_name, float var_val);
+        void set_float(string var_name, float var_val);
+        void delete_float(string var_name);
+        float* get_float(string var_name);
+
         void create_ofColor(string var_name, ofColor var_val);
         void set_ofColor(string var_name, ofColor var_val);
         void delete_ofColor(string var_name);
