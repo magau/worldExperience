@@ -36,19 +36,13 @@ class Particle : public Item {
 
 class Circle : public Particle{
     public:
-        //Circle (World* _world);
-        Circle ();//World* _world);
+        Circle ();
         void display();
 };
 
 
 class Particles_Container : public Pointers_Container<Particle*>{
     public:
-        Particle* create_itemByName(string iName);//, World* world);
-        Particle* add(Particle* particle, bool mainContainer=true);
-
-// This two methods must be transfered to the Master_Particle class, in Future...
-        void attachInteraction_one2one(string iName, Particles_Container* actuated_particles);
-        void attachInteraction_many2one(string iName, Particles_Container* actuated_particles);
+        Particle* create_itemByName(string iName);
 };
 

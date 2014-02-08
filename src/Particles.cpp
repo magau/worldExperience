@@ -165,61 +165,15 @@ void Circle :: display() {
     ofEllipse(locat.x,locat.y,rad,rad);
 }
 
-Particle* Particles_Container::add(Particle* particle, bool mainContainer){
-    Pointers_Container<Particle*>::add(particle, mainContainer);
-    return particle;
-}
-
 Particle* Particles_Container::create_itemByName(string iName){//, World* _world){
 
-   Particle* newParticle = (int)NULL;
+    Items_Fabric nature;
+    if (iName.size() == 0)
+        iName = default_addedItemName;
+    Particle* newParticle = nature.create_particle(iName);
+    add(newParticle);
 
-   if (iName.size() == 0){
-       iName = default_addedItemName;
-   } 
-
-   if (iName.compare("P_Base") == 0){
-       newParticle = new Particle();//_world);
-   } else if (iName.compare("P_Circle") == 0){
-       //newParticle = new Particle();//_world);
-       newParticle = new Circle();//_world);
-   } else if (iName.compare("MP_RegGrid") == 0){
-       //newParticle = new Particle();//_world);
-       newParticle = new RegularGrid_MP();//_world);
-   }
-
-   /*
-    .
-    .
-    .
-       Add new item types
-   */
-//cout<<"create_itemByName... rad = "<<rad<<endl;
-//*(intPtr_map["rad"]) = 10;
-//cout<<"create_itemByName...*intPtr_map['rad'] = "<<*(newParticle->intPtr_map["rad"])<<endl;
-//cout<<"create_itemByName... rad = "<<newParticle->rad<<endl;
-
-   add(newParticle);
-
-   return newParticle;
-
-}
-
-// This two methods must be transfered to the Master_Particle class, in Future...
-
-void Particles_Container::attachInteraction_one2one(string iName, Particles_Container* actuated_particles){
-//    typename vector<Particles*>::iterator particle_it;
-//    for (particle_it = itemsVector.begin();
-//         particle_it != itemsVector.end();
-//         particle_it++){
-//        particle = *particle_it;
-//        particle->interactions.        
-//
-//    }
-//
-}
-
-void Particles_Container::attachInteraction_many2one(string iName, Particles_Container* actuated_particles){
+    return newParticle;
 
 }
 

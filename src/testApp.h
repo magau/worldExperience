@@ -4,7 +4,8 @@
 //#include <sstream>
 #include <tr1/unordered_map> 
 using namespace tr1;
-#include "worldExperience.h"
+#include "math.h"
+#include "Item.h"
 #include "Pointers_Container.h"
 #include "Behaviors.h"
 #include "Interactions.h"
@@ -42,9 +43,7 @@ class testApp : public ofBaseApp{
            
            World world;
            Particles_Container* buffGroup;
-           Manager_KeyboardInterface managerInterface;
-           //string msg;
-           //bool listenMsg;
+           //Manager_KeyboardInterface managerInterface;
             
 #ifdef SYPHON
            ofxSyphonServer mainOutputSyphonServer;

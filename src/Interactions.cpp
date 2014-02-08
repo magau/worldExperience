@@ -161,27 +161,11 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
 
 Interaction* Interactions_Container::create_itemByName(string iName){
 
-   Interaction* newInteraction = (int)NULL;
+    Items_Fabric nature;
+    if (iName.size() == 0)
+        iName = default_addedItemName;
+    Interaction* newInteraction = nature.create_interaction(iName);
+    add(newInteraction);
 
-   if (iName.size() == 0){
-       iName = default_addedItemName;
-   } 
-
-   if (iName.compare("I_ElectRepulsion") == 0){
-       newInteraction = new Electrical_Repulsion();
-   } else if (iName.compare("I_ElectAttraction") == 0){
-       newInteraction = new Electrical_Attraction();
-   } else if (iName.compare("I_WaveSource") == 0){
-       newInteraction = new Wave_Source();
-   }
-   /*
-    .
-    .
-    .
-       Add new item types
-   */
-
-   add(newInteraction);
-
-   return newInteraction;
+    return newInteraction;
 }

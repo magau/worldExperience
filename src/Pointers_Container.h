@@ -9,10 +9,7 @@ class Pointers_Container{
 
         void set_default_itemName(string iName);
         void add(IType item,bool mainContainer=true);
-        virtual IType create_itemByName(string iName);//, Particle* _host_particle);
-        //virtual void del(IType item);
-        //virtual IType create_itemByName(string iName, Particle* _host_particle);
-        //virtual IType create_itemByName(string iName, World* _world);
+        virtual IType create_itemByName(string iName);
         IType pop(u_int index=(u_int)NULL, bool erase=false);
         void erase(u_int index=(u_int)NULL);
         IType pop(typename vector<IType>::iterator item_it, bool erase=false);
@@ -59,18 +56,9 @@ void Pointers_Container<IType>::add(IType item,bool mainContainer){
 }
 
 template <typename IType> 
-IType Pointers_Container<IType>::create_itemByName(string iName){//, World* _world){
+IType Pointers_Container<IType>::create_itemByName(string iName){
     return (int)NULL;
 }
-//template <typename IType> 
-//IType Pointers_Container<IType>::create_itemByName(string iName, World* _world){
-//    return (int)NULL;
-//}
-//
-//template <typename IType> 
-//IType Pointers_Container<IType>::create_itemByName(string iName,Particle* _host_particle){
-//    return (int)NULL;
-//}
 
 template <typename IType> 
 void Pointers_Container<IType>::set_default_itemName(string iName){
