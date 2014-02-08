@@ -1,44 +1,36 @@
 class Particles_Container;
-
 class Tag;
 class Tags_Container : public Pointers_Container<Tag*>{};
 
-class Interaction {
+class Interaction : public Item {
     public:
-        int id;
-        string name;
-        bool isAlive, isActive;
-        Particle* host_particle;
+
         int max_dist;
         int min_dist; 
         int timer;
         float weigth_fact;
-        World* world;
-        Particles_Container* actuated_particles;
         Tags_Container actuated_tags;
+
         Interaction();
-        Interaction(Particle* _host_particle);
         virtual void setup(Particle* _host_particle);
         virtual void free(Particle* _host_particle);
-        virtual void run(Particle* _host_particle=(Particle*)NULL);
-        virtual void interact(Particle* actuated_particle, Particle* _host_particle=(Particle*)NULL);
+        virtual void run(Particle* _host_particle);
+        virtual void interact(Particle* actuated_particle, Particle* _host_particle);
         void add_tag(Tag* tag);
         void remove_tag(Tag* tag);
-        void remove_tag_by_name(string tag_name);
+        void remove_tag_by_id(int tag_id);
 };
 
 class Electrical_Repulsion : public Interaction{
     public:
         Electrical_Repulsion();
-        Electrical_Repulsion(Particle* _host_particle);
-        void interact(Particle* actuated_particle, Particle* _host_particle=(Particle*)NULL);
+        void interact(Particle* actuated_particle, Particle* _host_particle);
 };
 
 class Electrical_Attraction : public Interaction{
     public:
         Electrical_Attraction();
-        Electrical_Attraction(Particle* _host_particle);
-        void interact(Particle* actuated_particle, Particle* _host_particle=(Particle*)NULL);
+        void interact(Particle* actuated_particle, Particle* _host_particle);
 };
 
 class Wave_Source : public Interaction{
@@ -47,9 +39,8 @@ class Wave_Source : public Interaction{
         float weight,weight_fact;
 
         Wave_Source();
-        Wave_Source(Particle* _host_particle);
-        void interact(Particle* actuated_particle, Particle* _host_particle=(Particle*)NULL);
-        void run(Particle* _host_particle=(Particle*)NULL);
+        void interact(Particle* actuated_particle, Particle* _host_particle);
+        void run(Particle* _host_particle);
 };
 
 /*
@@ -64,6 +55,5 @@ class Interaction_IV : public Interaction{
 
 class Interactions_Container : public Pointers_Container<Interaction*>{
     public:
-        Interaction* add_itemByName(string iName, Particle* host_particle=(Particle*)NULL);
+        Interaction* create_itemByName(string iName);
 };
-

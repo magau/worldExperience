@@ -1,14 +1,15 @@
 class World{
     public:
         Particles_Container particles;
-        Groups_Container groups;
+        //Groups_Container groups;
         Tags_Container tags;
         //void add_ParticleSystemByType();
         World();
         Tag* create_tag(string iName="");
         void remove_tag(Tag* tag);
-        Particles_Container* create_group(string iName="Generic");
+        //Particles_Container* create_group(string iName="Generic");
         Particle* create_particle(string iName);
+        void add_particle(Particle* particle);
         void remove_particle(Particle* particle_ptr);
         Particles_Container* update();
         void draw();

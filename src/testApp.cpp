@@ -15,7 +15,9 @@ void testApp::setup(){
     mouse.startThread(true, false);
     managerInterface.start(&world);
     
+cout<<"aqui0"<<endl;
     p = world.create_particle("MP_RegGrid");
+cout<<"aqui1"<<endl;
 
     if(strncmp("MP_RegGrid","MP_",3) == 0){
         managerInterface.update_availableItems_names(&(managerInterface.group_name),"C_MP_RegGrid");
@@ -30,29 +32,33 @@ void testApp::setup(){
     t0->add_behavior("B_GravityGlue");
 
     p = world.create_particle("P_Circle");
+    *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
+    *(p->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
+    *(p->intPtr_map["rad"]) = 10;
     
     Tag* t1 = world.create_tag();
+    t1->add_particle(p);
 
     t1->add_behavior("B_MouseTracking");
     Interaction* i0 = t1->add_interaction("I_ElectRepulsion");
+    //Interaction* i0 = t1->add_interaction("I_WaveSource");
     i0->add_tag(t0);
 
-    t1->add_particle(p);
 
     // this is the new git branch!!
 
     // testing remove particle
-    world.remove_particle(p);
+//    world.remove_particle(p);
+//
+//    p = world.create_particle("P_Circle");
+//    *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
+//    *(p->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
+//    *(p->intPtr_map["rad"]) = 10;
+//
+//    t1->add_particle(p);
 
-    p = world.create_particle("P_Circle");
-    *(p->ofColorPtr_map["color"]) = ofColor(255,0,0);
-    *(p->ofVec3fPtr_map["loc"]) = ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2,0);
-    *(p->intPtr_map["rad"]) = 10;
 
-    t1->add_particle(p);
-
-
-    //p->behaviors.add_itemByName("B_MouseTracking",p);
+    //p->behaviors.create_itemByName("B_MouseTracking",p);
 
     //p->set_var( b->name+"_loc", *(p->ofVec3fPtr_map["loc"]) );
     //ofVec3f* v_ptr;
@@ -94,13 +100,13 @@ void testApp::keyPressed(int key){
 /*
      switch (key){
          case 'w':
-             world.particles.itemsVector.back()->interactions.add_itemByName("Wave_Source",
+             world.particles.itemsVector.back()->interactions.create_itemByName("Wave_Source",
                                                        world.particles.itemsVector.back());
              world.particles.itemsVector.back()->interactions.itemsVector.back()->actuated_particles                          = world.groups.itemsVector.back();
              cout<<"add Wave_Source interaction"<<endl;
              break;
          case 'r':
-             world.particles.itemsVector.back()->interactions.add_itemByName("Electrical_Repulsion",
+             world.particles.itemsVector.back()->interactions.create_itemByName("Electrical_Repulsion",
                                                        world.particles.itemsVector.back());
              world.particles.itemsVector.back()->interactions.itemsVector.back()->actuated_particles                          = world.groups.itemsVector.back();
              cout<<"add Electrical_Repulsion interaction"<<endl;
@@ -114,7 +120,7 @@ void testApp::keyPressed(int key){
              cout<<"pop MouseTracking behavior"<<endl;
              break;
          case 'm':
-             world.particles.itemsVector.back()->behaviors.add_itemByName("B_MouseTracking",
+             world.particles.itemsVector.back()->behaviors.create_itemByName("B_MouseTracking",
                                                 world.particles.itemsVector.back());
              cout<<"add B_MouseTracking"<<endl;
              break;
@@ -126,7 +132,7 @@ void testApp::keyPressed(int key){
              break;
          case 'a':
              for (u_int i=0; i<world.particles.itemsVector.size()-2; i++){
-                 world.particles.itemsVector[i]->behaviors.add_itemByName("GravityGlue",
+                 world.particles.itemsVector[i]->behaviors.create_itemByName("GravityGlue",
                                                 world.particles.itemsVector[i]);
              }
              cout<<"set GravityGlue"<<endl;

@@ -1,10 +1,6 @@
 #include "testApp.h"
 
-World :: World() {
-    particles.name = "C_World";
-    particles.id = -1;
-    groups.add(&particles,false);
-}
+World :: World() {}
 
 Tag* World::create_tag(string iName){
     //create a new tag in the tags container of the world.
@@ -13,76 +9,88 @@ Tag* World::create_tag(string iName){
     tags.add(newTag);
 
     if (iName.size() != 0) {
-        newTag->name = iName ;
+        newTag->set_name(iName) ;
     } else {
-        char tmp[9];
-        sprintf(tmp,"tag_%04d",newTag->id);
-        newTag->name = tmp;
+        char tmp[7];
+        sprintf(tmp,"T_%04d",newTag->get_id());
+        newTag->set_name(tmp);
     }
-    cout << newTag->name << " tag created" << endl;
-
     return newTag;
 }
 
-Particles_Container* World::create_group(string iName){
-    //create System systemParticles Particles_Container.
-    Particles_Container* newGroup;
-    newGroup = new Particles_Container;
-    newGroup->name = iName;
-    groups.add(newGroup);
-    return newGroup;
-}
+//Particles_Container* World::create_group(string iName){
+//    //create System systemParticles Particles_Container.
+//    Particles_Container* newGroup;
+//    newGroup = new Particles_Container;
+//    newGroup->name = iName;
+//    groups.add(newGroup);
+//    return newGroup;
+//}
 
 Particle* World::create_particle(string iName){
     //create newParticle add particle to worldParticles
-    Particle* newParticle;
-    newParticle = particles.add_itemByName(iName, this);
+    Particle* newParticle = particles.create_itemByName(iName);//, this);
+    newParticle->set_world(this);
+    //If the particle acts over the world since its creation, it only
+    //can be done after seting up the world. this is the purpose for setup function
+    if(newParticle->is_active())
+        newParticle->setup(); 
     return newParticle;
 }
+
+void World::add_particle(Particle* particle){
+    // At the moment the particles instantiated at the "world.create_particle" are
+    // already added. (change in future...)
+    if(particle->get_world()==(World*)NULL){// for future usase...
+        particle->set_world(this);
+        particles.add(particle);
+    }
+    //If the particle constructor sets false the default value of the "isAlive" variable.
+    //Used to preset the particle members.
+    if(!particle->is_active()){
+        particle->set_live_state(true);
+        particle->setup(); 
+    }
+}
+
 
 Particles_Container* World :: update(){
 
     for(vector<Tag*>::iterator iter_tag = tags.itemsVector.begin();
                                     iter_tag != tags.itemsVector.end();
                                     iter_tag++){
+        //(*iter_tag)->particles.show_items_name_and_id();
         (*iter_tag)->run();
     }
-    Particle* temp_particle_ptr;
-    for(vector<Particle*>::iterator IterPart = particles.itemsVector.begin();
-                                    IterPart != particles.itemsVector.end();
-                                    IterPart++){
-        temp_particle_ptr = *IterPart;
-        temp_particle_ptr->run();
-        if(!temp_particle_ptr->isAlive){
-            remove_particle(temp_particle_ptr);
+
+    // This "for" statement is iterated in reverse mode to avoid core 
+    // dump in case of the "remove_particle" function is called.
+    for(vector<Particle*>::iterator iter_particle = particles.itemsVector.end() - 1;
+                                    iter_particle >= particles.itemsVector.begin();
+                                    iter_particle--) {
+        if(!(*iter_particle)->is_alive()) {
+            remove_particle(*iter_particle);
+        } else if ((*iter_particle)->is_active()) {
+            (*iter_particle)->run();
         }
     }
     return &(particles);
 }
 
 void World :: remove_tag(Tag* tag){
-    tags.erase_itemById(tag->id);
+    tags.erase_itemById(tag->get_id());
 }
 
 void World :: remove_particle(Particle* particle){
-    vector<Tag*>::iterator iter_tag;
-    for (iter_tag = particle->tags.itemsVector.begin();
-         iter_tag < particle->tags.itemsVector.end();
-         iter_tag++){
-        // Free the particle variables seted by this tag's behaviors.
-        (*iter_tag)->free_particle_vars(particle);
-        // Remove the particle from this tag's particles container.
-        (*iter_tag)->particles.pop_itemById(particle->id); 
-    }
     // Remove the particle from the world particles container.
-    particles.erase_itemById(particle->id);
+    particles.erase_itemById(particle->get_id());
 }
 
 void World::draw(){
-    for(vector<Particle*>::iterator IterPart = particles.itemsVector.begin();
-                                    IterPart != particles.itemsVector.end();
-                                    IterPart++){
-        (*IterPart)->display();
+    for(vector<Particle*>::iterator iter_particle = particles.itemsVector.begin();
+                                    iter_particle != particles.itemsVector.end();
+                                    iter_particle++){
+        (*iter_particle)->display();
     }
 }
 
@@ -283,44 +291,44 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
             cout<<"create buffer_behavior "<<obj_name<<" at ";
 
-            if (buffer_particle != (int)NULL) {
+            //if (buffer_particle != (int)NULL) {
 
-                cout<<buffer_particle->name<<": "<<buffer_particle->id<<endl;
-                buffer_behavior = buffer_particle->behaviors.add_itemByName(obj_name,buffer_particle);
-                buffer_interaction = (int)NULL;
+            //    cout<<buffer_particle->name<<": "<<buffer_particle->id<<endl;
+            //    buffer_behavior = buffer_particle->behaviors.create_itemByName(obj_name,buffer_particle);
+            //    buffer_interaction = (int)NULL;
 
-            } else if (buffer_particles_group != (int)NULL) {
+            //} else if (buffer_particles_group != (int)NULL) {
 
-                cout<<buffer_particles_group->name<<": "<<buffer_particles_group->id<<endl;
-                buffer_behaviors_group->clear();
+            //    cout<<buffer_particles_group->name<<": "<<buffer_particles_group->id<<endl;
+            //    buffer_behaviors_group->clear();
 
-                for(iterPart = buffer_particles_group->itemsVector.begin();
-                     iterPart != buffer_particles_group->itemsVector.end();
-                     iterPart++){
-                    cout<<"iter name:"<<(*iterPart)->name<<" iter id:"<<(*iterPart)->id<<endl;
-                    buffer_behaviors_group->add((*iterPart)->behaviors.add_itemByName(obj_name,*iterPart),false);
-                }
+            //    for(iterPart = buffer_particles_group->itemsVector.begin();
+            //         iterPart != buffer_particles_group->itemsVector.end();
+            //         iterPart++){
+            //        cout<<"iter name:"<<(*iterPart)->name<<" iter id:"<<(*iterPart)->id<<endl;
+            //        buffer_behaviors_group->add((*iterPart)->behaviors.create_itemByName(obj_name,*iterPart),false);
+            //    }
 
-                buffer_interactions_group->clear();
+            //    buffer_interactions_group->clear();
 
-            }
+            //}
 
         } else if (interaction) {
 
             if (buffer_particle != (int)NULL) {
-
-                buffer_interaction = buffer_particle->interactions.add_itemByName(obj_name,buffer_particle);
-                buffer_behavior = (int)NULL;
+//
+//                buffer_interaction = buffer_particle->interactions.create_itemByName(obj_name,buffer_particle);
+//                buffer_behavior = (int)NULL;
 
             } else if (buffer_particles_group != (int)NULL) {
 
                 buffer_interactions_group->clear();
 
-                for(iterPart = buffer_particles_group->itemsVector.begin();
-                     iterPart != buffer_particles_group->itemsVector.end();
-                     iterPart++){
-                    buffer_interactions_group->add((*iterPart)->interactions.add_itemByName(obj_name,*iterPart),false);
-                }
+                //for(iterPart = buffer_particles_group->itemsVector.begin();
+                //     iterPart != buffer_particles_group->itemsVector.end();
+                //     iterPart++){
+                //    buffer_interactions_group->add((*iterPart)->interactions.create_itemByName(obj_name,*iterPart),false);
+                //}
 
                 buffer_behaviors_group->clear();
 
@@ -348,9 +356,9 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
         } else if (group) {
 
-            buffer_particles_group = world->create_group(obj_name);
-            update_availableItems_names(&group_name,obj_name);
-            buffer_particle = (int)NULL;
+            //buffer_particles_group = world->create_group(obj_name);
+            //update_availableItems_names(&group_name,obj_name);
+            //buffer_particle = (int)NULL;
             
         }
 
@@ -408,7 +416,7 @@ void Manager_KeyboardInterface::stateFabric_decode(){
                     buffer_particles_vector = buffer_particles_group->get_itemsByName(obj_name);
 
                     for (u_int i = 0; i < buffer_particles_vector.size(); i++ ){
-                        cout<<buffer_particles_vector[i]->name<<" id:"<<buffer_particles_vector[i]->id<<endl;
+                        cout<<buffer_particles_vector[i]->get_name()<<" id:"<<buffer_particles_vector[i]->get_id()<<endl;
                     }
 
                     buffer_particle = (int)NULL;
@@ -423,11 +431,11 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
         } else if (group) {
 
-            if (by_id) {
-                buffer_particles_group = world->groups.get_itemById(obj_id);
-            } else if (by_name) {
-                buffer_groups_vector = world->groups.get_itemsByName(obj_name);
-            }
+            //if (by_id) {
+            //    buffer_particles_group = world->groups.get_itemById(obj_id);
+            //} else if (by_name) {
+            //    buffer_groups_vector = world->groups.get_itemsByName(obj_name);
+            //}
             buffer_particle = (int)NULL;
 
         }
@@ -445,11 +453,10 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
         } else if (group) {
             
-            if (buffer_interaction != (int)NULL) {
-                
-                buffer_interaction->actuated_particles = world->groups.get_itemById(obj_id);
-
-            }
+            //if (buffer_interaction != (int)NULL) {
+            //    
+            //    buffer_interaction->actuated_particles = world->groups.get_itemById(obj_id);
+            //}
 
         }
 
@@ -510,8 +517,8 @@ void Manager_KeyboardInterface::stateFabric_decode(){
 
         } else if (particle){
 
-            cout<<"group id:"<<buffer_particles_group->id<<endl;
-            buffer_particles_group->erase_itemById(buffer_particle->id);
+            //cout<<"group id:"<<buffer_particles_group->id<<endl;
+            buffer_particles_group->erase_itemById(buffer_particle->get_id());
 
         }
 
@@ -550,8 +557,6 @@ void Manager_KeyboardInterface::get_interactions_by_name(string& obj_name, vecto
 }
 
 void Manager_KeyboardInterface::listen(int key){
-   vector<Particle*> :: iterator IterPart;
-   vector<Particles_Container*> :: iterator IterGroup;
 
    if(ofGetKeyPressed(13)) {
        //RETURN
@@ -647,7 +652,7 @@ void Manager_KeyboardInterface::listen(int key){
        } else {
 
            buffer_particles_group->show_items_name_and_id();
-           cout<<"group:"<<(buffer_particles_group->name)<<" size:"<<(buffer_particles_group->itemsVector.size())<<endl;
+           //cout<<"group:"<<(buffer_particles_group->name)<<" size:"<<(buffer_particles_group->itemsVector.size())<<endl;
 
        }
 
@@ -681,8 +686,8 @@ void Manager_KeyboardInterface::listen(int key){
        by_name = false;
        by_id   = true;
 
-       world->groups.show_items_name_and_id();
-       cout<<"group:"<<(world->groups.name)<<" size:"<<(world->groups.itemsVector.size())<<endl;
+       //world->groups.show_items_name_and_id();
+       //cout<<"group:"<<(world->groups.name)<<" size:"<<(world->groups.itemsVector.size())<<endl;
 
        temp_msg.erase();
        isListening = true;
@@ -698,8 +703,8 @@ void Manager_KeyboardInterface::listen(int key){
        by_name = true;
        by_id   = false;
 
-       world->groups.show_items_name_and_id();
-       cout<<"group:"<<(world->groups.name)<<" size:"<<(world->groups.itemsVector.size())<<endl;
+       //world->groups.show_items_name_and_id();
+       //cout<<"group:"<<(world->groups.name)<<" size:"<<(world->groups.itemsVector.size())<<endl;
 
        temp_msg.erase();
        isListening = true;
@@ -722,7 +727,7 @@ void Manager_KeyboardInterface::listen(int key){
        } else {
 
            buffer_particle->behaviors.show_items_name_and_id();
-           cout<<"particle:"<<(buffer_particle->name)<<" size:"<<(buffer_particle->behaviors.itemsVector.size())<<endl;
+           cout<<"particle:"<<(buffer_particle->get_name())<<" size:"<<(buffer_particle->behaviors.itemsVector.size())<<endl;
 
        }
 
@@ -763,7 +768,7 @@ void Manager_KeyboardInterface::listen(int key){
        } else {
 
            buffer_particle->interactions.show_items_name_and_id();
-           cout<<"particle:"<<(buffer_particle->name)<<" size:"<<(buffer_particle->interactions.itemsVector.size())<<endl;
+           cout<<"particle:"<<(buffer_particle->get_name())<<" size:"<<(buffer_particle->interactions.itemsVector.size())<<endl;
 
        }
 

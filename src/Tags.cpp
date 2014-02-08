@@ -2,15 +2,10 @@
 
 
 Tag :: Tag (World* _world){
-
-    name="no_name_tag";
-    world = _world;
-    isAlive = true;
-    isActive = true;
+    set_world(_world);
 }
 
 Tag :: ~Tag (){
-    //cout << "Removing particles, interactions and behaviors from tag." << endl;
     remove_particles(particles.itemsVector);    
     behaviors.erase_all();
     interactions.erase_all();
@@ -23,17 +18,14 @@ void Tag::remove_particles(vector<Particle*> removed_particles){
          iter_particle++){
         remove_particle(*iter_particle);
     }
-
 }
 
 void Tag::remove_particle(Particle* particle){
-    // Remove the particle from this tag's particles container.
+    // Remove the particle from this tag's particles container:
     particles.pop_itemById(particle->id); 
-
-    // Remove this tag from particle's tags container.
+    // Remove this tag from particle's tags container:
     particle->tags.pop_itemById(id);
-
-    // Free the particle variables seted by this tag's behaviors and interactions.
+    // Free the particle variables seted by this tag's behaviors and interactions:
     free_particle_vars(particle);
 }
 
@@ -84,9 +76,20 @@ void Tag::add_particles(vector<Particle*> added_particles){
     }
 }
 
-Interaction* Tag::add_interaction(string interaction_name){
-    Interaction* interaction = interactions.add_itemByName(interaction_name);
+void Tag::add_interaction(Interaction* interaction){
+    interactions.add(interaction);
 
+    vector<Particle*>::iterator iter_particle;
+    for (iter_particle = particles.itemsVector.begin();
+         iter_particle < particles.itemsVector.end();
+         iter_particle++){
+        interaction->setup(*iter_particle);
+    }
+}
+
+Interaction* Tag::add_interaction(string interaction_name){
+    Interaction* interaction = interactions.create_itemByName(interaction_name);
+    interaction->set_world(world);
     vector<Particle*>::iterator iter_particle;
     for (iter_particle = particles.itemsVector.begin();
          iter_particle < particles.itemsVector.end();
@@ -107,20 +110,10 @@ void Tag::remove_interaction(Interaction* interaction){
     }
 }
 
-void Tag::add_interaction(Interaction* interaction){
-    interactions.add(interaction);
-
-    vector<Particle*>::iterator iter_particle;
-    for (iter_particle = particles.itemsVector.begin();
-         iter_particle < particles.itemsVector.end();
-         iter_particle++){
-        interaction->setup(*iter_particle);
-    }
-}
-
 Behavior* Tag::add_behavior(string behavior_name){
     
-    Behavior* behavior = behaviors.add_itemByName(behavior_name);
+    Behavior* behavior = behaviors.create_itemByName(behavior_name);
+    behavior->set_world(world);
     vector<Particle*>::iterator iter_particle;
     for ( iter_particle = particles.itemsVector.begin();
           iter_particle < particles.itemsVector.end();
@@ -178,12 +171,11 @@ void Tag::interact(){
          iter_particle != particles.itemsVector.end();
          iter_particle++){
          
-         for (iter_interaction = interactions.itemsVector.begin();
-              iter_interaction != interactions.itemsVector.end();
-              iter_interaction++){
-                  (*iter_interaction)->run(*iter_particle);
-                  //cout << "interaction runing in dead mode..." << endl;
-
-         }
+        for (iter_interaction = interactions.itemsVector.begin();
+             iter_interaction != interactions.itemsVector.end();
+             iter_interaction++){
+             (*iter_interaction)->run(*iter_particle);
+             //cout << "interaction runing in dead mode..." << endl;
+        }
     }
 }

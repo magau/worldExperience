@@ -1,11 +1,9 @@
 #include "testApp.h"
 
-
-Particle :: Particle (World* _world){
+Particle :: Particle () : Item(){
 
     name = "P_Base";
     rad = 6;
-    world = _world;
     ofVec3fPtr_map["loc"]      = &locat;
     ofVec3fPtr_map["vel"]      = &veloc;
     ofVec3fPtr_map["acc"]      = &accel;
@@ -13,28 +11,23 @@ Particle :: Particle (World* _world){
     intPtr_map["rad"]          = &rad;
     floatPtr_map["relax_fact"] = &relax_fact;
     boolPtr_map["isAlive"]     = &isAlive;
-    isAlive = true;
-    isActive = true;
+}
+
+Particle :: Particle (World* _world){
+    Particle ();
+    set_world(_world);
 }
 
 Particle :: ~Particle (){
-    vector<Particles_Container*>::iterator iterGroup;
-
-    cout<<"destructing particle; id:"<<id<<endl;
-
-    for (iterGroup = groups.itemsVector.begin();
-         iterGroup != groups.itemsVector.end();
-         iterGroup++){
-        (*iterGroup)->pop_itemById(id);
+    vector<Tag*>::iterator iter_tag;
+    for (iter_tag = tags.itemsVector.begin();
+         iter_tag < tags.itemsVector.end();
+         iter_tag++){
+        (*iter_tag)->remove_particle(this);
     }
-
-    behaviors.erase_all();
-    interactions.erase_all();
 }
 
-void Particle :: setup() {
-
-}
+void Particle :: setup() {}
 
 void Particle :: run() {
     behave();
@@ -43,9 +36,7 @@ void Particle :: run() {
 }
 
 // Method to display
-void Particle :: display() {
-
-}
+void Particle :: display() {}
 
 void Particle :: update() {
     veloc += accel;
@@ -65,7 +56,7 @@ void Particle :: behave() {
         for(vector<Behavior*>::iterator IterBehav = behaviors.itemsVector.begin();
                                         IterBehav != behaviors.itemsVector.end();
                                         IterBehav++){
-            (*IterBehav)->run();
+            (*IterBehav)->run(this);
         }
 }
 
@@ -74,14 +65,14 @@ void Particle :: interact() {
 
     if ( interactions.itemsVector.size() > 0){
         
-        for(vector<Interaction*>::iterator IterInterac = interactions.itemsVector.end()-1;
-                                        IterInterac >= interactions.itemsVector.begin();
-                                        IterInterac--){
-            temp_interaction_ptr = *IterInterac;
-            temp_interaction_ptr->run();
+        for(vector<Interaction*>::iterator iter_interaction = interactions.itemsVector.end()-1;
+                                        iter_interaction >= interactions.itemsVector.begin();
+                                        iter_interaction--){
+            temp_interaction_ptr = *iter_interaction;
+            temp_interaction_ptr->run(this);
             if(!temp_interaction_ptr->isAlive) {
-cout<<"erase dead interaction"<<endl;
-                interactions.erase(IterInterac);
+                cout<<"erase dead interaction"<<endl;
+                interactions.erase(iter_interaction);
             }
         }
     }
@@ -132,10 +123,13 @@ void Particle :: elastic_boundery(){
     }
 }
 
-void Particle::set_var(string var_name, ofVec3f var_ptr){
-
+void Particle::set_ofVec3f(string var_name, ofVec3f var_ptr){
     ofVec3fPtr_map[var_name] = new ofVec3f(var_ptr); 
-    
+}
+
+void Particle::delete_ofVec3f(string var_name){
+    delete ofVec3fPtr_map[var_name]; 
+    ofVec3fPtr_map.erase(var_name);    
 }
 
 ofVec3f* Particle::get_ofVec3f(string var_name){
@@ -158,8 +152,10 @@ ofVec3f* Particle::get_ofVec3f(string var_name){
     //} 
 }
 
-Circle::Circle(World* _world) : Particle(_world){
-    name="P_Circle";
+//Circle::Circle(World* _world) : Particle(){
+
+Circle::Circle() : Particle(){
+    set_name("P_Circle");
 }
 
 void Circle :: display() {
@@ -171,13 +167,10 @@ void Circle :: display() {
 
 Particle* Particles_Container::add(Particle* particle, bool mainContainer){
     Pointers_Container<Particle*>::add(particle, mainContainer);
-    if(!mainContainer) {
-        particle->groups.add(this,false);
-    }
     return particle;
 }
 
-Particle* Particles_Container::add_itemByName(string iName, World* _world){
+Particle* Particles_Container::create_itemByName(string iName){//, World* _world){
 
    Particle* newParticle = (int)NULL;
 
@@ -186,11 +179,13 @@ Particle* Particles_Container::add_itemByName(string iName, World* _world){
    } 
 
    if (iName.compare("P_Base") == 0){
-       newParticle = new Particle(_world);
+       newParticle = new Particle();//_world);
    } else if (iName.compare("P_Circle") == 0){
-       newParticle = new Circle(_world);
+       //newParticle = new Particle();//_world);
+       newParticle = new Circle();//_world);
    } else if (iName.compare("MP_RegGrid") == 0){
-       newParticle = new RegularGrid_MP(_world);
+       //newParticle = new Particle();//_world);
+       newParticle = new RegularGrid_MP();//_world);
    }
 
    /*
@@ -199,10 +194,10 @@ Particle* Particles_Container::add_itemByName(string iName, World* _world){
     .
        Add new item types
    */
-//cout<<"add_itemByName... rad = "<<rad<<endl;
+//cout<<"create_itemByName... rad = "<<rad<<endl;
 //*(intPtr_map["rad"]) = 10;
-//cout<<"add_itemByName...*intPtr_map['rad'] = "<<*(newParticle->intPtr_map["rad"])<<endl;
-//cout<<"add_itemByName... rad = "<<newParticle->rad<<endl;
+//cout<<"create_itemByName...*intPtr_map['rad'] = "<<*(newParticle->intPtr_map["rad"])<<endl;
+//cout<<"create_itemByName... rad = "<<newParticle->rad<<endl;
 
    add(newParticle);
 

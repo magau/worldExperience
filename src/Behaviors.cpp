@@ -1,59 +1,45 @@
 #include "testApp.h"
 
-Behavior::Behavior(){
-    host_particle = (Particle*)NULL;
+Item::Item(){
     isAlive = true;
     isActive = true;
 }
+string Item::get_name(){return name;}
+int    Item::get_id(){return id;}
+World* Item::get_world(){return world;}
+bool   Item::is_alive(){return isAlive;}
+bool   Item::is_active(){return isActive;}
+void   Item::set_name(string _name){name=_name;}
+void   Item::set_id(int _id){id=_id;}
+void   Item::set_world(World* _world){world=_world;}
+void   Item::set_live_state(bool live_state){isAlive=live_state;}
+void   Item::set_active_state(bool active_state){isActive=active_state;}
 
-Behavior::Behavior(Particle* _host_particle){
-    host_particle = _host_particle;
-    isAlive = true;
-    isActive = true;
-}
 
+Behavior::Behavior() : Item(){}
 void Behavior::run(Particle* _host_particle){}
-
 void Behavior::setup(Particle* _host_particle){}
-
 void Behavior::free(Particle* _host_particle){}
 
 GravityGlue::GravityGlue() : Behavior(){
-
-    name = "B_GravityGlue";
+    set_name("B_GravityGlue");
+    location_key = get_name()+"_loc";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
-}
-
-GravityGlue::GravityGlue(Particle* _host_particle) : Behavior(_host_particle){
-
-    name = "B_GravityGlue";
-    max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
-    host_particle = _host_particle;
-    locat = _host_particle->locat;
 }
 
 void GravityGlue::setup(Particle* _host_particle){
-    _host_particle->set_var(name+"_loc", _host_particle->locat);
+    ofVec3f var_value = _host_particle->locat;
+    _host_particle->set_ofVec3f(location_key, var_value);
 }
 
 void GravityGlue::free(Particle* _host_particle){
-    delete _host_particle->ofVec3fPtr_map[name+"_loc"]; 
-    _host_particle->ofVec3fPtr_map.erase(name+"_loc");    
+    _host_particle->delete_ofVec3f(location_key);
 }
 
 void GravityGlue::run(Particle* _host_particle){
     float dist,dx,dy,weight,weight_fact,acc;
     ofVec3f* _locat;
-
-    //cout << "run behavior:" << name << endl;
-
-    if(_host_particle == (Particle*)NULL){
-        _host_particle = host_particle;
-        _locat = &locat;
-    } else {
-        _locat = _host_particle->get_ofVec3f(name+"_loc");
-        //cout << "locat:" << (*_locat) << endl;
-    }
+    _locat = _host_particle->get_ofVec3f(location_key);
 
     weight_fact = 0.1;
     min_dist = 40;
@@ -83,37 +69,25 @@ void GravityGlue::run(Particle* _host_particle){
 }
 
 MouseTracking::MouseTracking() : Behavior(){
-    name = "B_MouseTracking"; 
-}
-
-MouseTracking::MouseTracking(Particle* _host_particle) : Behavior(_host_particle){
-    name = "B_MouseTracking"; 
+    set_name("B_MouseTracking"); 
 }
 
 void MouseTracking::run(Particle* _host_particle){
    extern getMouseLocation mouse;
-   if (_host_particle == (Particle*)NULL)
-       _host_particle = host_particle;
    _host_particle->veloc.x = mouse.x - _host_particle->locat.x;
    _host_particle->veloc.y = mouse.y - _host_particle->locat.y;
 }
 
-Behavior* Behaviors_Container::add_itemByName(string iName, Particle* _host_particle){
+Behavior* Behaviors_Container::create_itemByName(string iName){
 
    Behavior* newBehavior = (int)NULL;
 
    if (iName.size() == 0) iName = default_addedItemName;
 
    if (iName.compare("B_GravityGlue") == 0){
-       if(_host_particle != (Particle*)NULL)
-           newBehavior = new GravityGlue(_host_particle);
-       else
-           newBehavior = new GravityGlue();
+       newBehavior = new GravityGlue();
    } else if (iName.compare("B_MouseTracking") == 0){
-       if(_host_particle != (Particle*)NULL)
-           newBehavior = new MouseTracking(_host_particle);
-       else
-           newBehavior = new MouseTracking();
+       newBehavior = new MouseTracking();
    }
    /*
     .

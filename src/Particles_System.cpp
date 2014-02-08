@@ -1,44 +1,43 @@
 #include "testApp.h"
 
-Master_Particle::Master_Particle(World* _world) : Particle(_world){
-    name = "MP_Base";
+//Master_Particle::Master_Particle(World* _world) : Particle(_world){
+Master_Particle::Master_Particle() : Particle(){
+    set_name("MP_Base");
     default_Particle = "P_Base";
+    set_world((World*)NULL);
     //default_Particle = "P_Circle";
     //default_Interaction = "I";
 }
 
-void Master_Particle::setup(){
+void Master_Particle::setup(){}
 
-}
+void Master_Particle::run(){}
 
-void Master_Particle::run(){
-
-}
-
-Particles_Container* Master_Particle::create_slaveContainer(){
-    //create System slaveParticles Particles_Container.
-    //slaveParticles = new Particles_Container;
-    //slaveParticles->name = "C_" + name;
-    //world->groups.add(slaveParticles); 
-    slaveParticles = world->create_group("C_" + name);
-    return slaveParticles;
-}
+//Particles_Container* Master_Particle::create_slaveContainer(){
+//    //create System slaveParticles Particles_Container.
+//    //slaveParticles = new Particles_Container;
+//    //slaveParticles->name = "C_" + name;
+//    //world->groups.add(slaveParticles); 
+//    slaveParticles = world->create_group("C_" + name);
+//    return slaveParticles;
+//}
 
 Particle* Master_Particle::create_slaveParticle(){
-    //create newParticle add particle to worldParticles and 
-    //slaveParticles Particles_Container
-    Particle* newParticle;
-    newParticle = world->particles.add_itemByName(default_Particle, world);
-    slaveParticles->add(newParticle,false);
+    //create newParticle add particle to worldParticles 
+    Particle* newParticle = get_world()->create_particle(default_Particle);//, world);
+    //Particle* newParticle = world->particles.create_itemByName(default_Particle);//, world);
+    //newParticle->set_world(world);
+    
+    //slaveParticles->add(newParticle,false);
     return newParticle;
 }
 
-RegularGrid_MP::RegularGrid_MP(World* _world) : Master_Particle(_world){
-    name = "MP_RegGrid";
+//RegularGrid_MP::RegularGrid_MP(World* _world) : Master_Particle(_world){
+RegularGrid_MP::RegularGrid_MP() : Master_Particle(){
+    set_name("MP_RegGrid");
     default_Particle = "P_Circle";
     particles_distance = 15;
     windowRatio = 4.0/5;
-    setup(); 
 }
 
 void RegularGrid_MP::setup(){
@@ -62,9 +61,9 @@ void RegularGrid_MP::setup(){
     grid_offset.y = (win_h - grd_h)/2;
     grid_num.set(grd_w/grid_ds , grd_h/grid_ds);
 
-    create_slaveContainer();
+    //create_slaveContainer();
 
-//grid_num.x = 1;
+//grid_num.x = 2;
 //grid_num.y = 2;
 
     for (i=0; i<grid_num.y; i++){

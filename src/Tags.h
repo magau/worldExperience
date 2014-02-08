@@ -1,9 +1,9 @@
-class Tag{
+class Tag : public Item {
     public:
-        int id;
-        string name;
-        World* world;
-        bool isAlive, isActive;
+       // int id;
+       // string name;
+       // World* world;
+       // bool isAlive, isActive;
 
         Particles_Container particles;
         Interactions_Container interactions;

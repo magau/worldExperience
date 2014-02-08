@@ -9,9 +9,10 @@ class Pointers_Container{
 
         void set_default_itemName(string iName);
         void add(IType item,bool mainContainer=true);
+        virtual IType create_itemByName(string iName);//, Particle* _host_particle);
         //virtual void del(IType item);
-        virtual IType add_itemByName(string iName, Particle* _host_particle=(Particle*)NULL);
-        virtual IType add_itemByName(string iName, World* _world);
+        //virtual IType create_itemByName(string iName, Particle* _host_particle);
+        //virtual IType create_itemByName(string iName, World* _world);
         IType pop(u_int index=(u_int)NULL, bool erase=false);
         void erase(u_int index=(u_int)NULL);
         IType pop(typename vector<IType>::iterator item_it, bool erase=false);
@@ -49,23 +50,27 @@ void Pointers_Container<IType>::add(IType item,bool mainContainer){
     // The mainContainer is setted true wen a particle is added to 'world.groups'.
     if (mainContainer) {
         if (freeIdBuff.size() > 0){
-            itemsVector.back()->id = freeIdBuff.back();
+            itemsVector.back()->set_id(freeIdBuff.back());
             freeIdBuff.pop_back();
         } else {
-            itemsVector.back()->id = itemsVector.size() - 1;
+            itemsVector.back()->set_id(itemsVector.size() - 1);
         }
     }
 }
 
 template <typename IType> 
-IType Pointers_Container<IType>::add_itemByName(string iName, World* _world){
+IType Pointers_Container<IType>::create_itemByName(string iName){//, World* _world){
     return (int)NULL;
 }
-
-template <typename IType> 
-IType Pointers_Container<IType>::add_itemByName(string iName,Particle* _host_particle){
-    return (int)NULL;
-}
+//template <typename IType> 
+//IType Pointers_Container<IType>::create_itemByName(string iName, World* _world){
+//    return (int)NULL;
+//}
+//
+//template <typename IType> 
+//IType Pointers_Container<IType>::create_itemByName(string iName,Particle* _host_particle){
+//    return (int)NULL;
+//}
 
 template <typename IType> 
 void Pointers_Container<IType>::set_default_itemName(string iName){
@@ -83,7 +88,7 @@ vector <IType> Pointers_Container<IType>::get_itemsByName(string iName){
          item_it++){
 
         item = *item_it;
-        if (iName.compare(item->name) == 0 || iName.compare("all") == 0){
+        if (iName.compare(item->get_name()) == 0 || iName.compare("all") == 0){
             //cout<<" I.name:"<<item->name<<" I.id:"<<item->id<<endl;
             result.push_back(item);
         }
@@ -102,8 +107,8 @@ in "freeIdBuff" vector for future added items.
     IType item; 
     if (item_it >= itemsVector.begin() && item_it < itemsVector.end() && itemsVector.size() > 0) {
         if (erase) {
-            if ((**item_it).id < (int)(itemsVector.size() - 1)) {
-                freeIdBuff.push_back((**item_it).id);
+            if ((*item_it)->get_id() < (int)(itemsVector.size() - 1)) {
+                freeIdBuff.push_back((*item_it)->get_id());
             }
             item = *item_it;
             delete item;
@@ -139,8 +144,8 @@ in "freeIdBuff" vector for future added items.
         item = itemsVector[index];
         itemsVector.erase(itemsVector.begin() + index);
         if (erase) {
-            if (item->id < (int)(itemsVector.size())) {
-                freeIdBuff.push_back(item->id);
+            if (item->get_id() < (int)(itemsVector.size())) {
+                freeIdBuff.push_back(item->get_id());
             }
             delete item;
         }
@@ -167,7 +172,7 @@ void Pointers_Container<IType>::show_items_name_and_id(){
          item_it != itemsVector.end();
          item_it++){
 
-        cout<<"name:"<<(*item_it)->name<<" id:"<<(*item_it)->id<<endl;
+        cout<<"name:"<<(*item_it)->get_name()<<" id:"<<(*item_it)->get_id()<<endl;
     }
 
 }
@@ -183,7 +188,7 @@ IType Pointers_Container<IType>::get_itemById(int id){
          item_it++){
 
         item = *item_it;
-        if (item->id == id){
+        if (item->get_id() == id){
             result = item;
             //cout<<"got item - name:"<<item->name<<"; id:"<<id<<endl;
             break;
@@ -203,10 +208,10 @@ IType Pointers_Container<IType>::pop_itemById(int id, bool erase){
          item_it++){
 
         item = *item_it;
-        if (item->id == id){
+        if (item->get_id() == id){
             itemsVector.erase(item_it);
             if (erase){
-                if (item->id < (int)itemsVector.size()) {
+                if (item->get_id() < (int)itemsVector.size()) {
                     freeIdBuff.push_back(id);
                 }
                 delete item;
@@ -236,11 +241,11 @@ vector<IType> Pointers_Container<IType>::pop_itemsByName(string iName, bool eras
              item_it--){
 
             item = *item_it;
-            if (iName.compare(item->name) == 0) {
+            if (iName.compare(item->get_name()) == 0) {
                 itemsVector.erase(item_it);
                 if (erase){
-                    if (item->id < (int)itemsVector.size()) {
-                        freeIdBuff.push_back(item->id);
+                    if (item->get_id() < (int)itemsVector.size()) {
+                        freeIdBuff.push_back(item->get_id());
                     }
                     delete item;
                 }
@@ -278,7 +283,7 @@ void Pointers_Container<IType>::reset_itemTypeById(int id, string iName){
             init_props = item->props;
             delete item;
             itemsVector.erase(item_it);
-            add_itemByName(iName,init_props);
+            create_itemByName(iName,init_props);
             itemsVector.back()->id = id;
             break;
         }
