@@ -33,8 +33,8 @@ void testApp::setup(){
     t1->add_action("B_MouseTracking");
 
     // Adiciona à tag t1 uma interacção do tipo "I_ElectRepulsion"
-    //Interaction* i0 = t1->add_interaction("I_ElectRepulsion");
-    Interaction* i0 = t1->add_interaction("I_WaveSource");
+    Interaction* i0 = t1->add_interaction("I_ElectRepulsion");
+    //Interaction* i0 = t1->add_interaction("I_WaveSource");
     // Adiciona a tag t0, que transporta consigo as particulas
     // da grelha, à interacção.
     i0->add_actuated_tag(t0);

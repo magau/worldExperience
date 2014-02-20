@@ -12,7 +12,7 @@ class Action : public Item{
         virtual void free(Particle* host_particle);
         virtual void setup();
         virtual void free();
-        //virtual void run();
+        virtual void run();
         virtual void run(Particle* _host_particle);
 
     private:
