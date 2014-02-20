@@ -2,7 +2,7 @@ class Particles_Container;
 class Tag;
 class Tags_Container : public Pointers_Container<Tag*>{};
 
-class Interaction : public Item {
+class Interaction : public Action {
     public:
 
         int max_dist;
@@ -12,13 +12,15 @@ class Interaction : public Item {
         Tags_Container actuated_tags;
 
         Interaction();
-        virtual void setup(Particle* _host_particle);
-        virtual void free(Particle* _host_particle);
+        //virtual void free(Particle* _host_particle);
+        //virtual void free(Item* _host_item);
         virtual void run(Particle* _host_particle);
         virtual void interact(Particle* actuated_particle, Particle* _host_particle);
-        void add_tag(Tag* tag);
-        void remove_tag(Tag* tag);
-        void remove_tag_by_id(int tag_id);
+        void add_actuated_tag(Tag* tag);
+        void remove_actuated_tag(Tag* tag);
+        
+    protected:
+        Tag* tag;
 };
 
 class Electrical_Repulsion : public Interaction{

@@ -8,13 +8,18 @@ class Tag : public Item {
         Particles_Container particles;
         Interactions_Container interactions;
         Behaviors_Container behaviors;
+        Actions_Container actions;
         Tag (World* _world);
         ~Tag();
         void add_particle(Particle* particle);
         void add_particles(vector<Particle*> added_particles);
         void remove_particle(Particle* particle);
+        //void free(Item* item);
         void free_particle_vars(Particle* particle);
         void remove_particles(vector<Particle*> added_particles);
+        void add_action(Action* action);
+        Action* add_action(string action_name);
+        void remove_action(Action* interaction);
         void add_interaction(Interaction* interaction);
         Interaction* add_interaction(string interaction_name);
         void remove_interaction(Interaction* interaction);
@@ -24,4 +29,5 @@ class Tag : public Item {
         void run();
         void behave();
         void interact();
+        void actuate();
 };

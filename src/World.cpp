@@ -4,8 +4,7 @@ World :: World() {}
 
 Tag* World::create_tag(string iName){
     //create a new tag in the tags container of the world.
-    Tag* newTag;
-    newTag = new Tag(this);
+    Tag* newTag = new Tag(this);
     tags.add(newTag);
 
     if (iName.size() != 0) {
@@ -16,6 +15,44 @@ Tag* World::create_tag(string iName){
         newTag->set_name(tmp);
     }
     return newTag;
+}
+
+Action* World::create_action(string iName){
+    //create newAction.
+    //Action* newAction = actions.create_itemByName(iName);
+    Action* newAction = nature.create_action(iName);
+    newAction->set_world(this);
+    //If the action acts over the world since its creation, it only
+    //can be done after seting up the world. this is the purpose for setup function
+    if(newAction->is_active())
+        newAction->setup(); 
+    return newAction;
+}
+
+
+Behavior* World::create_behavior(string iName){
+    //create newBehavior.
+    //Behavior* newBehavior = behaviors.create_itemByName(iName);
+    Behavior* newBehavior = nature.create_behavior(iName);
+    newBehavior->set_world(this);
+    //If the behavior acts over the world since its creation, it only
+    //can be done after seting up the world. this is the purpose for setup function
+    if(newBehavior->is_active())
+        newBehavior->setup(); 
+    return newBehavior;
+}
+
+
+Interaction* World::create_interaction(string iName){
+    //create newInteraction.
+    //Interaction* newInteraction = interactions.create_itemByName(iName);
+    Interaction* newInteraction = nature.create_interaction(iName);
+    newInteraction->set_world(this);
+    //If the interaction acts over the world since its creation, it only
+    //can be done after seting up the world. this is the purpose for setup function
+    if(newInteraction->is_active())
+        newInteraction->setup(); 
+    return newInteraction;
 }
 
 Particle* World::create_particle(string iName){

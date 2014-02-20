@@ -5,13 +5,15 @@
 #include <tr1/unordered_map> 
 using namespace tr1;
 #include "math.h"
-#include "Item.h"
 #include "Pointers_Container.h"
+#include "Item.h"
+#include "Action.h"
 #include "Behaviors.h"
 #include "Interactions.h"
 #include "Particles.h"
 #include "Particles_System.h"
-#include "Particles_Manager.h"
+//#include "Particles_Manager.h"
+#include "World.h"
 #include "Tags.h"
 
 

@@ -17,6 +17,7 @@ class Pointers_Container{
         IType pop_itemById(int id, bool erase=false);
         void erase_itemById(int id);
         IType get_itemById(int id);
+        vector <IType> get_items();
         void show_items_name_and_id();
         vector <IType> pop_itemsByName(string iName, bool erase=false);
         void erase_itemsByName(string iName);
@@ -63,6 +64,11 @@ IType Pointers_Container<IType>::create_itemByName(string iName){
 template <typename IType> 
 void Pointers_Container<IType>::set_default_itemName(string iName){
     default_addedItemName = iName;
+}
+
+template <typename IType> 
+vector<IType> Pointers_Container<IType>::get_items(){
+    return itemsVector;
 }
 
 template <typename IType> 

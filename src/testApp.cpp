@@ -18,7 +18,8 @@ void testApp::setup(){
     // e o comportamento "B_GravityGlue".
     Tag* t0 = world.create_tag();
     t0->add_particles(world.particles.get_itemsByName("P_Circle"));
-    t0->add_behavior("B_GravityGlue");
+    //t0->add_behavior("B_GravityGlue");
+    t0->add_action("B_GravityGlue");
 
     // Cria uma nova particula vermelha.
     p = world.create_particle("P_Circle");
@@ -28,13 +29,15 @@ void testApp::setup(){
     // e o comportamento "B_MouseTracking".
     Tag* t1 = world.create_tag();
     t1->add_particle(p);
-    t1->add_behavior("B_MouseTracking");
+    //t1->add_behavior("B_MouseTracking");
+    t1->add_action("B_MouseTracking");
 
     // Adiciona à tag t1 uma interacção do tipo "I_ElectRepulsion"
-    Interaction* i0 = t1->add_interaction("I_ElectRepulsion");
+    //Interaction* i0 = t1->add_interaction("I_ElectRepulsion");
+    Interaction* i0 = t1->add_interaction("I_WaveSource");
     // Adiciona a tag t0, que transporta consigo as particulas
     // da grelha, à interacção.
-    i0->add_tag(t0);
+    i0->add_actuated_tag(t0);
 
 }
    

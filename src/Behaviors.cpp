@@ -1,9 +1,11 @@
 #include "testApp.h"
 
-Behavior::Behavior() : Item(){}
-void Behavior::run(Particle* _host_particle){}
-void Behavior::setup(Particle* _host_particle){}
-void Behavior::free(Particle* _host_particle){}
+Behavior::Behavior() : Action(){}
+//void Behavior::run(Particle* _host_particle){}
+//void Behavior::setup(Particle* _host_particle){}
+//void Behavior::setup(){}
+//void Behavior::free(Particle* _host_particle){}
+//void Behavior::free(Item* _host_item){}
 
 GravityGlue::GravityGlue() : Behavior(){
     set_name("B_GravityGlue");
@@ -11,13 +13,37 @@ GravityGlue::GravityGlue() : Behavior(){
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
+void GravityGlue::setup(){
+    vector<Particle*> particles = get_tag()->particles.get_items();
+    vector<Particle*>::iterator iter_particle;
+    for ( iter_particle = particles.begin();
+          iter_particle < particles.end();
+          iter_particle++){
+        setup(*iter_particle);
+    }
+}
+
 void GravityGlue::setup(Particle* _host_particle){
     ofVec3f var_value = _host_particle->locat;
-    _host_particle->create_ofVec3f(location_key, var_value);
+    _host_particle->add_ofVec3f(location_key, var_value);
 }
+
+//void GravityGlue::free(Item* _host_item){
+//    if (typeid (_host_item) == typeid(Particle*))
+//        _host_item->delete_ofVec3f(location_key);
+//}
 
 void GravityGlue::free(Particle* _host_particle){
     _host_particle->delete_ofVec3f(location_key);
+}
+
+void GravityGlue::free(){
+    vector<Particle*>::iterator iter_particle;
+    for ( iter_particle = get_tag()->particles.itemsVector.begin();
+          iter_particle < get_tag()->particles.itemsVector.end();
+          iter_particle++){
+        free(*iter_particle);
+    }
 }
 
 void GravityGlue::run(Particle* _host_particle){

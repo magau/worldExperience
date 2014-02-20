@@ -1,8 +1,8 @@
 #include "testApp.h"
 
-Interaction::Interaction() : Item() {}
-void Interaction::setup(Particle* _host_particle){};
-void Interaction::free(Particle* _host_particle){};
+Interaction::Interaction() : Action(){}
+//void Interaction::free(Particle* _host_particle){}
+//void Interaction::free(Item* _host_item){}
 void Interaction::interact(Particle* actuated_particle, Particle* _host_particle){}
 void Interaction::run(Particle* _host_particle){
     vector<Tag*>::iterator iter_tag;
@@ -20,16 +20,12 @@ void Interaction::run(Particle* _host_particle){
     }
 }
 
-void Interaction::add_tag(Tag* tag){
+void Interaction::add_actuated_tag(Tag* tag){
    actuated_tags.add(tag, false); 
 }
 
-void Interaction::remove_tag(Tag* tag){
+void Interaction::remove_actuated_tag(Tag* tag){
    actuated_tags.pop_itemById(tag->id);
-}
-
-void Interaction::remove_tag_by_id(int id){
-   actuated_tags.pop_itemById(id);
 }
 
 Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
