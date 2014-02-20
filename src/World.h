@@ -1,3 +1,11 @@
+class Items_Fabric{
+    public:
+        Particle*    create_particle(string name);
+        Behavior*    create_behavior(string name);
+        Interaction* create_interaction(string name);
+        Action*      create_action(string name);
+};
+
 class World{
     public:
         Items_Fabric nature;
@@ -15,4 +23,3 @@ class World{
         Particles_Container* update();
         void draw();
 };
-

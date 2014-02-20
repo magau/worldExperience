@@ -12,8 +12,6 @@ class Interaction : public Action {
         Tags_Container actuated_tags;
 
         Interaction();
-        //virtual void free(Particle* _host_particle);
-        //virtual void free(Item* _host_item);
         virtual void run(Particle* _host_particle);
         virtual void interact(Particle* actuated_particle, Particle* _host_particle);
         void add_actuated_tag(Tag* tag);
@@ -54,8 +52,3 @@ class Interaction_IV : public Interaction{
         void interact(Particle* actuated_particle);
 };
 */
-
-class Interactions_Container : public Pointers_Container<Interaction*>{
-    public:
-        Interaction* create_itemByName(string iName);
-};

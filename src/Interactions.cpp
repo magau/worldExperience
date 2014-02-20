@@ -1,8 +1,6 @@
 #include "testApp.h"
 
 Interaction::Interaction() : Action(){}
-//void Interaction::free(Particle* _host_particle){}
-//void Interaction::free(Item* _host_item){}
 void Interaction::interact(Particle* actuated_particle, Particle* _host_particle){}
 void Interaction::run(Particle* _host_particle){
     vector<Tag*>::iterator iter_tag;
@@ -98,20 +96,7 @@ Wave_Source :: Wave_Source() : Interaction(){
 }
 
 void Wave_Source :: run(Particle* _host_particle){
-    vector<Tag*>::iterator iter_tag;
-    vector<Particle*>::iterator iter_particle;
-    for (iter_tag = actuated_tags.itemsVector.begin();
-         iter_tag < actuated_tags.itemsVector.end();
-         iter_tag++ ){
-
-        for (iter_particle = (*iter_tag)->particles.itemsVector.begin();
-             iter_particle != (*iter_tag)->particles.itemsVector.end();
-             iter_particle++){
-
-            interact(*iter_particle, _host_particle);
-        }
-    }
-
+    Interaction::run(_host_particle);
     timer += wave_speed;
 }
 
@@ -153,15 +138,4 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
         //    //actuated_particle->relax_fact = 0.7;
         //}
     } 
-}
-
-Interaction* Interactions_Container::create_itemByName(string iName){
-
-    Items_Fabric nature;
-    if (iName.size() == 0)
-        iName = default_addedItemName;
-    Interaction* newInteraction = nature.create_interaction(iName);
-    add(newInteraction);
-
-    return newInteraction;
 }

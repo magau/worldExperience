@@ -35,18 +35,7 @@ class Item{
          * added and/or seted variable name (key), if the variable is 
          * not suposed to be used by other items.
          */ 
-        //virtual void setup(Item* _host_item);
         virtual void setup();
-        /*
-         * The purpose of the "free" function is to delete
-         * the variables added to the particles inside the
-         * "setup" function.
-         * This is called when ever a particle or the behavior
-         * it self is removed from the host tag.
-         */
-        virtual void free(Item* _host_item);
-        //virtual void run(Item* _host_item);
-        //virtual void free();
         virtual void run();
 
         void add_bool(string var_name, bool var_val);
@@ -93,12 +82,4 @@ class Item{
         unordered_map<string, bool*> boolPtr_map;
 
 
-};
-
-class Items_Fabric{
-    public:
-        Action*      create_action(string name);
-        Particle*    create_particle(string name);
-        Behavior*    create_behavior(string name);
-        Interaction* create_interaction(string name);
 };
