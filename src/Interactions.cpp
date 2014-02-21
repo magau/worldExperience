@@ -1,5 +1,7 @@
 #include "testApp.h"
 
+#define USE_UNORDERED_MAP
+
 Interaction::Interaction() : Action(){}
 void Interaction::interact(Particle* actuated_particle, Particle* _host_particle){}
 void Interaction::run(Particle* _host_particle){
@@ -40,11 +42,25 @@ void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host
     weight = max_dist*weight_fact;
 
     dist = _host_particle->locat.distance(actuated_particle->locat);
+
+#ifdef USE_UNORDERED_MAP
+    dx = actuated_particle->get_ofVec3f("loc")->x - _host_particle->get_ofVec3f("loc")->x;
+    dy = actuated_particle->get_ofVec3f("loc")->y - _host_particle->get_ofVec3f("loc")->y;
+#else
     dx = actuated_particle->locat.x - _host_particle->locat.x;
     dy = actuated_particle->locat.y - _host_particle->locat.y;
+#endif
+
     acc = weight / pow(dist,2);
+
+#ifdef USE_UNORDERED_MAP
+    actuated_particle->get_ofVec3f("acc")->x += dx * acc;
+    actuated_particle->get_ofVec3f("acc")->y += dy * acc;
+#else
     actuated_particle->accel.x += dx * acc;
     actuated_particle->accel.y += dy * acc;
+#endif
+
     ////Do not aplly relaxation at the bounthery wall  
     //int offset = actuated_particle->rad;
     //if (actuated_particle->locat.x > offset &&
