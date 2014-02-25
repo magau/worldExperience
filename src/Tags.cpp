@@ -5,8 +5,8 @@ Tag :: Tag (World* _world){
 }
 
 Tag :: ~Tag (){
+    remove_actions();
     remove_particles(particles.itemsVector);    
-    actions.erase_all();
 }
 
 void Tag::remove_particles(vector<Particle*> removed_particles){
@@ -77,6 +77,15 @@ Action* Tag::add_action(string action_name){
 void Tag::remove_action(Action* action){
     actions.pop_itemById(action->id);
     action->free();
+}
+
+void Tag::remove_actions(){
+    vector<Action*>::iterator iter_action;
+    for (iter_action = actions.itemsVector.begin();
+         iter_action != actions.itemsVector.end();
+         iter_action++){
+        remove_action(*iter_action);
+    }
 }
 
 void Tag::add_interaction(Interaction* interaction){

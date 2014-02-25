@@ -1,7 +1,5 @@
 #include "testApp.h"
 
-#define USE_UNORDERED_MAP
-
 Interaction::Interaction() : Action(){}
 void Interaction::interact(Particle* actuated_particle, Particle* _host_particle){}
 void Interaction::run(Particle* _host_particle){

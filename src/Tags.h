@@ -13,6 +13,7 @@ class Tag : public Item {
         void add_action(Action* action);
         Action* add_action(string action_name);
         void remove_action(Action* interaction);
+        void remove_actions();
         void add_interaction(Interaction* interaction);
         Interaction* add_interaction(string interaction_name);
         void remove_interaction(Interaction* interaction);

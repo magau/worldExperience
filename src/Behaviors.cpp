@@ -1,7 +1,5 @@
 #include "testApp.h"
 
-#define USE_UNORDERED_MAP
-
 Behavior::Behavior() : Action(){}
 
 GravityGlue::GravityGlue() : Behavior(){
