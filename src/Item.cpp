@@ -10,6 +10,8 @@ Item :: Item (World* _world){
     set_world(_world);
 }
 
+Item :: ~Item(){}
+
 string Item::get_name(){return name;}
 
 int    Item::get_id(){return id;}

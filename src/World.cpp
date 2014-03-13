@@ -24,8 +24,6 @@ Action* World::create_action(string iName){
     newAction->set_world(this);
     //If the action acts over the world since its creation, it only
     //can be done after seting up the world. this is the purpose for setup function
-    if(newAction->is_active())
-        newAction->setup(); 
     return newAction;
 }
 

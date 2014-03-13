@@ -1,13 +1,14 @@
 #include "testApp.h"
 
-getMouseLocation mouse;
+//For some reason thread can't terminate (tryJoin())
+//getMouseLocation mouse;
 
 void testApp::setup(){
     Particle* p;
     //ofSetFrameRate(1);
     ofSetVerticalSync(true);
     ofEnableSmoothing();
-    mouse.startThread(true, false);
+    //mouse.startThread(true, false);
     //managerInterface.start(&world);
     
     // Cria a particula "MP_RegGrid" que por sua vez cria uma
@@ -118,5 +119,6 @@ void testApp::dragEvent(ofDragInfo dragInfo){
 //--------------------------------------------------------------
 void testApp::exit() {
  // stop the thread
- mouse.stopThread();
+ //cout << "stoping thread..." << endl;
+ //mouse.stopThread();
 }
