@@ -88,9 +88,12 @@ MouseTracking::MouseTracking() : Behavior(){
 }
 
 void MouseTracking::run(Particle* _host_particle){
-    //extern getMouseLocation mouse;
-    //_host_particle->veloc.x = mouse.x - _host_particle->locat.x;
-    //_host_particle->veloc.y = mouse.y - _host_particle->locat.y;
+#ifdef USE_MOUSE_THREAD
+    extern getMouseLocation mouse;
+    _host_particle->veloc.x = mouse.x - _host_particle->locat.x;
+    _host_particle->veloc.y = mouse.y - _host_particle->locat.y;
+#else
     _host_particle->veloc.x = ofGetMouseX() - _host_particle->locat.x;
     _host_particle->veloc.y = ofGetMouseY() - _host_particle->locat.y;
+#endif
 }
