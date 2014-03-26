@@ -31,6 +31,12 @@ Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
+void Electrical_Repulsion::add_listener(string attr_name) {
+    //ofEvent<bool>* new_event = new ofEvent<bool>;
+    //bool_events.add(new_event); 
+    //ofAddListener(_tag->bool_event,this,&iterate_attribute(attr_name,b));}
+}
+
 void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host_particle){
     float dist,dx,dy,weight,weight_fact,acc;
 

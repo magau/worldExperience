@@ -41,6 +41,10 @@ void testApp::setup(){
     // Adiciona a tag t0, que transporta consigo as particulas
     // da grelha, à interacção.
     i0->add_actuated_tag(t0);
+    //t0->add_bool_listener_to_particles(&(t0->bool_event));
+    //t0->add_listener_to_particles<bool_attr>(&(t0->bool_event));
+    t0->add_listener_to_particles("isAlive");
+    t0->add_listener_to_particles("color");
 
 }
    
@@ -66,6 +70,38 @@ void testApp::draw(){
 void testApp::keyPressed(int key){
 
      //managerInterface.listen(key);
+     switch (key){
+         case 'd':{
+             bool_attr d;
+             d.name = "isAlive";
+             d.value = false;
+             ofNotifyEvent(world.tags.itemsVector[0]->bool_event, d);
+             break;}
+         case 'b':{
+             ofColor_attr b;
+             b.name = "color";
+             b.value = ofColor(0,0,255);
+             ofNotifyEvent(world.tags.itemsVector[0]->ofColor_event, b);
+             break;}
+         case 'g':{
+             ofColor_attr g;
+             g.name = "color";
+             g.value = ofColor(0,255,0);
+             ofNotifyEvent(world.tags.itemsVector[0]->ofColor_event, g);
+             break;}
+         case 'r':{
+             ofColor_attr r;
+             r.name = "color";
+             r.value = ofColor(255,0,0);
+             ofNotifyEvent(world.tags.itemsVector[0]->ofColor_event, r);
+             break;}
+         case 'w':{
+             ofColor_attr r;
+             r.name = "color";
+             r.value = ofColor(255);
+             ofNotifyEvent(world.tags.itemsVector[0]->ofColor_event, r);
+             break;}
+      }
 /*
      switch (key){
          case 'a':

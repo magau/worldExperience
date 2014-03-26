@@ -24,6 +24,7 @@ class Interaction : public Action {
 class Electrical_Repulsion : public Interaction{
     public:
         Electrical_Repulsion();
+        void add_listener(string var_name);
         void interact(Particle* actuated_particle, Particle* _host_particle);
 };
 

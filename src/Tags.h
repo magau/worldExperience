@@ -1,5 +1,11 @@
 class Tag : public Item {
     public:
+        ofEvent<bool_attr> bool_event;
+        ofEvent<int_attr> int_event;
+        ofEvent<float_attr> float_event;
+        ofEvent<ofVec3f_attr> ofVec3f_event;
+        ofEvent<ofColor_attr> ofColor_event;
+
         Particles_Container particles;
         Actions_Container actions;
         Tag (World* _world);
@@ -24,4 +30,17 @@ class Tag : public Item {
         void behave();
         void interact();
         void actuate();
+
+        void add_listener_to_particles(string attr_name);
+        //template <typename T>
+        //void add_listener_to_particles(ofEvent<T>* event){
+        //    vector<Particle*>::iterator iter_particle;
+        //    for (iter_particle = particles.itemsVector.begin();
+        //         iter_particle < particles.itemsVector.end();
+        //         iter_particle++){
+        //        (*iter_particle)->add_listener(*event);
+        //    } 
+        //}
+
+        //void add_bool_listener_to_particles(ofEvent<bool_attr>* event);
 };

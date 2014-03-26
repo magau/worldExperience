@@ -1,5 +1,6 @@
 #pragma once
 
+#include <typeinfo>
 #include "ofMain.h"
 //#include <sstream>
 #include <tr1/unordered_map> 
@@ -17,6 +18,7 @@ using namespace tr1;
 #include "Tags.h"
 
 //#define USE_UNORDERED_MAP
+#define USE_MOUSE_THREAD
 //#define SYPHON
 //#define OSC_MSG
 

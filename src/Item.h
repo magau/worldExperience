@@ -4,6 +4,32 @@ class Interaction;
 class Behavior;
 class Action;
 
+struct bool_attr {
+    string name;
+    bool value;
+};
+
+struct int_attr {
+    string name;
+    int value;
+};
+
+struct float_attr {
+    string name;
+    float value;
+};
+
+struct ofVec3f_attr {
+    string name;
+    ofVec3f value;
+};
+
+struct ofColor_attr {
+    string name;
+    ofColor value;
+};
+
+
 class Item{
 
     public:
@@ -20,6 +46,42 @@ class Item{
         void set_world(World* _world);
         void set_live_state(bool live_state);
         void set_active_state(bool active_state);
+
+        void iterate_attribute(string attr_name, bool forward);
+
+        template <typename T>
+        void add_listener(ofEvent<T>* event){
+            if (typeid(*event) == typeid(ofEvent<bool_attr>)) {
+                ofAddListener(*event, this ,& Item::change_bool_attr);
+            } //else if (typeid(*event) == typeid(ofEvent<int_attr>)) {
+                //ofAddListener(*event, this ,& Item::change_int_attr);
+            //} else if (typeid(*event) == typeid(ofEvent<float_attr>)) {
+            //    //ofAddListener(*event, this ,& Item::change_float_attr);
+            //} else if (typeid(*event) == typeid(ofEvent<ofVec3f_attr>)) {
+            //    //ofAddListener(*event, this ,& Item::change_ofVec3f_attr);
+            //} else if (typeid(*event) == typeid(ofEvent<ofColor_attr>)) {
+            //    //ofAddListener(*event, this ,& Item::change_ofColor_attr);
+            //}
+            //...
+        }
+
+        void add_bool_listener(ofEvent<bool_attr>* event);
+        void add_int_listener(ofEvent<int_attr>* event);
+        void add_float_listener(ofEvent<float_attr>* event);
+        void add_ofVec3f_listener(ofEvent<ofVec3f_attr>* event);
+        void add_ofColor_listener(ofEvent<ofColor_attr>* event);
+
+
+        //virtual void add_listener(ofEvent<bool_attr>& bool_event);
+
+        //virtual void add_listener(string attr_name);
+        void change_bool_attr(bool_attr& _attr);
+        void change_int_attr(int_attr& attr);
+        void change_float_attr(float_attr& attr);
+        void change_ofVec3f_attr(ofVec3f_attr& attr);
+        void change_ofColor_attr(ofColor_attr& attr);
+
+
         /*
          * The purpose of the "setup" function is to set and/or
          * add (only on particles it can be added variables)
@@ -81,6 +143,7 @@ class Item{
         unordered_map<string, int*> intPtr_map;
         unordered_map<string, float*> floatPtr_map;
         unordered_map<string, bool*> boolPtr_map;
-
+        //Change in future to a template
+        Pointers_Container<ofEvent<bool>*> bool_events;
 
 };
