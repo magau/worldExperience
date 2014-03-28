@@ -143,7 +143,5 @@ class Item{
         unordered_map<string, int*> intPtr_map;
         unordered_map<string, float*> floatPtr_map;
         unordered_map<string, bool*> boolPtr_map;
-        //Change in future to a template
-        Pointers_Container<ofEvent<bool>*> bool_events;
 
 };

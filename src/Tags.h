@@ -7,7 +7,8 @@ class Tag : public Item {
         ofEvent<ofColor_attr> ofColor_event;
 
         Particles_Container particles;
-        Actions_Container actions;
+        Interactions_Container interactions;
+        Behaviors_Container behaviors;
         Tag (World* _world);
         ~Tag();
         void add_particle(Particle* particle);
@@ -16,20 +17,20 @@ class Tag : public Item {
         //void free(Item* item);
         void free_particle(Particle* particle);
         void remove_particles(vector<Particle*> added_particles);
-        void add_action(Action* action);
-        Action* add_action(string action_name);
-        void remove_action(Action* interaction);
-        void remove_actions();
+        //void add_action(Action* action);
+        //Action* add_action(string action_name);
+        //void remove_action(Action* interaction);
+        //void remove_actions();
         void add_interaction(Interaction* interaction);
         Interaction* add_interaction(string interaction_name);
         void remove_interaction(Interaction* interaction);
+        void remove_interactions();
         void add_behavior(Behavior* behavior);
         Behavior* add_behavior(string behavior_name);
         void remove_behavior(Behavior* behavior);
+        void remove_behaviors();
         void run();
-        void behave();
-        void interact();
-        void actuate();
+        //void actuate();
 
         void add_listener_to_particles(string attr_name);
         //template <typename T>

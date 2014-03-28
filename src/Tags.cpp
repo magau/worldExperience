@@ -5,7 +5,8 @@ Tag :: Tag (World* _world){
 }
 
 Tag :: ~Tag (){
-    remove_actions();
+    remove_interactions();
+    remove_behaviors();
     remove_particles(particles.itemsVector);    
 }
 
@@ -29,11 +30,17 @@ void Tag::remove_particle(Particle* particle){
 
 void Tag::free_particle(Particle* particle){
     // Free the particle variables seted by this tag's actions.
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
-         iter_action++){
-             (*iter_action)->free(particle);
+    vector<Interaction*>::iterator iter_interaction;
+    for (iter_interaction = interactions.itemsVector.begin();
+         iter_interaction != interactions.itemsVector.end();
+         iter_interaction++){
+             (*iter_interaction)->free(particle);
+    }
+    vector<Behavior*>::iterator iter_behavior;
+    for (iter_behavior = behaviors.itemsVector.begin();
+         iter_behavior != behaviors.itemsVector.end();
+         iter_behavior++){
+             (*iter_behavior)->free(particle);
     }
 }
 
@@ -41,11 +48,18 @@ void Tag::add_particle(Particle* particle){
     particles.add(particle,false); 
     particle->tags.add(this,false);
 
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
-         iter_action++){
-             (*iter_action)->setup(particle);
+    vector<Interaction*>::iterator iter_interaction;
+    for (iter_interaction = interactions.itemsVector.begin();
+         iter_interaction != interactions.itemsVector.end();
+         iter_interaction++){
+             (*iter_interaction)->setup(particle);
+    }
+
+    vector<Behavior*>::iterator iter_behavior;
+    for (iter_behavior = behaviors.itemsVector.begin();
+         iter_behavior != behaviors.itemsVector.end();
+         iter_behavior++){
+             (*iter_behavior)->setup(particle);
     }
 
 }
@@ -59,82 +73,110 @@ void Tag::add_particles(vector<Particle*> added_particles){
     }
 }
 
-void Tag::add_action(Action* action){
-    actions.add(action);
-    action->add_tag(this);
-    action->setup();
-}
+//void Tag::add_action(Action* action){
+//    actions.add(action);
+//    action->add_tag(this);
+//    action->setup();
+//}
+//
+//Action* Tag::add_action(string action_name){
+//    Action* action = world->create_action(action_name);
+//    actions.add(action);
+//    action->set_world(world);
+//    action->add_tag(this);
+//    action->setup();
+//    return action;
+//}
+//
+//void Tag::remove_action(Action* action){
+//    actions.pop_itemById(action->id);
+//    action->free();
+//}
+//
 
-Action* Tag::add_action(string action_name){
-    Action* action = world->create_action(action_name);
-    actions.add(action);
-    action->set_world(world);
-    action->add_tag(this);
-    action->setup();
-    return action;
-}
-
-void Tag::remove_action(Action* action){
-    actions.pop_itemById(action->id);
-    action->free();
-}
-
-void Tag::remove_actions(){
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
-         iter_action++){
-        remove_action(*iter_action);
+void Tag::remove_interactions(){
+    vector<Interaction*>::iterator iter_interaction;
+    for (iter_interaction = interactions.itemsVector.begin();
+         iter_interaction != interactions.itemsVector.end();
+         iter_interaction++){
+        remove_interaction(*iter_interaction);
     }
 }
 
+void Tag::remove_behaviors(){
+    vector<Behavior*>::iterator iter_behavior;
+    for (iter_behavior = behaviors.itemsVector.begin();
+         iter_behavior != behaviors.itemsVector.end();
+         iter_behavior++){
+        remove_behavior(*iter_behavior);
+    }
+}
 void Tag::add_interaction(Interaction* interaction){
-    add_action(interaction);
+    interactions.add(interaction);
+    interaction->add_tag(this);
+    interaction->setup();
 }
 
 Interaction* Tag::add_interaction(string interaction_name){
     Interaction* interaction = world->create_interaction(interaction_name);
     interaction->set_world(world);
-    actions.add(interaction);
+    interactions.add(interaction);
     interaction->add_tag(this);
     interaction->setup();
     return interaction;
 }
 
 void Tag::remove_interaction(Interaction* interaction){
-    remove_action(interaction);
+    interactions.pop_itemById(interaction->id);
+    interaction->free();
 }
 
 Behavior* Tag::add_behavior(string behavior_name){
     
     Behavior* behavior = world->create_behavior(behavior_name);
     behavior->set_world(world);
-    actions.add(behavior);
+    behaviors.add(behavior);
     behavior->add_tag(this);
     behavior->setup();
     return behavior;
 }
 
 void Tag::add_behavior(Behavior* behavior){
-    add_action(behavior);
+    behaviors.add(behavior);
+    behavior->add_tag(this);
+    behavior->setup();
 }
 
 void Tag::remove_behavior(Behavior* behavior){
-    remove_action(behavior);
+    behaviors.pop_itemById(behavior->id);
+    behavior->free();
 }
 
 void Tag::run(){
-    actuate();
-}
 
-void Tag::actuate(){
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
-         iter_action++){
-         (*iter_action)->run();
+    vector<Interaction*>::iterator iter_interaction;
+    for (iter_interaction = interactions.itemsVector.begin();
+         iter_interaction != interactions.itemsVector.end();
+         iter_interaction++){
+         (*iter_interaction)->run();
+    }
+
+    vector<Behavior*>::iterator iter_behavior;
+    for (iter_behavior = behaviors.itemsVector.begin();
+         iter_behavior != behaviors.itemsVector.end();
+         iter_behavior++){
+         (*iter_behavior)->run();
     }
 }
+
+//void Tag::actuate(){
+//    vector<Action*>::iterator iter_action;
+//    for (iter_action = actions.itemsVector.begin();
+//         iter_action != actions.itemsVector.end();
+//         iter_action++){
+//         (*iter_action)->run();
+//    }
+//}
 
 void Tag::add_listener_to_particles(string attr_name){
     vector<Particle*>::iterator iter_particle;
