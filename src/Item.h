@@ -34,7 +34,7 @@ class Item{
 
     public:
         Item();
-        Item(World* _world);
+        //Item(World* _world);
         virtual ~Item();
         string get_name();
         int get_id();

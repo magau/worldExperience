@@ -1,6 +1,6 @@
-class Particles_Container;
-class Tag;
-class Tags_Container : public Pointers_Container<Tag*>{};
+//class Particles_Container;
+//class Tag;
+class Tags_Container;// : public Pointers_Container<Tag*>{};
 
 class Interaction : public Action {
     public:
@@ -55,4 +55,4 @@ class Interaction_IV : public Interaction{
 };
 */
 
-class Interactions_Container : public Pointers_Container<Interaction*>{};
+//class Interactions_Container : public Pointers_Container<Interaction*>{};

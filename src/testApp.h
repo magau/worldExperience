@@ -17,7 +17,7 @@ using namespace tr1;
 #include "World.h"
 #include "Tags.h"
 
-//#define USE_UNORDERED_MAP
+#define USE_UNORDERED_MAP
 //#define USE_MOUSE_THREAD
 //#define SYPHON
 //#define OSC_MSG

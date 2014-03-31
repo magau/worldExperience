@@ -26,6 +26,7 @@ class MouseTracking : public Behavior{
     public:
         MouseTracking();
         void run(Particle* _host_particle);
+        void setup(){};//cout<<"aqui"<<endl;};
 };
 
-class Behaviors_Container : public Pointers_Container<Behavior*>{};
+//class Behaviors_Container : public Pointers_Container<Behavior*>{};

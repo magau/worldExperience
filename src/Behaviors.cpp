@@ -14,13 +14,7 @@ void GravityGlue::setup(Particle* _host_particle){
 }
 
 void GravityGlue::setup(){
-    vector<Particle*> particles = get_tag()->particles.get_items();
-    vector<Particle*>::iterator iter_particle;
-    for ( iter_particle = particles.begin();
-          iter_particle < particles.end();
-          iter_particle++){
-        setup(*iter_particle);
-    }
+    Action::setup();
 }
 
 void GravityGlue::free(){

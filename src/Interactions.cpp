@@ -1,7 +1,11 @@
 #include "testApp.h"
 
-Interaction::Interaction() : Action(){}
+Interaction::Interaction() : Action() {
+    actuated_tags.isMainContainer=false;
+}
+
 void Interaction::interact(Particle* actuated_particle, Particle* _host_particle){}
+
 void Interaction::run(Particle* _host_particle){
     vector<Tag*>::iterator iter_tag;
     vector<Particle*>::iterator iter_particle;
@@ -19,7 +23,7 @@ void Interaction::run(Particle* _host_particle){
 }
 
 void Interaction::add_actuated_tag(Tag* tag){
-   actuated_tags.add(tag, false); 
+   actuated_tags.add(tag); 
 }
 
 void Interaction::remove_actuated_tag(Tag* tag){

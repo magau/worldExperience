@@ -11,11 +11,7 @@ Particle :: Particle () : Item(){
     intPtr_map["rad"]          = &rad;
     floatPtr_map["relax_fact"] = &relax_fact;
     boolPtr_map["isAlive"]     = &isAlive;
-}
-
-Particle :: Particle (World* _world){
-    Particle ();
-    set_world(_world);
+    tags.isMainContainer = false;
 }
 
 Particle :: ~Particle (){
@@ -105,14 +101,4 @@ void Circle :: display() {
     ofEllipse(locat.x,locat.y,rad,rad);
 }
 
-Particle* Particles_Container::create_itemByName(string iName){
 
-    Items_Fabric nature;
-    if (iName.size() == 0)
-        iName = default_addedItemName;
-    Particle* newParticle = nature.create_particle(iName);
-    add(newParticle);
-
-    return newParticle;
-
-}

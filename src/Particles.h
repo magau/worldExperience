@@ -1,4 +1,5 @@
-class Particles_Container;
+//class Particles_Container;
+//class Tags_Container;
 
 class Particle : public Item {
     public:
@@ -10,7 +11,6 @@ class Particle : public Item {
         Tags_Container tags;
 
         Particle ();
-        Particle (World* _world);
         ~Particle();
 
         virtual void setup();
@@ -29,8 +29,4 @@ class Circle : public Particle{
 };
 
 
-class Particles_Container : public Pointers_Container<Particle*>{
-    public:
-        Particle* create_itemByName(string iName);
-};
 

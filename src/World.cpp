@@ -1,9 +1,74 @@
 #include "testApp.h"
 
-World :: World() {}
+World :: World() {
+}
+
+Particle* World::create_particle(string iName, bool isActive){
+/*
+ * Create a new particle. Add created particle to the world particles
+ * container and if "isActive" is setted true run the
+ * activate_particle method (set true the "isActive" 
+ * attribute of the particle and run
+ * the "setup" method of the particle).
+ */
+    Particle* newParticle = nature.create_particle(iName);
+    if(newParticle->get_world() != this){
+        newParticle->set_world(this);
+        particles.add(newParticle);
+    }
+    if (isActive) {
+        activate_particle(newParticle);
+    } else if (!isActive) {
+        newParticle->set_active_state(false);
+    }
+
+    return newParticle;
+}
+
+void World::activate_particle(Particle* particle){
+    // Set the "isActive" attribute true and run 
+    // the setup method for the particle.
+    particle->set_active_state(true);
+    particle->setup(); 
+}
+
+void World :: remove_particle(Particle* particle){
+    // Remove the particle from the world.particles container.
+    particles.erase_itemById(particle->get_id());
+}
+
+/*
+ * Implementation in the furute of the "get" and "remove"
+ * methods by name and id, for the particles and actions.
+ * ...
+ */
+
+Action* World::create_action(string iName){
+    //create newAction.
+    Action* newAction = nature.create_action(iName);
+    newAction->set_world(this);
+    return newAction;
+}
+
+
+Behavior* World::create_behavior(string iName){
+    //create newBehavior.
+    Behavior* newBehavior = nature.create_behavior(iName);
+    newBehavior->set_world(this);
+
+    return newBehavior;
+}
+
+
+Interaction* World::create_interaction(string iName){
+    //create newInteraction.
+    Interaction* newInteraction = nature.create_interaction(iName);
+    newInteraction->set_world(this);
+    return newInteraction;
+}
 
 Tag* World::create_tag(string iName){
-    //create a new tag in the tags container of the world.
+    //create a new tag in the World's tags container.
     Tag* newTag = new Tag(this);
     tags.add(newTag);
 
@@ -17,69 +82,10 @@ Tag* World::create_tag(string iName){
     return newTag;
 }
 
-Action* World::create_action(string iName){
-    //create newAction.
-    //Action* newAction = actions.create_itemByName(iName);
-    Action* newAction = nature.create_action(iName);
-    newAction->set_world(this);
-    //If the action acts over the world since its creation, it only
-    //can be done after seting up the world. this is the purpose for setup function
-    if(newAction->is_active())
-        newAction->setup(); 
-    return newAction;
+void World :: remove_tag(Tag* tag){
+    tags.erase_itemById(tag->get_id());
 }
 
-
-Behavior* World::create_behavior(string iName){
-    //create newBehavior.
-    //Behavior* newBehavior = behaviors.create_itemByName(iName);
-    Behavior* newBehavior = nature.create_behavior(iName);
-    newBehavior->set_world(this);
-    //If the behavior acts over the world since its creation, it only
-    //can be done after seting up the world. this is the purpose for setup function
-    if(newBehavior->is_active())
-        newBehavior->setup(); 
-    return newBehavior;
-}
-
-
-Interaction* World::create_interaction(string iName){
-    //create newInteraction.
-    //Interaction* newInteraction = interactions.create_itemByName(iName);
-    Interaction* newInteraction = nature.create_interaction(iName);
-    newInteraction->set_world(this);
-    //If the interaction acts over the world since its creation, it only
-    //can be done after seting up the world. this is the purpose for setup function
-    if(newInteraction->is_active())
-        newInteraction->setup(); 
-    return newInteraction;
-}
-
-Particle* World::create_particle(string iName){
-    //create newParticle add particle to world.particles
-    Particle* newParticle = particles.create_itemByName(iName);
-    newParticle->set_world(this);
-    //If the particle acts over the world since its creation, it only
-    //can be done after seting up the world. this is the purpose for setup function
-    if(newParticle->is_active())
-        newParticle->setup(); 
-    return newParticle;
-}
-
-void World::add_particle(Particle* particle){
-    // At the moment the particles instantiated at the "world.create_particle" are
-    // already added. (change in future...)
-    if(particle->get_world()==(World*)NULL){// for future usase...
-        particle->set_world(this);
-        particles.add(particle);
-    }
-    //If the particle constructor sets false the default value of the "isAlive" variable.
-    //Used to preset the particle members.
-    if(!particle->is_active()){
-        particle->set_live_state(true);
-        particle->setup(); 
-    }
-}
 
 Particles_Container* World :: update(){
 
@@ -103,15 +109,6 @@ Particles_Container* World :: update(){
     return &(particles);
 }
 
-void World :: remove_tag(Tag* tag){
-    tags.erase_itemById(tag->get_id());
-}
-
-void World :: remove_particle(Particle* particle){
-    // Remove the particle from the world.particles container.
-    particles.erase_itemById(particle->get_id());
-}
-
 void World::draw(){
     for(vector<Particle*>::iterator iter_particle = particles.itemsVector.begin();
                                     iter_particle != particles.itemsVector.end();
@@ -119,6 +116,8 @@ void World::draw(){
         (*iter_particle)->display();
     }
 }
+
+
 
 Particle* Items_Fabric::create_particle(string item_name){
 

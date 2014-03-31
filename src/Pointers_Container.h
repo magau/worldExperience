@@ -1,27 +1,35 @@
+class Particle;
+class Action;
+class Tag;
+
 template <typename IType>
 class Pointers_Container{
     public:
         string name;
         int id;
+        bool isMainContainer;
         string default_addedItemName;
         vector<IType> itemsVector;
         vector<int> freeIdBuff;
-
+        Pointers_Container();
+        Pointers_Container(bool isMainContainer);
+        Pointers_Container(const Pointers_Container& ptr_container);
+        Pointers_Container<IType>& operator=(Pointers_Container& ptr_container);
         void set_default_itemName(string iName);
-        void add(IType item,bool mainContainer=true);
+        void add(IType item);
         virtual IType create_itemByName(string iName);
-        IType pop(u_int index=(u_int)NULL, bool erase=false);
+        IType pop(u_int index=(u_int)NULL);
         void erase(u_int index=(u_int)NULL);
-        IType pop(typename vector<IType>::iterator item_it, bool erase=false);
+        IType pop(typename vector<IType>::iterator item_it);
         void erase(typename vector<IType>::iterator item_it);
-        IType pop_itemById(int id, bool erase=false);
+        IType pop_itemById(int id);
         void erase_itemById(int id);
         IType get_itemById(int id);
         vector <IType> get_items();
         void show_items_name_and_id();
-        vector <IType> pop_itemsByName(string iName, bool erase=false);
+        vector <IType> pop_itemsByName(string iName);
         void erase_itemsByName(string iName);
-        vector <IType> clear(bool erase=false);
+        vector <IType> clear();
         void erase_all();
         vector <IType> get_itemsByName(string iName="all");
         /*
@@ -42,11 +50,40 @@ Pointers_Container<IType>::Pointers_Container(){
 */
 
 template <typename IType> 
-void Pointers_Container<IType>::add(IType item,bool mainContainer){
+Pointers_Container<IType>& Pointers_Container<IType>::operator=(Pointers_Container<IType>& ptr_container){
+    name = ptr_container.name;
+    id = ptr_container.id;
+    isMainContainer = ptr_container.isMainContainer;
+    itemsVector = ptr_container.itemsVector;
+    freeIdBuff = ptr_container.freeIdBuff;
+    return *this;
+}
+
+template <typename IType> 
+Pointers_Container<IType>::Pointers_Container(const Pointers_Container& ptr_container){
+    name = ptr_container.name;
+    id = ptr_container.id;
+    isMainContainer = ptr_container.isMainContainer;
+    itemsVector = ptr_container.itemsVector;
+    freeIdBuff = ptr_container.freeIdBuff;
+}
+
+template <typename IType> 
+Pointers_Container<IType>::Pointers_Container(){
+    isMainContainer=true;
+}
+
+template <typename IType> 
+Pointers_Container<IType>::Pointers_Container(bool _isMainContainer){
+    isMainContainer = _isMainContainer;
+}
+
+template <typename IType> 
+void Pointers_Container<IType>::add(IType item){
     itemsVector.push_back(item);
     // If 'mainContainer' is setted true we give an id number to the added item.
     // The mainContainer is setted true wen a particle is added to 'world.groups'.
-    if (mainContainer) {
+    if (isMainContainer) {
         if (freeIdBuff.size() > 0){
             itemsVector.back()->set_id(freeIdBuff.back());
             freeIdBuff.pop_back();
@@ -91,7 +128,7 @@ vector <IType> Pointers_Container<IType>::get_itemsByName(string iName){
 }
 
 template <typename IType> 
-IType Pointers_Container<IType>::pop(typename vector<IType>::iterator item_it, bool erase){
+IType Pointers_Container<IType>::pop(typename vector<IType>::iterator item_it){
 /*
 Erase element from "itemsVector" pointers vector after
 deallocate the respective memory using the "delete"
@@ -100,7 +137,7 @@ in "freeIdBuff" vector for future added items.
 */
     IType item; 
     if (item_it >= itemsVector.begin() && item_it < itemsVector.end() && itemsVector.size() > 0) {
-        if (erase) {
+        if (isMainContainer) {
             if ((*item_it)->get_id() < (int)(itemsVector.size() - 1)) {
                 freeIdBuff.push_back((*item_it)->get_id());
             }
@@ -124,7 +161,7 @@ void Pointers_Container<IType>::erase(typename vector<IType>::iterator item_it){
 }
 
 template <typename IType> 
-IType Pointers_Container<IType>::pop(u_int index, bool erase){
+IType Pointers_Container<IType>::pop(u_int index){
 /*
 Erase element from "itemsVector" pointers vector after
 deallocate the respective memory using the "delete"
@@ -137,7 +174,7 @@ in "freeIdBuff" vector for future added items.
     if (index >= 0 && index < itemsVector.size() && itemsVector.size() > 0) {
         item = itemsVector[index];
         itemsVector.erase(itemsVector.begin() + index);
-        if (erase) {
+        if (isMainContainer) {
             if (item->get_id() < (int)(itemsVector.size())) {
                 freeIdBuff.push_back(item->get_id());
             }
@@ -192,7 +229,7 @@ IType Pointers_Container<IType>::get_itemById(int id){
 }
 
 template <typename IType> 
-IType Pointers_Container<IType>::pop_itemById(int id, bool erase){
+IType Pointers_Container<IType>::pop_itemById(int id){
     IType item;
     IType result = (int)NULL;
     typename vector<IType>::iterator item_it;
@@ -204,7 +241,7 @@ IType Pointers_Container<IType>::pop_itemById(int id, bool erase){
         item = *item_it;
         if (item->get_id() == id){
             itemsVector.erase(item_it);
-            if (erase){
+            if (isMainContainer){
                 if (item->get_id() < (int)itemsVector.size()) {
                     freeIdBuff.push_back(id);
                 }
@@ -220,11 +257,11 @@ IType Pointers_Container<IType>::pop_itemById(int id, bool erase){
 
 template <typename IType> 
 void Pointers_Container<IType>::erase_itemById(int id){
-    pop_itemById(id, true); 
+    pop_itemById(id); 
 }
 
 template <typename IType> 
-vector<IType> Pointers_Container<IType>::pop_itemsByName(string iName, bool erase){
+vector<IType> Pointers_Container<IType>::pop_itemsByName(string iName){
     IType item;
     typename vector<IType>::iterator item_it;
     vector<IType> result;
@@ -237,7 +274,7 @@ vector<IType> Pointers_Container<IType>::pop_itemsByName(string iName, bool eras
             item = *item_it;
             if (iName.compare(item->get_name()) == 0) {
                 itemsVector.erase(item_it);
-                if (erase){
+                if (isMainContainer){
                     if (item->get_id() < (int)itemsVector.size()) {
                         freeIdBuff.push_back(item->get_id());
                     }
@@ -253,7 +290,7 @@ vector<IType> Pointers_Container<IType>::pop_itemsByName(string iName, bool eras
 
 template <typename IType> 
 void Pointers_Container<IType>::erase_itemsByName(string iName){
-    pop_itemsByName(iName,true);
+    pop_itemsByName(iName);
 }
 
 /*
@@ -286,14 +323,14 @@ void Pointers_Container<IType>::reset_itemTypeById(int id, string iName){
 */
 
 template <typename IType> 
-vector<IType> Pointers_Container<IType>::clear(bool erase){
+vector<IType> Pointers_Container<IType>::clear(){
     IType item;
     typename vector<IType>::iterator item_it;
     vector<IType> result;
     result = itemsVector;
 
     if ( itemsVector.size() > 0){
-        if (erase){
+        if (isMainContainer){
             for (item_it = itemsVector.end() - 1;
                  item_it >= itemsVector.begin();
                  item_it--){
@@ -310,5 +347,37 @@ vector<IType> Pointers_Container<IType>::clear(bool erase){
 
 template <typename IType> 
 void Pointers_Container<IType>::erase_all(){
-    clear(true);
+    clear();
 }
+
+class Particles_Container : public Pointers_Container<Particle*>{
+    public:
+        Particles_Container() : Pointers_Container<Particle*>(){};
+        Particles_Container(bool isMainContainer) : Pointers_Container<Particle*>(isMainContainer){};
+        //Particle* create_itemByName(string iName);
+};
+
+//Particle* Particles_Container::create_itemByName(string iName){
+//
+//    Items_Fabric nature;
+//    if (iName.size() == 0)
+//        iName = default_addedItemName;
+//    Particle* newParticle = nature.create_particle(iName);
+//    add(newParticle);
+//
+//    return newParticle;
+//
+//}
+
+class Tags_Container : public Pointers_Container<Tag*> {
+    public:
+    Tags_Container() : Pointers_Container<Tag*>(){};
+    Tags_Container(bool isMainContainer) : Pointers_Container<Tag*>(isMainContainer){};
+};
+
+
+class Actions_Container : public Pointers_Container<Action*>{
+    public:
+    Actions_Container() : Pointers_Container<Action*>(){};
+    Actions_Container(bool isMainContainer) : Pointers_Container<Action*>(isMainContainer){};
+};

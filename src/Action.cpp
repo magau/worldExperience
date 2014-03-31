@@ -5,7 +5,17 @@ void Action::add_tag(Tag* tag){_tag = tag;}
 Tag* Action::get_tag(){return _tag;}
 void Action::setup(Particle* particle){}
 void Action::free(Particle* particle){}
-void Action::setup(){}
+void Action::setup(){
+    if (get_tag() != (Tag*)NULL) {
+        vector<Particle*> particles = get_tag()->particles.get_items();
+        vector<Particle*>::iterator iter_particle;
+        for ( iter_particle = particles.begin();
+              iter_particle < particles.end();
+              iter_particle++){
+            setup(*iter_particle);
+        }
+    }
+}
 void Action::free(){}
 
 void Action::run(Particle* _host_particle){}
