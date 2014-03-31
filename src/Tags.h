@@ -21,17 +21,17 @@ class Tag : public Item {
         void remove_particles(vector<Particle*> added_particles);
 
         void add_action(Action* action);
-        Action* add_action(string action_name);
+        Action* create_action(string action_name);
         void remove_action(Action* interaction);
         void remove_actions();
 
         void add_interaction(Interaction* interaction);
-        Interaction* add_interaction(string interaction_name);
+        Interaction* create_interaction(string interaction_name);
         void remove_interaction(Interaction* interaction);
         void remove_interactions();
 
         void add_behavior(Behavior* behavior);
-        Behavior* add_behavior(string behavior_name);
+        Behavior* create_behavior(string behavior_name);
         void remove_behavior(Behavior* behavior);
         void remove_behaviors();
 
