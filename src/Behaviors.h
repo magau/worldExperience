@@ -8,6 +8,7 @@ class Behavior : public Action{
         int max_dist;
         int min_dist; 
         float weigth_fact;
+        virtual const type_info& get_typeid();
 };
 
 class GravityGlue : public Behavior{
@@ -18,6 +19,7 @@ class GravityGlue : public Behavior{
         void free(Particle* _host_particle);
         void setup();
         void free();
+        const type_info& get_typeid();
     private:
         string location_key;
 };
@@ -26,7 +28,6 @@ class MouseTracking : public Behavior{
     public:
         MouseTracking();
         void run(Particle* _host_particle);
-        void setup(){};//cout<<"aqui"<<endl;};
+        void setup(){};
+        const type_info& get_typeid();
 };
-
-//class Behaviors_Container : public Pointers_Container<Behavior*>{};

@@ -2,10 +2,18 @@
 
 Behavior::Behavior() : Action(){}
 
+const type_info& Behavior::get_typeid() {
+    return typeid(this);
+}
+
 GravityGlue::GravityGlue() : Behavior(){
     set_name("B_GravityGlue");
     location_key = get_name()+"_loc";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
+}
+
+const type_info& GravityGlue::get_typeid() {
+    return typeid(this);
 }
 
 void GravityGlue::setup(Particle* _host_particle){
@@ -18,9 +26,9 @@ void GravityGlue::setup(){
 }
 
 void GravityGlue::free(){
-    vector<Particle*>::iterator iter_particle;
-    for ( iter_particle = get_tag()->particles.itemsVector.begin();
-          iter_particle < get_tag()->particles.itemsVector.end();
+    PointersVector<Particle*>::iterator iter_particle;
+    for ( iter_particle = get_tag()->particles.begin();
+          iter_particle < get_tag()->particles.end();
           iter_particle++){
         free(*iter_particle);
     }
@@ -79,6 +87,10 @@ void GravityGlue::run(Particle* _host_particle){
 
 MouseTracking::MouseTracking() : Behavior(){
     set_name("B_MouseTracking"); 
+}
+
+const type_info& MouseTracking::get_typeid() {
+    return typeid(this);
 }
 
 void MouseTracking::run(Particle* _host_particle){

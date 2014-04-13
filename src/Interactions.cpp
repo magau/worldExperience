@@ -1,20 +1,23 @@
 #include "testApp.h"
 
 Interaction::Interaction() : Action() {
-    actuated_tags.isMainContainer=false;
+}
+
+const type_info& Interaction::get_typeid() {
+    return typeid(this);
 }
 
 void Interaction::interact(Particle* actuated_particle, Particle* _host_particle){}
 
 void Interaction::run(Particle* _host_particle){
-    vector<Tag*>::iterator iter_tag;
-    vector<Particle*>::iterator iter_particle;
-    for (iter_tag = actuated_tags.itemsVector.begin();
-         iter_tag < actuated_tags.itemsVector.end();
+    PointersVector<Tag*>::iterator iter_tag;
+    PointersVector<Particle*>::iterator iter_particle;
+    for (iter_tag = actuated_tags.begin();
+         iter_tag < actuated_tags.end();
          iter_tag++ ){
 
-        for (iter_particle = (*iter_tag)->particles.itemsVector.begin();
-             iter_particle != (*iter_tag)->particles.itemsVector.end();
+        for (iter_particle = (*iter_tag)->particles.begin();
+             iter_particle != (*iter_tag)->particles.end();
              iter_particle++){
 
             interact(*iter_particle, _host_particle);
@@ -23,16 +26,20 @@ void Interaction::run(Particle* _host_particle){
 }
 
 void Interaction::add_actuated_tag(Tag* tag){
-   actuated_tags.add(tag); 
+   actuated_tags.push_back(tag); 
 }
 
 void Interaction::remove_actuated_tag(Tag* tag){
-   actuated_tags.pop_itemById(tag->id);
+   actuated_tags.erase_item_by_id(tag->id);
 }
 
 Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
     set_name("I_ElectRepulsion");
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
+}
+
+const type_info& Electrical_Repulsion::get_typeid() {
+    return typeid(this);
 }
 
 void Electrical_Repulsion::add_listener(string attr_name) {
@@ -85,6 +92,10 @@ Electrical_Attraction::Electrical_Attraction() : Interaction(){
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
+const type_info& Electrical_Attraction::get_typeid() {
+    return typeid(this);
+}
+
 void Electrical_Attraction::interact(Particle* actuated_particle, Particle* _host_particle){
     float dist,dx,dy,weight,weight_fact,acc;
 
@@ -109,7 +120,7 @@ void Electrical_Attraction::interact(Particle* actuated_particle, Particle* _hos
     // }
 }
 
-Wave_Source :: Wave_Source() : Interaction(){
+Wave_Source::Wave_Source() : Interaction(){
     set_name("I_WaveSource");
     min_dist=80;
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
@@ -117,6 +128,10 @@ Wave_Source :: Wave_Source() : Interaction(){
     weight = max_dist*weight_fact;
     timer = 0;
     wave_speed = 5;
+}
+
+const type_info& Wave_Source::get_typeid() {
+    return typeid(this);
 }
 
 void Wave_Source :: run(Particle* _host_particle){

@@ -1,27 +1,28 @@
 #include "testApp.h"
 
 Tag :: Tag (World* _world){
-    particles.isMainContainer = false;
+    particles.set_main_container(false);
+    actions.set_main_container(true);
     set_world(_world);
 }
 
 Tag :: ~Tag (){
     remove_actions();
-    remove_particles(particles.itemsVector);    
+    remove_particles(particles);    
 }
 
 void Tag::add_particle(Particle* particle){
     // Add the particle to this tag's particles container:
-    particles.add(particle); 
+    particles.push_back(particle); 
     // Add this tag to particle's tags container:
-    particle->tags.add(this);
+    particle->tags.push_back(this);
     // Run the setup function of this tag's behaviors
     // and interactions over the added particle:
     setup_particle(particle);
 }
 
-void Tag::add_particles(vector<Particle*> added_particles){
-    vector<Particle*>::iterator iter_particle;
+void Tag::add_particles(PointersVector<Particle*> added_particles){
+    PointersVector<Particle*>::iterator iter_particle;
     for (iter_particle = added_particles.begin();
          iter_particle < added_particles.end();
          iter_particle++){
@@ -31,15 +32,15 @@ void Tag::add_particles(vector<Particle*> added_particles){
 
 void Tag::remove_particle(Particle* particle){
     // Remove the particle from this tag's particles container:
-    particles.pop_itemById(particle->id); 
+    particles.erase_item_by_id(particle->get_id()); 
     // Remove this tag from particle's tags container:
-    particle->tags.pop_itemById(id);
+    particle->tags.erase_item_by_id(id);
     // Free the particle variables seted by this tag's behaviors and interactions:
     free_particle(particle);
 }
 
-void Tag::remove_particles(vector<Particle*> removed_particles){
-    vector<Particle*>::iterator iter_particle;
+void Tag::remove_particles(PointersVector<Particle*> removed_particles){
+    PointersVector<Particle*>::iterator iter_particle;
     for (iter_particle = removed_particles.begin();
          iter_particle < removed_particles.end();
          iter_particle++){
@@ -48,9 +49,9 @@ void Tag::remove_particles(vector<Particle*> removed_particles){
 }
 
 void Tag::setup_particle(Particle* particle){
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
+    PointersVector<Action*>::iterator iter_action;
+    for (iter_action = actions.begin();
+         iter_action != actions.end();
          iter_action++){
          (*iter_action)->setup(particle);
     }
@@ -58,9 +59,9 @@ void Tag::setup_particle(Particle* particle){
 
 void Tag::free_particle(Particle* particle){
     // Free the particle variables seted by this tag's actions.
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
+    PointersVector<Action*>::iterator iter_action;
+    for (iter_action = actions.begin();
+         iter_action != actions.end();
          iter_action++){
          (*iter_action)->free(particle);
     }
@@ -74,23 +75,23 @@ Action* Tag::create_action(string action_name){
 }
 
 void Tag::add_action(Action* action){
-    actions.add(action);
+    actions.push_back(action);
     action->add_tag(this);
     //If the action acts over the world or tag since its creation, it only
-    //can be done after seting up the world and tag. this is the purpose for setup function
+    //can be done after seting up the world and tag. This is the purpose of the setup function.
     if(action->is_active())
         action->setup(); 
 }
 
 void Tag::remove_action(Action* action){
-    actions.pop_itemById(action->id);
+    actions.erase_item_by_id(action->id);
     action->free();
 }
 
 void Tag::remove_actions(){
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
+    PointersVector<Action*>::iterator iter_action;
+    for (iter_action = actions.begin();
+         iter_action != actions.end();
          iter_action++){
         remove_action(*iter_action);
     }
@@ -107,9 +108,9 @@ void Tag::remove_behavior(Behavior* behavior){
 }
 
 void Tag::remove_behaviors(){
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
+    PointersVector<Action*>::iterator iter_action;
+    for (iter_action = actions.begin();
+         iter_action != actions.end();
          iter_action++){
 
         if (typeid(*iter_action) == typeid(Behavior*))
@@ -128,9 +129,9 @@ void Tag::remove_interaction(Interaction* interaction){
 }
 
 void Tag::remove_interactions(){
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
+    PointersVector<Action*>::iterator iter_action;
+    for (iter_action = actions.begin();
+         iter_action != actions.end();
          iter_action++){
         if (typeid(*iter_action) == typeid(Interaction*))
             remove_action(*iter_action);
@@ -138,18 +139,18 @@ void Tag::remove_interactions(){
 }
 
 void Tag::run(){
-    vector<Action*>::iterator iter_action;
-    for (iter_action = actions.itemsVector.begin();
-         iter_action != actions.itemsVector.end();
+    PointersVector<Action*>::iterator iter_action;
+    for (iter_action = actions.begin();
+         iter_action != actions.end();
          iter_action++){
          (*iter_action)->run();
     }
 }
 
 void Tag::add_listener_to_particles(string attr_name){
-    vector<Particle*>::iterator iter_particle;
-    for (iter_particle = particles.itemsVector.begin();
-         iter_particle < particles.itemsVector.end();
+    PointersVector<Particle*>::iterator iter_particle;
+    for (iter_particle = particles.begin();
+         iter_particle < particles.end();
          iter_particle++){
           
          for (typename unordered_map<string,bool*>::iterator map_it = (*iter_particle)->boolPtr_map.begin();
@@ -165,8 +166,8 @@ void Tag::add_listener_to_particles(string attr_name){
          }
     }
 
-    for (iter_particle = particles.itemsVector.begin();
-         iter_particle < particles.itemsVector.end();
+    for (iter_particle = particles.begin();
+         iter_particle < particles.end();
          iter_particle++){
           
          for (typename unordered_map<string,int*>::iterator map_it = (*iter_particle)->intPtr_map.begin();
@@ -180,8 +181,8 @@ void Tag::add_listener_to_particles(string attr_name){
          }
 
     }
-    for (iter_particle = particles.itemsVector.begin();
-         iter_particle < particles.itemsVector.end();
+    for (iter_particle = particles.begin();
+         iter_particle < particles.end();
          iter_particle++){
           
          for (typename unordered_map<string,float*>::iterator map_it = (*iter_particle)->floatPtr_map.begin();
@@ -194,8 +195,8 @@ void Tag::add_listener_to_particles(string attr_name){
              }
          }
     }
-    for (iter_particle = particles.itemsVector.begin();
-         iter_particle < particles.itemsVector.end();
+    for (iter_particle = particles.begin();
+         iter_particle < particles.end();
          iter_particle++){
           
          for (typename unordered_map<string,ofVec3f*>::iterator map_it = (*iter_particle)->ofVec3fPtr_map.begin();
@@ -208,8 +209,8 @@ void Tag::add_listener_to_particles(string attr_name){
              }
          }
     }
-    for (iter_particle = particles.itemsVector.begin();
-         iter_particle < particles.itemsVector.end();
+    for (iter_particle = particles.begin();
+         iter_particle < particles.end();
          iter_particle++){
           
          for (typename unordered_map<string,ofColor*>::iterator map_it = (*iter_particle)->ofColorPtr_map.begin();

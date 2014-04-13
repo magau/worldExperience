@@ -7,8 +7,8 @@ void Action::setup(Particle* particle){}
 void Action::free(Particle* particle){}
 void Action::setup(){
     if (get_tag() != (Tag*)NULL) {
-        vector<Particle*> particles = get_tag()->particles.get_items();
-        vector<Particle*>::iterator iter_particle;
+        PointersVector<Particle*> particles = get_tag()->particles;
+        PointersVector<Particle*>::iterator iter_particle;
         for ( iter_particle = particles.begin();
               iter_particle < particles.end();
               iter_particle++){
@@ -21,10 +21,10 @@ void Action::free(){}
 void Action::run(Particle* _host_particle){}
 
 void Action::run(){
-    vector<Particle*>::iterator iter_particle;
-    vector<Action*>::iterator iter_action;
-    for (iter_particle = get_tag()->particles.itemsVector.begin();
-	 iter_particle != get_tag()->particles.itemsVector.end();
+    PointersVector<Particle*>::iterator iter_particle;
+    PointersVector<Action*>::iterator iter_action;
+    for (iter_particle = get_tag()->particles.begin();
+	 iter_particle != get_tag()->particles.end();
          iter_particle++){
          run(*iter_particle);
     }

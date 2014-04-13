@@ -9,9 +9,10 @@ class Interaction : public Action {
         int min_dist; 
         int timer;
         float weigth_fact;
-        Tags_Container actuated_tags;
+        PointersVector<Tag*> actuated_tags;
 
         Interaction();
+        const type_info& get_typeid();
         virtual void run(){Action::run();};
         virtual void run(Particle* _host_particle);
         virtual void interact(Particle* actuated_particle, Particle* _host_particle);
@@ -25,6 +26,7 @@ class Interaction : public Action {
 class Electrical_Repulsion : public Interaction{
     public:
         Electrical_Repulsion();
+        const type_info& get_typeid();
         void add_listener(string var_name);
         void interact(Particle* actuated_particle, Particle* _host_particle);
 };
@@ -32,6 +34,7 @@ class Electrical_Repulsion : public Interaction{
 class Electrical_Attraction : public Interaction{
     public:
         Electrical_Attraction();
+        const type_info& get_typeid();
         void interact(Particle* actuated_particle, Particle* _host_particle);
 };
 
@@ -41,6 +44,7 @@ class Wave_Source : public Interaction{
         float weight,weight_fact;
 
         Wave_Source();
+        const type_info& get_typeid();
         void interact(Particle* actuated_particle, Particle* _host_particle);
         void run(Particle* _host_particle);
 };

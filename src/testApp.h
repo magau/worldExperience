@@ -6,7 +6,7 @@
 #include <tr1/unordered_map> 
 using namespace tr1;
 #include "math.h"
-#include "Pointers_Container.h"
+#include "PointersVector.h"
 #include "Item.h"
 #include "Action.h"
 #include "Behaviors.h"
@@ -46,7 +46,6 @@ class testApp : public ofBaseApp{
 	public:
            
            World world;
-           Particles_Container* buffGroup;
            //Manager_KeyboardInterface managerInterface;
             
 #ifdef SYPHON

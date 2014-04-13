@@ -5,12 +5,6 @@ Item::Item(){
     isActive = true;
 }
 
-//Item :: Item (World* _world){
-//    Item();
-//    //set_world(_world);
-//    //add_bool("is_alive",&isAlive);
-//}
-
 Item :: ~Item(){}
 
 string Item::get_name(){return name;}

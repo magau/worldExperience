@@ -22,7 +22,7 @@ void testApp::setup(){
     Tag* t0 = world.create_tag();
     //t0->add_behavior("B_GravityGlue");
     t0->create_behavior("B_GravityGlue");
-    t0->add_particles(world.particles.get_itemsByName("P_Circle"));
+    t0->add_particles(world.particles.get_items_by_typeid(typeid(Circle*)));
     //t0->add_behavior("B_GravityGlue");
 
     // Cria uma nova particula vermelha.
@@ -47,6 +47,33 @@ void testApp::setup(){
     //t0->add_listener_to_particles<bool_attr>(&(t0->bool_event));
     t0->add_listener_to_particles("isAlive");
     t0->add_listener_to_particles("color");
+
+    PointersVector<Particle*> pv(true);
+    PointersVector<Particle*> pvI(false);
+    pv.push_back(world.nature.create_particle("P_Circle"));
+    pv.push_back(world.nature.create_particle("P_Base"));
+    p=world.nature.create_particle("P_Circle");
+    //cout << "test P_Circle typeid:" << (int)(typeid(Particle*) == p->get_typeid()) << endl;
+    pv.push_back(p);
+    pv.show_items_name_and_id();
+
+    pvI = pv.get_items_by_typeid(typeid(Particle*));
+    cout << "copyed particles <- get_items_by_typeid(typeid(Partcle*));" << endl;
+    pvI.show_items_name_and_id();
+    cout << "Three particles created." << endl;
+    pv.show_items_name_and_id();
+    pv.erase_items_by_typeid(typeid(Circle*));
+    //pv.erase(pv.begin(),pv.end()-1);
+    cout << "Two particles erased." << endl;
+    cout << "vector size: " << (int)pv.size() << endl;
+    pv.show_items_name_and_id();
+    //pv.clear();
+    //cout << "clear()" << endl;
+    //cout << "vector size: " << (int)pv.size() << endl;
+    pv.push_back(world.nature.create_particle("P_Circle"));
+    pv.push_back(world.nature.create_particle("P_Circle"));
+    cout << "Two particles created." << endl;
+    pv.show_items_name_and_id();
 
 }
    
@@ -77,38 +104,38 @@ void testApp::keyPressed(int key){
              bool_attr d;
              d.name = "isAlive";
              d.value = false;
-             ofNotifyEvent(world.tags.get_itemById(0)->bool_event, d);
+             ofNotifyEvent(world.tags.get_item_by_id(0)->bool_event, d);
              break;}
          case 'b':{
              ofColor_attr b;
              b.name = "color";
              b.value = ofColor(0,0,255);
-             ofNotifyEvent(world.tags.get_itemById(0)->ofColor_event, b);
+             ofNotifyEvent(world.tags.get_item_by_id(0)->ofColor_event, b);
              break;}
          case 'g':{
              ofColor_attr g;
              g.name = "color";
              g.value = ofColor(0,255,0);
-             ofNotifyEvent(world.tags.get_itemById(0)->ofColor_event, g);
+             ofNotifyEvent(world.tags.get_item_by_id(0)->ofColor_event, g);
              break;}
          case 'r':{
              ofColor_attr r;
              r.name = "color";
              r.value = ofColor(255,0,0);
-             ofNotifyEvent(world.tags.get_itemById(0)->ofColor_event, r);
+             ofNotifyEvent(world.tags.get_item_by_id(0)->ofColor_event, r);
              break;}
          case 'w':{
              ofColor_attr r;
              r.name = "color";
              r.value = ofColor(255);
-             ofNotifyEvent(world.tags.get_itemById(0)->ofColor_event, r);
+             ofNotifyEvent(world.tags.get_item_by_id(0)->ofColor_event, r);
              break;}
          case 'f':{
-             Tag* tag = world.tags.get_itemById(1);
-             tag->actions.pop_itemsByName("B_MouseTracking");
+             Tag* tag = world.tags.get_item_by_id(1);
+             tag->actions.erase_items_by_typeid(typeid(MouseTracking*));
              break;}
          case 'm':{
-             Tag* tag = world.tags.get_itemById(1);
+             Tag* tag = world.tags.get_item_by_id(1);
              tag->create_behavior("B_MouseTracking");
              break;}
       }

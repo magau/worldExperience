@@ -6,19 +6,21 @@ class Tag : public Item {
         ofEvent<ofVec3f_attr> ofVec3f_event;
         ofEvent<ofColor_attr> ofColor_event;
 
-        Particles_Container particles;
-        Actions_Container actions;
+        //Particles_Container particles;
+        PointersVector<Particle*> particles;
+        //Actions_Container actions;
+        PointersVector<Action*> actions;
         //Interactions_Container interactions;
         //Behaviors_Container behaviors;
         Tag (World* _world);
         ~Tag();
         void add_particle(Particle* particle);
-        void add_particles(vector<Particle*> added_particles);
+        void add_particles(PointersVector<Particle*> added_particles);
         void remove_particle(Particle* particle);
         //void free(Item* item);
         void free_particle(Particle* particle);
         void setup_particle(Particle* particle);
-        void remove_particles(vector<Particle*> added_particles);
+        void remove_particles(PointersVector<Particle*> added_particles);
 
         void add_action(Action* action);
         Action* create_action(string action_name);

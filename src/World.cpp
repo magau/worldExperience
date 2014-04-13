@@ -1,6 +1,8 @@
 #include "testApp.h"
 
 World :: World() {
+    particles.set_main_container(true);
+    tags.set_main_container(true);
 }
 
 Particle* World::create_particle(string iName, bool isActive){
@@ -14,7 +16,7 @@ Particle* World::create_particle(string iName, bool isActive){
     Particle* newParticle = nature.create_particle(iName);
     if(newParticle->get_world() != this){
         newParticle->set_world(this);
-        particles.add(newParticle);
+        particles.push_back(newParticle);
     }
     if (isActive) {
         activate_particle(newParticle);
@@ -34,7 +36,7 @@ void World::activate_particle(Particle* particle){
 
 void World :: remove_particle(Particle* particle){
     // Remove the particle from the world.particles container.
-    particles.erase_itemById(particle->get_id());
+    particles.erase_item_by_id(particle->get_id());
 }
 
 /*
@@ -70,7 +72,7 @@ Interaction* World::create_interaction(string iName){
 Tag* World::create_tag(string iName){
     //create a new tag in the World's tags container.
     Tag* newTag = new Tag(this);
-    tags.add(newTag);
+    tags.push_back(newTag);
 
     if (iName.size() != 0) {
         newTag->set_name(iName) ;
@@ -83,22 +85,22 @@ Tag* World::create_tag(string iName){
 }
 
 void World :: remove_tag(Tag* tag){
-    tags.erase_itemById(tag->get_id());
+    tags.erase_item_by_id(tag->get_id());
 }
 
 
-Particles_Container* World :: update(){
+PointersVector<Particle*>* World :: update(){
 
-    for(vector<Tag*>::iterator iter_tag = tags.itemsVector.begin();
-                                    iter_tag != tags.itemsVector.end();
+    for(PointersVector<Tag*>::iterator iter_tag = tags.begin();
+                                    iter_tag != tags.end();
                                     iter_tag++){
         (*iter_tag)->run();
     }
 
     // This "for" statement is iterated in reverse mode to avoid core 
     // dump in case of the "remove_particle" function is called.
-    for(vector<Particle*>::iterator iter_particle = particles.itemsVector.end() - 1;
-                                    iter_particle >= particles.itemsVector.begin();
+    for(PointersVector<Particle*>::iterator iter_particle = particles.end() - 1;
+                                    iter_particle >= particles.begin();
                                     iter_particle--) {
         if(!(*iter_particle)->is_alive()) {
             remove_particle(*iter_particle);
@@ -110,8 +112,8 @@ Particles_Container* World :: update(){
 }
 
 void World::draw(){
-    for(vector<Particle*>::iterator iter_particle = particles.itemsVector.begin();
-                                    iter_particle != particles.itemsVector.end();
+    for(PointersVector<Particle*>::iterator iter_particle = particles.begin();
+                                    iter_particle != particles.end();
                                     iter_particle++){
         (*iter_particle)->display();
     }

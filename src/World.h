@@ -9,17 +9,19 @@ class Items_Fabric{
 class World{
     public:
         Items_Fabric nature;
-        Particles_Container particles;
-        Tags_Container tags;
+        PointersVector<Particle*> particles;
+        PointersVector<Tag*> tags;
+        //Particles_Container particles;
+        //Tags_Container tags;
         World();
         Tag* create_tag(string iName="");
         void remove_tag(Tag* tag);
         Behavior* create_behavior(string iName);
         Interaction* create_interaction(string iName);
         Action* create_action(string iName);
-        Particle* create_particle(string iName, bool materialize=true);
+        Particle* create_particle(string iName, bool isActive=true);
         void activate_particle(Particle* particle);
         void remove_particle(Particle* particle_ptr);
-        Particles_Container* update();
+        PointersVector<Particle*>* update();
         void draw();
 };

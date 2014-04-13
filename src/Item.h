@@ -46,6 +46,7 @@ class Item{
         void set_world(World* _world);
         void set_live_state(bool live_state);
         void set_active_state(bool active_state);
+        virtual const type_info& get_typeid(){return typeid(this);};
 
         void iterate_attribute(string attr_name, bool forward);
 

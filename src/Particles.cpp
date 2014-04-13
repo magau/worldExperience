@@ -4,6 +4,7 @@ Particle :: Particle () : Item(){
 
     name = "P_Base";
     rad = 6;
+    _is_visible = true;
     ofVec3fPtr_map["loc"]      = &locat;
     ofVec3fPtr_map["vel"]      = &veloc;
     ofVec3fPtr_map["acc"]      = &accel;
@@ -11,24 +12,36 @@ Particle :: Particle () : Item(){
     intPtr_map["rad"]          = &rad;
     floatPtr_map["relax_fact"] = &relax_fact;
     boolPtr_map["isAlive"]     = &isAlive;
-    tags.isMainContainer = false;
+    boolPtr_map["isVisible"]     = &_is_visible;
 }
 
 Particle :: ~Particle (){
-    vector<Tag*>::iterator iter_tag;
-    for (iter_tag = tags.itemsVector.begin();
-         iter_tag < tags.itemsVector.end();
+    PointersVector<Tag*>::iterator iter_tag;
+    for (iter_tag = tags.begin();
+         iter_tag < tags.end();
          iter_tag++){
         (*iter_tag)->remove_particle(this);
     }
 }
+
+bool Particle::is_visible() {
+    return _is_visible;    
+};
+
+void Particle::set_visible(bool visible){
+    _is_visible = visible;
+};
 
 void Particle::setup(){}
 
 void Particle::run(){update();}
 
 // Method to display
-void Particle :: display() {}
+void Particle::display() {}
+
+const type_info& Particle::get_typeid() {
+    return typeid(this);
+}
 
 void Particle :: update() {
     veloc += accel;
@@ -101,4 +114,7 @@ void Circle :: display() {
     ofEllipse(locat.x,locat.y,rad,rad);
 }
 
+const type_info& Circle::get_typeid(){
+    return typeid(this);
+}
 
