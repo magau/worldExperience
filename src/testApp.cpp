@@ -15,30 +15,33 @@ void testApp::setup(){
     
     // Cria a particula "MP_RegGrid" que por sua vez cria uma
     // grelha regular de particulas com o tipo "P_Circle". 
-    p = world.create_particle("MP_RegGrid");
+
+    p = world.create_particle("RegularGrid_MP");
+    //p = world.create_particle(typeid(RegularGrid_MP*));
     
     // Cria uma tag t0 à qual adiciona as particulas da grelha regular
     // e o comportamento "B_GravityGlue".
     Tag* t0 = world.create_tag();
-    //t0->add_behavior("B_GravityGlue");
-    t0->create_behavior("B_GravityGlue");
+    //t0->create_behavior("GravityGlue");
+    t0->create_behavior(typeid(GravityGlue*));
     t0->add_particles(world.particles.get_items_by_typeid(typeid(Circle*)));
     //t0->add_behavior("B_GravityGlue");
 
     // Cria uma nova particula vermelha.
-    p = world.create_particle("P_Circle");
+    //p = world.create_particle("Circle");
+    p = world.create_particle(typeid(Circle*));
     p->set_ofColor("color",ofColor(255,0,0));
     
     // Cria uma nova tag t1 à qual adiciona a particula vermelha
     // e o comportamento "B_MouseTracking".
     Tag* t1 = world.create_tag();
     t1->add_particle(p);
-    //t1->create_behavior("B_MouseTracking");
-    t1->create_behavior("B_MouseTracking");
+    //t1->create_behavior("MouseTracking");
+    t1->create_behavior(typeid(MouseTracking*));
 
-    // Adiciona à tag t1 uma interacção do tipo "I_ElectRepulsion"
-    //Interaction* i0 = t1->create_interaction("I_ElectRepulsion");
-    Interaction* i0 = t1->create_interaction("I_ElectRepulsion");
+    // Adiciona à tag t1 uma interacção do tipo ElecticleRepulsion"
+    //Interaction* i0 = t1->create_interaction("Electrical_Repulsion");
+    Interaction* i0 = t1->create_interaction(typeid(Electrical_Repulsion*));
     //Interaction* i0 = t1->add_interaction("I_WaveSource");
     // Adiciona a tag t0, que transporta consigo as particulas
     // da grelha, à interacção.
@@ -47,33 +50,6 @@ void testApp::setup(){
     //t0->add_listener_to_particles<bool_attr>(&(t0->bool_event));
     t0->add_listener_to_particles("isAlive");
     t0->add_listener_to_particles("color");
-
-    PointersVector<Particle*> pv(true);
-    PointersVector<Particle*> pvI(false);
-    pv.push_back(world.nature.create_particle("P_Circle"));
-    pv.push_back(world.nature.create_particle("P_Base"));
-    p=world.nature.create_particle("P_Circle");
-    //cout << "test P_Circle typeid:" << (int)(typeid(Particle*) == p->get_typeid()) << endl;
-    pv.push_back(p);
-    pv.show_items_name_and_id();
-
-    pvI = pv.get_items_by_typeid(typeid(Particle*));
-    cout << "copyed particles <- get_items_by_typeid(typeid(Partcle*));" << endl;
-    pvI.show_items_name_and_id();
-    cout << "Three particles created." << endl;
-    pv.show_items_name_and_id();
-    pv.erase_items_by_typeid(typeid(Circle*));
-    //pv.erase(pv.begin(),pv.end()-1);
-    cout << "Two particles erased." << endl;
-    cout << "vector size: " << (int)pv.size() << endl;
-    pv.show_items_name_and_id();
-    //pv.clear();
-    //cout << "clear()" << endl;
-    //cout << "vector size: " << (int)pv.size() << endl;
-    pv.push_back(world.nature.create_particle("P_Circle"));
-    pv.push_back(world.nature.create_particle("P_Circle"));
-    cout << "Two particles created." << endl;
-    pv.show_items_name_and_id();
 
 }
    
@@ -132,7 +108,7 @@ void testApp::keyPressed(int key){
              break;}
          case 'f':{
              Tag* tag = world.tags.get_item_by_id(1);
-             tag->actions.erase_items_by_typeid(typeid(MouseTracking*));
+             tag->behaviors.erase_items_by_typeid(typeid(MouseTracking*));
              break;}
          case 'm':{
              Tag* tag = world.tags.get_item_by_id(1);

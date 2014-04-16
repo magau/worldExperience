@@ -3,9 +3,19 @@
 Item::Item(){
     isAlive = true;
     isActive = true;
+    set_name(get_type_name());
 }
 
 Item :: ~Item(){}
+
+const type_info& Item::get_typeid(){
+    return typeid(this);
+}
+
+string Item::get_type_name(){
+    regex pattern ("\\bP?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
 
 string Item::get_name(){return name;}
 

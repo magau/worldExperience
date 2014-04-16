@@ -2,7 +2,6 @@
 
 Particle :: Particle () : Item(){
 
-    name = "P_Base";
     rad = 6;
     _is_visible = true;
     ofVec3fPtr_map["loc"]      = &locat;
@@ -104,7 +103,6 @@ void Particle :: elastic_boundery(){
 }
 
 Circle::Circle() : Particle(){
-    set_name("P_Circle");
 }
 
 void Circle :: display() {
@@ -117,4 +115,3 @@ void Circle :: display() {
 const type_info& Circle::get_typeid(){
     return typeid(this);
 }
-

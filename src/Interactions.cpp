@@ -34,7 +34,6 @@ void Interaction::remove_actuated_tag(Tag* tag){
 }
 
 Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
-    set_name("I_ElectRepulsion");
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
@@ -88,7 +87,6 @@ void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host
 } 
 
 Electrical_Attraction::Electrical_Attraction() : Interaction(){
-    set_name("I_ElectAttraction");
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
@@ -121,7 +119,6 @@ void Electrical_Attraction::interact(Particle* actuated_particle, Particle* _hos
 }
 
 Wave_Source::Wave_Source() : Interaction(){
-    set_name("I_WaveSource");
     min_dist=80;
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
     weight_fact = 0.05;

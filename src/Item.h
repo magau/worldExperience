@@ -36,6 +36,10 @@ class Item{
         Item();
         //Item(World* _world);
         virtual ~Item();
+
+        virtual const type_info& get_typeid();
+        string get_type_name();
+
         string get_name();
         int get_id();
         World* get_world();
@@ -46,7 +50,6 @@ class Item{
         void set_world(World* _world);
         void set_live_state(bool live_state);
         void set_active_state(bool active_state);
-        virtual const type_info& get_typeid(){return typeid(this);};
 
         void iterate_attribute(string attr_name, bool forward);
 

@@ -166,20 +166,20 @@ void PointersVector<BaseTypePtr>::clear(){
 }
 
 template <typename BaseTypePtr>
-BaseTypePtr PointersVector<BaseTypePtr>::get_item_by_id(int id) {
+BaseTypePtr PointersVector<BaseTypePtr>::get_item_by_id(int item_id) {
     typename vector<BaseTypePtr>::iterator item_it; 
     for (item_it = vector<BaseTypePtr>::begin(); item_it != vector<BaseTypePtr>::end(); item_it++) {
-        if ((*item_it)->get_id() == id)
+        if ((*item_it)->get_id() == item_id)
             return *item_it;
     }
     return (BaseTypePtr)NULL;
 }
 
 template <typename BaseTypePtr>
-typename vector<BaseTypePtr>::iterator PointersVector<BaseTypePtr>::erase_item_by_id(int id) {
+typename vector<BaseTypePtr>::iterator PointersVector<BaseTypePtr>::erase_item_by_id(int item_id) {
     typename vector<BaseTypePtr>::iterator item_it; 
     for (item_it = vector<BaseTypePtr>::begin(); item_it != vector<BaseTypePtr>::end(); item_it++) {
-        if ((*item_it)->get_id() == id)
+        if ((*item_it)->get_id() == item_id)
             return erase(item_it);
     }
     return vector<BaseTypePtr>::end();

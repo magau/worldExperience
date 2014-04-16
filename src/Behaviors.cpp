@@ -7,7 +7,6 @@ const type_info& Behavior::get_typeid() {
 }
 
 GravityGlue::GravityGlue() : Behavior(){
-    set_name("B_GravityGlue");
     location_key = get_name()+"_loc";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
@@ -86,7 +85,6 @@ void GravityGlue::run(Particle* _host_particle){
 }
 
 MouseTracking::MouseTracking() : Behavior(){
-    set_name("B_MouseTracking"); 
 }
 
 const type_info& MouseTracking::get_typeid() {

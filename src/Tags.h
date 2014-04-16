@@ -6,39 +6,38 @@ class Tag : public Item {
         ofEvent<ofVec3f_attr> ofVec3f_event;
         ofEvent<ofColor_attr> ofColor_event;
 
-        //Particles_Container particles;
         PointersVector<Particle*> particles;
-        //Actions_Container actions;
-        PointersVector<Action*> actions;
-        //Interactions_Container interactions;
-        //Behaviors_Container behaviors;
+        //PointersVector<Action*> actions;
+        PointersVector<Interaction*> interactions;
+        PointersVector<Behavior*> behaviors;
         Tag (World* _world);
         ~Tag();
         void add_particle(Particle* particle);
         void add_particles(PointersVector<Particle*> added_particles);
+        Particle* get_particle_by_id(int particle_id);
+        PointersVector<Particle*> get_particles_by_typeid(const type_info& particle_typeid);
         void remove_particle(Particle* particle);
-        //void free(Item* item);
         void free_particle(Particle* particle);
         void setup_particle(Particle* particle);
         void remove_particles(PointersVector<Particle*> added_particles);
 
-        void add_action(Action* action);
-        Action* create_action(string action_name);
-        void remove_action(Action* interaction);
-        void remove_actions();
+        void setup_action(Action* action, bool isActive);
 
-        void add_interaction(Interaction* interaction);
-        Interaction* create_interaction(string interaction_name);
-        void remove_interaction(Interaction* interaction);
-        void remove_interactions();
-
-        void add_behavior(Behavior* behavior);
-        Behavior* create_behavior(string behavior_name);
+        Behavior* create_behavior(string behavior_name, bool isActive=true);
+        Behavior* create_behavior(const type_info& behavior_typeid, bool isActive=true);
+        PointersVector<Behavior*> get_behaviors_by_typeid(const type_info& behavior_typeid);
+        Behavior* get_behavior_by_id(int behavior_id);
         void remove_behavior(Behavior* behavior);
         void remove_behaviors();
 
+        Interaction* create_interaction(string interaction_name, bool isActive=true);
+        Interaction* create_interaction(const type_info& interaction_typeid, bool isActive=true);
+        Interaction* get_interaction_by_id(int interaction_id);
+        PointersVector<Interaction*> get_interactions_by_typeid(const type_info& interaction_typeid);
+        void remove_interaction(Interaction* interaction);
+        void remove_interactions();
+
         void run();
-        //void actuate();
 
         void add_listener_to_particles(string attr_name);
         //template <typename T>

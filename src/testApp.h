@@ -3,6 +3,8 @@
 #include <typeinfo>
 #include "ofMain.h"
 //#include <sstream>
+#include <boost/regex.hpp>
+using namespace boost;
 #include <tr1/unordered_map> 
 using namespace tr1;
 #include "math.h"
@@ -14,11 +16,12 @@ using namespace tr1;
 #include "Particles.h"
 #include "Particles_System.h"
 //#include "Particles_Manager.h"
+#include "Items_Factory.h"
 #include "World.h"
 #include "Tags.h"
 
 #define USE_UNORDERED_MAP
-//#define USE_MOUSE_THREAD
+#define USE_MOUSE_THREAD
 //#define SYPHON
 //#define OSC_MSG
 

@@ -1,8 +1,7 @@
 #include "testApp.h"
 
 Master_Particle::Master_Particle() : Particle(){
-    set_name("MP_Base");
-    default_Particle = "P_Base";
+    default_Particle = "Particle";
     set_world((World*)NULL);
 }
 
@@ -18,8 +17,7 @@ Particle* Master_Particle::create_slaveParticle(){
 }
 
 RegularGrid_MP::RegularGrid_MP() : Master_Particle(){
-    set_name("MP_RegGrid");
-    default_Particle = "P_Circle";
+    default_Particle = "Circle";
     particles_distance = 15;
     windowRatio = 4.0/5;
 }

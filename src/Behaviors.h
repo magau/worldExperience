@@ -4,11 +4,11 @@ class Tag;
 class Behavior : public Action{
     public:
         Behavior();
+        virtual const type_info& get_typeid();
     protected:
         int max_dist;
         int min_dist; 
         float weigth_fact;
-        virtual const type_info& get_typeid();
 };
 
 class GravityGlue : public Behavior{
