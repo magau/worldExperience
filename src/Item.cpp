@@ -13,7 +13,7 @@ const type_info& Item::get_typeid(){
 }
 
 string Item::get_type_name(){
-    regex pattern ("\\bP?[0-9]*(.*)"); 
+    regex pattern ("^P?[0-9]*(.*)"); 
     return regex_replace(string(get_typeid().name()), pattern, string("$1"));
 };
 

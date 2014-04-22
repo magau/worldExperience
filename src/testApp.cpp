@@ -31,7 +31,8 @@ void testApp::setup(){
     //p = world.create_particle("Circle");
     p = world.create_particle(typeid(Circle*));
     p->set_ofColor("color",ofColor(255,0,0));
-    
+
+    cout << p->get_type_name() << endl; 
     // Cria uma nova tag t1 à qual adiciona a particula vermelha
     // e o comportamento "B_MouseTracking".
     Tag* t1 = world.create_tag();
@@ -51,6 +52,7 @@ void testApp::setup(){
     t0->add_listener_to_particles("isAlive");
     t0->add_listener_to_particles("color");
 
+    
 }
    
 //--------------------------------------------------------------
@@ -112,7 +114,7 @@ void testApp::keyPressed(int key){
              break;}
          case 'm':{
              Tag* tag = world.tags.get_item_by_id(1);
-             tag->create_behavior("B_MouseTracking");
+             tag->create_behavior("MouseTracking");
              break;}
       }
 /*
