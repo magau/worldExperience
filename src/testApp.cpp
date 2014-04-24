@@ -32,7 +32,6 @@ void testApp::setup(){
     p = world.create_particle(typeid(Circle*));
     p->set_ofColor("color",ofColor(255,0,0));
 
-    cout << p->get_type_name() << endl; 
     // Cria uma nova tag t1 à qual adiciona a particula vermelha
     // e o comportamento "B_MouseTracking".
     Tag* t1 = world.create_tag();
@@ -79,34 +78,24 @@ void testApp::keyPressed(int key){
      //managerInterface.listen(key);
      switch (key){
          case 'd':{
-             bool_attr d;
-             d.name = "isAlive";
-             d.value = false;
-             ofNotifyEvent(world.tags.get_item_by_id(0)->bool_event, d);
+             bool_attr attr = {"isAlive", false};
+             ofNotifyEvent(*(world.tags.get_item_by_id(0)->bool_events["isAlive"]), attr);
              break;}
          case 'b':{
-             ofColor_attr b;
-             b.name = "color";
-             b.value = ofColor(0,0,255);
-             ofNotifyEvent(world.tags.get_item_by_id(0)->ofColor_event, b);
+             ofColor_attr attr = {"color", ofColor(0,0,255)};
+             ofNotifyEvent(*(world.tags.get_item_by_id(0)->ofColor_events["color"]), attr);
              break;}
          case 'g':{
-             ofColor_attr g;
-             g.name = "color";
-             g.value = ofColor(0,255,0);
-             ofNotifyEvent(world.tags.get_item_by_id(0)->ofColor_event, g);
+             ofColor_attr attr = {"color", ofColor(0,255,0)};
+             ofNotifyEvent(*(world.tags.get_item_by_id(0)->ofColor_events["color"]), attr);
              break;}
          case 'r':{
-             ofColor_attr r;
-             r.name = "color";
-             r.value = ofColor(255,0,0);
-             ofNotifyEvent(world.tags.get_item_by_id(0)->ofColor_event, r);
+             ofColor_attr attr =  {"color", ofColor(255,0,0)};
+             ofNotifyEvent(*(world.tags.get_item_by_id(0)->ofColor_events["color"]), attr);
              break;}
          case 'w':{
-             ofColor_attr r;
-             r.name = "color";
-             r.value = ofColor(255);
-             ofNotifyEvent(world.tags.get_item_by_id(0)->ofColor_event, r);
+             ofColor_attr attr = {"color", ofColor(255)};
+             ofNotifyEvent(*(world.tags.get_item_by_id(0)->ofColor_events["color"]), attr);
              break;}
          case 'f':{
              Tag* tag = world.tags.get_item_by_id(1);

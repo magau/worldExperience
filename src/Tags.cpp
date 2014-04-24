@@ -206,78 +206,122 @@ void Tag::run(){
 
 void Tag::add_listener_to_particles(string attr_name){
     PointersVector<Particle*>::iterator iter_particle;
-    for (iter_particle = particles.begin();
-         iter_particle < particles.end();
-         iter_particle++){
-          
-         for (typename unordered_map<string,bool*>::iterator map_it = (*iter_particle)->boolPtr_map.begin();
-              map_it != boolPtr_map.end();
-              map_it++){
-         
-             if (map_it->first.compare(attr_name) == 0) {
-                 if (typeid(*(map_it->second)) == typeid(bool)){
-                     (*iter_particle)->add_bool_listener(&bool_event);
-                     //(*iter_particle)->add_listener<bool_attr>(&bool_event);
-                 }
-             }
-         }
+    bool event_added = false;
+    bool listener_added = false;
+
+    if (!listener_added) {
+        for (iter_particle = particles.begin();
+             iter_particle < particles.end();
+             iter_particle++){
+            for (typename unordered_map<string,bool*>::iterator map_it = (*iter_particle)->boolPtr_map.begin();
+                 map_it != boolPtr_map.end();
+                 map_it++){
+                if (map_it->first.compare(attr_name) == 0) {
+                    if (typeid(*(map_it->second)) == typeid(bool)){
+                        if (!event_added) {
+                            bool_events[attr_name] = new ofEvent<bool_attr>;
+                            event_added = true;
+                        }
+                        if (!listener_added)
+                            listener_added = true;
+                        (*iter_particle)->add_bool_listener(bool_events[attr_name]);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
-    for (iter_particle = particles.begin();
-         iter_particle < particles.end();
-         iter_particle++){
-          
-         for (typename unordered_map<string,int*>::iterator map_it = (*iter_particle)->intPtr_map.begin();
-              map_it != intPtr_map.end();
-              map_it++){
-             if (map_it->first.compare(attr_name) == 0) {
-                 if (typeid(*(map_it->second)) == typeid(int)) {    
-                     (*iter_particle)->add_int_listener(&int_event);
-                 }
-             }
-         }
-
+    if (!listener_added) {
+        for (iter_particle = particles.begin();
+             iter_particle < particles.end();
+             iter_particle++){
+            for (typename unordered_map<string,int*>::iterator map_it = (*iter_particle)->intPtr_map.begin();
+                 map_it != intPtr_map.end();
+                 map_it++){
+                if (map_it->first.compare(attr_name) == 0) {
+                    if (typeid(*(map_it->second)) == typeid(int)) {    
+                        if (!event_added) {
+                            int_events[attr_name] = new ofEvent<int_attr>;
+                            event_added = true;
+                        }
+                        if (!listener_added)
+                            listener_added = true;
+                        (*iter_particle)->add_int_listener(int_events[attr_name]);
+                        break;
+                    }
+                }
+            }
+        }
     }
-    for (iter_particle = particles.begin();
-         iter_particle < particles.end();
-         iter_particle++){
-          
-         for (typename unordered_map<string,float*>::iterator map_it = (*iter_particle)->floatPtr_map.begin();
-              map_it != floatPtr_map.end();
-              map_it++){
-             if (map_it->first.compare(attr_name) == 0) {
-                 if (typeid(*(map_it->second)) == typeid(float)) {    
-                     (*iter_particle)->add_float_listener(&float_event);
-                 }
-             }
-         }
+    if (!listener_added) {
+        for (iter_particle = particles.begin();
+             iter_particle < particles.end();
+             iter_particle++){
+            for (typename unordered_map<string,float*>::iterator map_it = (*iter_particle)->floatPtr_map.begin();
+                 map_it != floatPtr_map.end();
+                 map_it++){
+                if (map_it->first.compare(attr_name) == 0) {
+                    if (typeid(*(map_it->second)) == typeid(float)) {    
+                        if (!event_added) {
+                            float_events[attr_name] = new ofEvent<float_attr>;
+                            event_added = true;
+                        }
+                        if (!listener_added)
+                            listener_added = true;
+                        (*iter_particle)->add_float_listener(float_events[attr_name]);
+                        break;
+                    }
+                }
+            }
+        }
     }
-    for (iter_particle = particles.begin();
-         iter_particle < particles.end();
-         iter_particle++){
-          
-         for (typename unordered_map<string,ofVec3f*>::iterator map_it = (*iter_particle)->ofVec3fPtr_map.begin();
-              map_it != ofVec3fPtr_map.end();
-              map_it++){
-             if (map_it->first.compare(attr_name) == 0) {
-                 if (typeid(*(map_it->second)) == typeid(ofVec3f)) {    
-                     (*iter_particle)->add_ofVec3f_listener(&ofVec3f_event);
-                 }
-             }
-         }
+    if (!listener_added) {
+        for (iter_particle = particles.begin();
+             iter_particle < particles.end();
+             iter_particle++){
+            for (typename unordered_map<string,ofVec3f*>::iterator map_it = (*iter_particle)->ofVec3fPtr_map.begin();
+                 map_it != ofVec3fPtr_map.end();
+                 map_it++){
+                if (map_it->first.compare(attr_name) == 0) {
+                    if (typeid(*(map_it->second)) == typeid(ofVec3f)) {    
+                        if (!event_added) {
+                            ofVec3f_events[attr_name] = new ofEvent<ofVec3f_attr>;
+                            event_added = true;
+                        }
+                        if (!listener_added)
+                            listener_added = true;
+                        (*iter_particle)->add_ofVec3f_listener(ofVec3f_events[attr_name]);
+                        break;
+                    }
+                }
+            }
+        }
     }
-    for (iter_particle = particles.begin();
-         iter_particle < particles.end();
-         iter_particle++){
-          
-         for (typename unordered_map<string,ofColor*>::iterator map_it = (*iter_particle)->ofColorPtr_map.begin();
-              map_it != ofColorPtr_map.end();
-              map_it++){
-             if (map_it->first.compare(attr_name) == 0) {
-                 if (typeid(*(map_it->second)) == typeid(ofColor)) {    
-                     (*iter_particle)->add_ofColor_listener(&ofColor_event);
-                 }
-             }
-         }
+    if (!listener_added) {
+        for (iter_particle = particles.begin();
+             iter_particle < particles.end();
+             iter_particle++){
+            for (typename unordered_map<string,ofColor*>::iterator map_it = (*iter_particle)->ofColorPtr_map.begin();
+                 map_it != ofColorPtr_map.end();
+                 map_it++){
+                if (map_it->first.compare(attr_name) == 0) {
+                    if (typeid(*(map_it->second)) == typeid(ofColor)) {    
+                        if (!event_added) {
+                            ofColor_events[attr_name] = new ofEvent<ofColor_attr>;
+                            event_added = true;
+                        }
+                        if (!listener_added)
+                            listener_added = true;
+                        (*iter_particle)->add_ofColor_listener(ofColor_events[attr_name]);
+                        break;
+                    }
+                }
+            }
+        } 
     } 
+}
+
+void Tag::remove_listener_from_particles(string attr_name){
+//miss implementation!!
 }

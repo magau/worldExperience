@@ -1,5 +1,11 @@
 class Tag : public Item {
     public:
+        unordered_map<string, ofEvent<bool_attr>*> bool_events;
+        unordered_map<string, ofEvent<int_attr>*> int_events;
+        unordered_map<string, ofEvent<float_attr>*> float_events;
+        unordered_map<string, ofEvent<ofVec3f_attr>*> ofVec3f_events;
+        unordered_map<string, ofEvent<ofColor_attr>*> ofColor_events;
+
         ofEvent<bool_attr> bool_event;
         ofEvent<int_attr> int_event;
         ofEvent<float_attr> float_event;
@@ -40,17 +46,7 @@ class Tag : public Item {
         void run();
 
         void add_listener_to_particles(string attr_name);
-        //template <typename T>
-        //void add_listener_to_particles(ofEvent<T>* event){
-        //    vector<Particle*>::iterator iter_particle;
-        //    for (iter_particle = particles.itemsVector.begin();
-        //         iter_particle < particles.itemsVector.end();
-        //         iter_particle++){
-        //        (*iter_particle)->add_listener(*event);
-        //    } 
-        //}
-
-        //void add_bool_listener_to_particles(ofEvent<bool_attr>* event);
+        void remove_listener_from_particles(string attr_name);
 };
 
 

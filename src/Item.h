@@ -56,15 +56,15 @@ class Item{
         template <typename T>
         void add_listener(ofEvent<T>* event){
             if (typeid(*event) == typeid(ofEvent<bool_attr>)) {
-                ofAddListener(*event, this ,& Item::change_bool_attr);
+                ofAddListener(*event, this ,& Item::set_bool_attr);
             } //else if (typeid(*event) == typeid(ofEvent<int_attr>)) {
-                //ofAddListener(*event, this ,& Item::change_int_attr);
+                //ofAddListener(*event, this ,& Item::set_int_attr);
             //} else if (typeid(*event) == typeid(ofEvent<float_attr>)) {
-            //    //ofAddListener(*event, this ,& Item::change_float_attr);
+            //    //ofAddListener(*event, this ,& Item::set_float_attr);
             //} else if (typeid(*event) == typeid(ofEvent<ofVec3f_attr>)) {
-            //    //ofAddListener(*event, this ,& Item::change_ofVec3f_attr);
+            //    //ofAddListener(*event, this ,& Item::set_ofVec3f_attr);
             //} else if (typeid(*event) == typeid(ofEvent<ofColor_attr>)) {
-            //    //ofAddListener(*event, this ,& Item::change_ofColor_attr);
+            //    //ofAddListener(*event, this ,& Item::set_ofColor_attr);
             //}
             //...
         }
@@ -79,11 +79,11 @@ class Item{
         //virtual void add_listener(ofEvent<bool_attr>& bool_event);
 
         //virtual void add_listener(string attr_name);
-        void change_bool_attr(bool_attr& _attr);
-        void change_int_attr(int_attr& attr);
-        void change_float_attr(float_attr& attr);
-        void change_ofVec3f_attr(ofVec3f_attr& attr);
-        void change_ofColor_attr(ofColor_attr& attr);
+        void set_bool_attr(bool_attr& _attr);
+        void set_int_attr(int_attr& attr);
+        void set_float_attr(float_attr& attr);
+        void set_ofVec3f_attr(ofVec3f_attr& attr);
+        void set_ofColor_attr(ofColor_attr& attr);
 
 
         /*
