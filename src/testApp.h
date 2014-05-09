@@ -3,13 +3,16 @@
 #include <typeinfo>
 #include "ofMain.h"
 //#include <sstream>
+#include <algorithm>
 #include <boost/regex.hpp>
 using namespace boost;
 #include <tr1/unordered_map> 
 using namespace tr1;
 #include "math.h"
 #include "PointersVector.h"
+#include "ofxMidi.h"
 #include "Item.h"
+#include "Controller.h"
 #include "Action.h"
 #include "Behaviors.h"
 #include "Interactions.h"
@@ -48,6 +51,8 @@ class getMouseLocation : public ofThread {
 class testApp : public ofBaseApp{
 	public:
            
+           Controller* cl;
+  
            World world;
            //Manager_KeyboardInterface managerInterface;
             

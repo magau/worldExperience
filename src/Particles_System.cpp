@@ -18,7 +18,8 @@ Particle* Master_Particle::create_slaveParticle(){
 
 RegularGrid_MP::RegularGrid_MP() : Master_Particle(){
     default_Particle = "Circle";
-    particles_distance = 15;
+    //particles_distance = 15;
+    particles_distance = 30;
     windowRatio = 4.0/5;
 }
 

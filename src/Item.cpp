@@ -6,7 +6,10 @@ Item::Item(){
     set_name(get_type_name());
 }
 
-Item :: ~Item(){}
+Item :: ~Item(){
+    /* delete added variables. */
+    for_each(var_ptr_map.begin(),var_ptr_map.end(),[](pair<pair<string,Item*>,pair<void*,size_t>> map_el){free(map_el.second.first);});
+}
 
 const type_info& Item::get_typeid(){
     return typeid(this);

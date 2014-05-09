@@ -105,6 +105,83 @@ class Item{
         virtual void setup();
         virtual void run();
 
+        template<typename T>
+        void add(pair<string,T> var_val){
+            var_ptr_map[pair<string,Item*>(var_val.first,this)] = pair<void*,size_t>(new T(var_val.second),sizeof(T));
+        }
+
+        template<typename T>
+        void set(pair<string,T> var_val){
+            pair<void*,size_t>& map_el = var_ptr_map[pair<string,Item*>(var_val.first,this)];
+            if(sizeof(T) != map_el.second) {
+	        stringstream error_msg;
+                error_msg << "invalid conversion from size_t: " <<
+                             sizeof(T) << " to size_t: " << map_el.second <<
+                             "; variable name:" << var_val.first;
+                throw runtime_error(error_msg);
+            } else {
+                *static_cast<T*>(map_el.first) = var_val.second;
+            }
+        }
+
+        template<typename T>
+        T& get(string var_name){
+            pair<void*,size_t>& map_el = var_ptr_map[pair<string,Item*>(var_name,this)];
+            if(sizeof(T) != map_el.second) {
+	        stringstream error_msg;
+                error_msg << "invalid conversion from size_t: " <<
+                             sizeof(T) << " to size_t: " << map_el.second <<
+                             "; variable name:" << var_name;
+                throw runtime_error(error_msg);
+            }
+            return *static_cast<T*>(map_el.first);
+        }
+
+        void erase(string var_name){
+            free(var_ptr_map[pair<string,Item*>(var_name,this)].first); 
+            var_ptr_map.erase(pair<string,Item*>(var_name,this));    
+        }
+
+        template<typename T>
+        void erase(string var_name){
+            pair<void*,size_t>& map_el = var_ptr_map[pair<string,Item*>(var_name,this)];
+            if(sizeof(T) != map_el.second) {
+	        stringstream error_msg;
+                error_msg << "invalid conversion from size_t: " <<
+                             sizeof(T) << " to size_t: " << map_el.second <<
+                             "; variable name:" << var_name;
+                throw runtime_error(error_msg);
+            } else {
+                delete static_cast<T*>(map_el.first); 
+                var_ptr_map.erase(pair<string,Item*>(var_name,this));    
+            }
+        }
+
+
+        ///*
+        // * To manage with variables added by other Items
+        // *  use the functions below with the Item* pointer
+        // *  value equals the Item object that has add the
+        // *  variable.
+        // */
+        //template<typename T>
+        //void add(pair<pair<string,Item*>,T> key_val){
+        //    var_ptr_map[pair<string,Item*>(key_val.first.first,key_val.first.second)] = new T(key_val.second);
+        //}
+        //template<typename T>
+        //void set(pair<pair<string,Item*>,T> key_val){
+        //    *static_cast<T*> (var_ptr_map[pair<string,Item*>(key_val.first.first,key_val.first.second)]) = key_val.second;
+        //}
+        //template<typename T>
+        //T& get(pair<string,Item*> key_pair){
+        //    return *static_cast<T*>(var_ptr_map[pair<string,Item*>(key_pair.first,key_pair.second)]);
+        //}
+        //template<typename T>
+        //void erase(pair<string,Item*> key_pair){
+        //    delete static_cast<T*>(var_ptr_map[pair<string,Item*>(key_pair.first,key_pair.second)]); 
+        //    var_ptr_map.erase(key_pair);    
+        //}
+
         void add_bool(string var_name, bool var_val);
         void set_bool(string var_name, bool var_val);
         void delete_bool(string var_name);
@@ -142,6 +219,23 @@ class Item{
         bool isAlive, isActive;
         int id;
         string name;
+
+
+        /* 
+         * All the shared variables must be added to the "var_ptr_map" inside
+         * the Item constructor or setup functions using the template function "add".
+         * The keys of the "var_ptr_map" are of type std::pair<string,Item*> with the name
+         * of the variable and a pointer to the Item object that has set the
+         * variable. The Item* pointer allows the Items to add variables to each other 
+         * with the same name without overwrite or delete them, preserving the unicity
+         * of the key. In most cases the Item* value is "this", because the most part
+         * of the shared variables are added by the Item it self.
+         */
+
+        //static const types_map(u_int8)
+
+        unordered_map<pair<string,Item*>,pair<void*,size_t>> var_ptr_map;
+
         unordered_map<string, ofVec3f*> ofVec3fPtr_map;
         unordered_map<string, ofColor*> ofColorPtr_map;
         unordered_map<string, int*> intPtr_map;

@@ -47,7 +47,35 @@ Particle* World::create_particle(const type_info& particle_type, bool isActive){
     return particle;
 }
 
-PointersVector<Particle*> World::get_particle_by_typeid(const type_info& particle_typeid){
+Controller* World::create_controller(string iName, bool isActive) {
+    Controller* controller = nature.create_controller(iName);
+    controller->set_world(this);
+    if (isActive) {
+        controller->set_active_state(true);
+        controller->setup(); 
+    } else {
+        controller->set_active_state(false);
+    }
+    controllers.push_back(controller);
+
+    return controller;
+}
+
+Controller* World::create_controller(const type_info& controller_type, bool isActive) {
+    Controller* controller = nature.create_controller(controller_type);
+    controller->set_world(this);
+    if (isActive) {
+        controller->set_active_state(true);
+        controller->setup(); 
+    } else {
+        controller->set_active_state(false);
+    }
+    controllers.push_back(controller);
+
+    return controller;
+}
+
+PointersVector<Particle*> World::get_particle_by_typeid(const type_info& particle_typeid) {
     return particles.get_items_by_typeid(particle_typeid);
 }
 

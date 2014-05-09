@@ -1,6 +1,3 @@
-//class Particles_Container;
-//class Tags_Container;
-
 class Particle : public Item {
     public:
         ofVec3f locat, veloc, accel;

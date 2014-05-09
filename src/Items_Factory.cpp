@@ -2,8 +2,6 @@
 
 Particle* Items_Factory::create_particle(const type_info& item_typeid){
 
-    
-
     Particle* newItem = (Particle*)NULL;
 
     if (item_typeid == typeid(Particle*)){
@@ -118,6 +116,42 @@ Interaction* Items_Factory::create_interaction(string item_name){
         newItem = new Electrical_Attraction();
     } else if (item_name.compare("WaveSource") == 0){
         newItem = new Wave_Source();
+    }
+    /*
+     .
+     .
+     .
+        Add new item types
+    */
+
+
+    return newItem;
+}
+
+Controller* Items_Factory::create_controller(const type_info& item_typeid){
+
+    Controller* newItem = (Controller*)NULL;
+
+    if (item_typeid == typeid(MidiController*)){
+        newItem = new MidiController();
+    } 
+    /*
+     .
+     .
+     .
+        Add new item types
+    */
+
+
+    return newItem;
+}
+
+Controller* Items_Factory::create_controller(string item_name){
+
+    Controller* newItem = (Controller*)NULL;
+
+    if (item_name.compare("MidiController") == 0){
+        newItem = new MidiController();
     }
     /*
      .
