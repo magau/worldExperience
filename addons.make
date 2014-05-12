@@ -1,1 +1,1 @@
-ofxOsc
+ofxMidi

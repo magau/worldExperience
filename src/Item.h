@@ -87,46 +87,105 @@ class Item{
 
 
         /*
-         * The purpose of the "setup" function is to set and/or
-         * add (only on particles it can be added variables)
-         * sepecific variables required by this item to 
-         * other items sharing the same tag, "host_items"
-         * (taged with the host tag of this item).
-         * This variables are used inside the "run" function of 
-         * the item.
-         * The "host item" class have a set of unordered_maps
-         * that can be accessed with the member functions:
-         * "add_", "set_", "get_" and "delete_" for certain 
-         * types, used for this purpose.
-         * It's adviced to add the name and id of this item to the 
-         * added and/or seted variable name (key), if the variable is 
-         * not suposed to be used by other items.
+         *  The purpose of the "setup" function is to set and/or
+         *  add (only on particles it can be added variables)
+         *  sepecific variables required by this item to 
+         *  other items sharing the same tag, "host_items"
+         *  (taged with the host tag of this item).
+         *  This variables are used inside the "run" function of 
+         *  the item.
+         *  The "host item" class have a set of unordered_maps
+         *  that can be accessed with the member functions:
+         *  "add_", "set_", "get_" and "delete_" for certain 
+         *  types, used for this purpose.
+         *  It's adviced to add the name and id of this item to the 
+         *  added and/or seted variable name (key), if the variable is 
+         *  not suposed to be used by other items.
          */ 
         virtual void setup();
         virtual void run();
 
         template<typename T>
-        void add(pair<string,T> var_val){
-            var_ptr_map[pair<string,Item*>(var_val.first,this)] = pair<void*,size_t>(new T(var_val.second),sizeof(T));
+        void add(pair<string,T> name_value_pair){
+            add<T>(name_value_pair.first, name_value_pair.second);
         }
 
         template<typename T>
-        void set(pair<string,T> var_val){
-            pair<void*,size_t>& map_el = var_ptr_map[pair<string,Item*>(var_val.first,this)];
+        void set(pair<string,T> name_value_pair){
+            set<T>(name_value_pair.first, name_value_pair.second);
+        }
+
+        /*
+         *  To manage with variables added by other Items
+         *  use the functions below with the Item* pointer
+         *  value equals the Item object that has add the
+         *  variable.
+         */
+        template<typename T>
+        void add(pair<pair<string,Item*>,T> key_val){
+            add<T>(key_val.first.first, key_val.second, key_val.first.second);
+        }
+
+        template<typename T>
+        void set(pair<pair<string,Item*>,T> keypair_val){
+            set<T>(keypair_val.first.first, keypair_val.second, keypair_val.first.second);
+        }
+
+        template<typename T>
+        T& get(pair<string,Item*>var_key){
+            return get<T>(var_key.first, var_key.second);
+        }
+
+        template<typename T>
+        void erase(pair<string,Item*> var_key){
+            erase<T>(var_key.first, var_key.second);
+        }
+
+        /*
+         *  Generic functions to manage with the shared 
+         *  variables container "var_ptr_map":
+         *  (add, set, get, erase)
+         */
+        template<typename T>
+        void add(string var_name, T value, Item* item_ptr=NULL){
+            pair<string,Item*> var_key;
+            if (item_ptr == NULL)
+                var_key=pair<string,Item*>(var_name,this);
+            else
+                var_key=pair<string,Item*>(var_name,item_ptr);
+
+            var_ptr_map[var_key] = pair<void*,size_t>(new T(value),sizeof(T));
+        }
+
+        template<typename T>
+        void set(string var_name, T value, Item* item_ptr=NULL){
+            pair<string,Item*> var_key;
+            if (item_ptr == NULL)
+                var_key=pair<string,Item*>(var_name,this);
+            else
+                var_key=pair<string,Item*>(var_name,item_ptr);
+
+            pair<void*,size_t>& map_el = var_ptr_map[var_key];
             if(sizeof(T) != map_el.second) {
 	        stringstream error_msg;
                 error_msg << "invalid conversion from size_t: " <<
                              sizeof(T) << " to size_t: " << map_el.second <<
-                             "; variable name:" << var_val.first;
+                             "; variable name:" << var_name;
                 throw runtime_error(error_msg);
             } else {
-                *static_cast<T*>(map_el.first) = var_val.second;
+                *static_cast<T*>(map_el.first) = value;
             }
         }
 
         template<typename T>
-        T& get(string var_name){
-            pair<void*,size_t>& map_el = var_ptr_map[pair<string,Item*>(var_name,this)];
+        T& get(string var_name, Item* item_ptr=NULL){
+            pair<string,Item*> var_key;
+            if (item_ptr == NULL)
+                var_key = pair<string,Item*>(var_name,this);
+            else
+                var_key = pair<string,Item*>(var_name,item_ptr);
+
+            pair<void*,size_t>& map_el = var_ptr_map[var_key];
             if(sizeof(T) != map_el.second) {
 	        stringstream error_msg;
                 error_msg << "invalid conversion from size_t: " <<
@@ -137,14 +196,15 @@ class Item{
             return *static_cast<T*>(map_el.first);
         }
 
-        void erase(string var_name){
-            free(var_ptr_map[pair<string,Item*>(var_name,this)].first); 
-            var_ptr_map.erase(pair<string,Item*>(var_name,this));    
-        }
-
         template<typename T>
-        void erase(string var_name){
-            pair<void*,size_t>& map_el = var_ptr_map[pair<string,Item*>(var_name,this)];
+        void erase(string var_name, Item* item_ptr=NULL){
+            pair<string,Item*> var_key;
+            if (item_ptr == NULL)
+                var_key = pair<string,Item*>(var_name,this);
+            else
+                var_key = pair<string,Item*>(var_name,item_ptr);
+
+            pair<void*,size_t>& map_el = var_ptr_map[var_key];
             if(sizeof(T) != map_el.second) {
 	        stringstream error_msg;
                 error_msg << "invalid conversion from size_t: " <<
@@ -153,34 +213,9 @@ class Item{
                 throw runtime_error(error_msg);
             } else {
                 delete static_cast<T*>(map_el.first); 
-                var_ptr_map.erase(pair<string,Item*>(var_name,this));    
+                var_ptr_map.erase(var_key);
             }
         }
-
-
-        ///*
-        // * To manage with variables added by other Items
-        // *  use the functions below with the Item* pointer
-        // *  value equals the Item object that has add the
-        // *  variable.
-        // */
-        //template<typename T>
-        //void add(pair<pair<string,Item*>,T> key_val){
-        //    var_ptr_map[pair<string,Item*>(key_val.first.first,key_val.first.second)] = new T(key_val.second);
-        //}
-        //template<typename T>
-        //void set(pair<pair<string,Item*>,T> key_val){
-        //    *static_cast<T*> (var_ptr_map[pair<string,Item*>(key_val.first.first,key_val.first.second)]) = key_val.second;
-        //}
-        //template<typename T>
-        //T& get(pair<string,Item*> key_pair){
-        //    return *static_cast<T*>(var_ptr_map[pair<string,Item*>(key_pair.first,key_pair.second)]);
-        //}
-        //template<typename T>
-        //void erase(pair<string,Item*> key_pair){
-        //    delete static_cast<T*>(var_ptr_map[pair<string,Item*>(key_pair.first,key_pair.second)]); 
-        //    var_ptr_map.erase(key_pair);    
-        //}
 
         void add_bool(string var_name, bool var_val);
         void set_bool(string var_name, bool var_val);
