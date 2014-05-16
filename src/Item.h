@@ -88,27 +88,13 @@ class Item{
 
         /*
          *  The purpose of the "setup" function is to set and/or
-         *  add (only on particles it can be added variables)
-         *  sepecific variables required by this item to 
-         *  other items sharing the same tag, "host_items"
-         *  (taged with the host tag of this item).
-         *  This variables are used inside the "run" function of 
-         *  the item.
-         *  The "host item" class have a set of unordered_maps
+         *  add shared variables.
+         *  The "Item" class have an unordered_map
          *  that can be accessed with the member functions:
-         *  "add_", "set_", "get_" and "delete_" for certain 
-         *  types, used for this purpose.
-         *  It's adviced to add the name and id of this item to the 
-         *  added and/or seted variable name (key), if the variable is 
-         *  not suposed to be used by other items.
+         *  "add", "set", "get" and "erase" for this purpose.
          */ 
         virtual void setup();
         virtual void run();
-
-        template<typename T>
-        void add(pair<string,T> name_value_pair){
-            add<T>(name_value_pair.first, name_value_pair.second);
-        }
 
         template<typename T>
         void set(pair<string,T> name_value_pair){
@@ -121,11 +107,6 @@ class Item{
          *  value equals the Item object that has add the
          *  variable.
          */
-        template<typename T>
-        void add(pair<pair<string,Item*>,T> key_val){
-            add<T>(key_val.first.first, key_val.second, key_val.first.second);
-        }
-
         template<typename T>
         void set(pair<pair<string,Item*>,T> keypair_val){
             set<T>(keypair_val.first.first, keypair_val.second, keypair_val.first.second);
@@ -144,77 +125,73 @@ class Item{
         /*
          *  Generic functions to manage with the shared 
          *  variables container "var_ptr_map":
-         *  (add, set, get, erase)
+         *  (set, get, erase)
          */
-        template<typename T>
-        void add(string var_name, T value, Item* item_ptr=NULL){
-            pair<string,Item*> var_key;
-            if (item_ptr == NULL)
-                var_key=pair<string,Item*>(var_name,this);
-            else
-                var_key=pair<string,Item*>(var_name,item_ptr);
-
-            var_ptr_map[var_key] = pair<void*,size_t>(new T(value),sizeof(T));
-        }
 
         template<typename T>
-        void set(string var_name, T value, Item* item_ptr=NULL){
-            pair<string,Item*> var_key;
+        void set(string var_name, T value=(T)0, Item* item_ptr=NULL){
+            string var_key;
             if (item_ptr == NULL)
-                var_key=pair<string,Item*>(var_name,this);
+                var_key=string(var_name + ":" + to_string((long unsigned int)this));
             else
-                var_key=pair<string,Item*>(var_name,item_ptr);
-
-            pair<void*,size_t>& map_el = var_ptr_map[var_key];
-            if(sizeof(T) != map_el.second) {
+                var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
+            unordered_map <string,pair<void*,size_t>>::const_iterator map_it = var_ptr_map.find(var_key);
+            if(map_it == var_ptr_map.end()) {
+                // Add new element.
+                var_ptr_map[var_key] = pair<void*,size_t>(new T(value),sizeof(T));
+            } else if(map_it->second.second != sizeof(T)) {
+                // Element already exists with diferent size_t.
 	        stringstream error_msg;
-                error_msg << "invalid conversion from size_t: " <<
-                             sizeof(T) << " to size_t: " << map_el.second <<
+                error_msg << "invalid conversion from variable of size_t: " <<
+                             sizeof(T) << " to size_t: " << map_it->second.second <<
                              "; variable name:" << var_name;
-                throw runtime_error(error_msg);
+                throw runtime_error(error_msg.str());
             } else {
-                *static_cast<T*>(map_el.first) = value;
+                *static_cast<T*>(map_it->second.first) = value;
             }
         }
 
         template<typename T>
         T& get(string var_name, Item* item_ptr=NULL){
-            pair<string,Item*> var_key;
+            string var_key;
             if (item_ptr == NULL)
-                var_key = pair<string,Item*>(var_name,this);
+                var_key=string(var_name + ":" + to_string((long unsigned int)this));
             else
-                var_key = pair<string,Item*>(var_name,item_ptr);
-
-            pair<void*,size_t>& map_el = var_ptr_map[var_key];
-            if(sizeof(T) != map_el.second) {
-	        stringstream error_msg;
-                error_msg << "invalid conversion from size_t: " <<
-                             sizeof(T) << " to size_t: " << map_el.second <<
+                var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
+            unordered_map <string,pair<void*,size_t>>::const_iterator map_it = var_ptr_map.find(var_key);
+            if(map_it == var_ptr_map.end()) {
+                // Element doesn't exists.
+                stringstream error_msg;
+                error_msg << "get undefined variable " << var_name;
+                throw runtime_error(error_msg.str());
+            } else if(map_it->second.second != sizeof(T)) {
+                // Element already exists with diferent size_t.
+                stringstream error_msg;
+                error_msg << "invalid conversion from variable of size_t: " <<
+                             sizeof(T) << " to size_t: " << map_it->second.second <<
                              "; variable name:" << var_name;
-                throw runtime_error(error_msg);
+                throw runtime_error(error_msg.str());
             }
-            return *static_cast<T*>(map_el.first);
+            return *static_cast<T*>(map_it->second.first);
         }
 
         template<typename T>
         void erase(string var_name, Item* item_ptr=NULL){
-            pair<string,Item*> var_key;
+            string var_key;
             if (item_ptr == NULL)
-                var_key = pair<string,Item*>(var_name,this);
+                var_key=string(var_name + ":" + to_string((long unsigned int)this));
             else
-                var_key = pair<string,Item*>(var_name,item_ptr);
-
+                var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
             pair<void*,size_t>& map_el = var_ptr_map[var_key];
             if(sizeof(T) != map_el.second) {
 	        stringstream error_msg;
                 error_msg << "invalid conversion from size_t: " <<
                              sizeof(T) << " to size_t: " << map_el.second <<
                              "; variable name:" << var_name;
-                throw runtime_error(error_msg);
-            } else {
-                delete static_cast<T*>(map_el.first); 
-                var_ptr_map.erase(var_key);
+                throw runtime_error(error_msg.str());
             }
+            delete static_cast<T*>(map_el.first); 
+            var_ptr_map.erase(var_key);
         }
 
         void add_bool(string var_name, bool var_val);
@@ -269,7 +246,9 @@ class Item{
 
         //static const types_map(u_int8)
 
-        unordered_map<pair<string,Item*>,pair<void*,size_t>> var_ptr_map;
+        unordered_map<string,pair<void*,size_t>> var_ptr_map;
+        //unordered_map<pair<string,Item*>,pair<void*,size_t>> var_ptr_map;
+        //unordered_map<Item*,pair<void*,size_t>> var_ptr_map;
 
         unordered_map<string, ofVec3f*> ofVec3fPtr_map;
         unordered_map<string, ofColor*> ofColorPtr_map;

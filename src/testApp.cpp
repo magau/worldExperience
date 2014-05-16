@@ -4,7 +4,7 @@
 getMouseLocation mouse;
 #endif
 void testApp::setup(){
-    cl = world.create_controller("MidiController");
+    //cl = world.create_controller("MidiController");
     Particle* p;
     //ofSetFrameRate(1);
     ofSetVerticalSync(true);
@@ -66,7 +66,7 @@ void testApp::draw(){
 
     ofBackground(0);
     world.draw();
-    cl->run();
+    //cl->run();
 
 
     //ofSleepMillis(50);

@@ -2,7 +2,14 @@
 
 Particle :: Particle () : Item(){
 
-    rad = 6;
+    set<bool>("visible",true);
+    set<ofVec3f>("loc");
+    set<ofVec3f>("vel");
+    set<ofVec3f>("acc");
+    set<ofColor>("color");
+    set<int>("rad",9);
+
+    //rad = 6;
     _is_visible = true;
     ofVec3fPtr_map["loc"]      = &locat;
     ofVec3fPtr_map["vel"]      = &veloc;
@@ -89,7 +96,7 @@ void Particle :: set_speedLimit(int maxSpeed){
 */
 
 void Particle :: elastic_boundery(){
-    int offset = rad;
+    int offset = get<int>("rad");
 
     //Elastic bounds
     if ( (locat.x <= offset &&  veloc.x < 0) ||
@@ -109,6 +116,8 @@ void Circle :: display() {
     //ofColor(...);
     //ofFill();
     ofSetColor(color);
+    //ofEllipse(locat.x,locat.y,rad,rad);
+    int rad = get<int>("rad");
     ofEllipse(locat.x,locat.y,rad,rad);
 }
 
