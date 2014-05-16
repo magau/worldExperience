@@ -2,11 +2,11 @@
 
 Particle :: Particle () : Item(){
 
-    set<bool>("visible",true);
     set<ofVec3f>("loc");
     set<ofVec3f>("vel");
     set<ofVec3f>("acc");
     set<ofColor>("color");
+    set<bool>("visible",true);
     set<int>("rad",9);
 
     //rad = 6;
@@ -28,6 +28,13 @@ Particle :: ~Particle (){
          iter_tag++){
         (*iter_tag)->remove_particle(this);
     }
+
+    erase<bool>("visible");
+    erase<ofVec3f>("loc");
+    erase<ofVec3f>("vel");
+    erase<ofVec3f>("acc");
+    erase<ofColor>("color");
+    erase<int>("rad");
 }
 
 bool Particle::is_visible() {
