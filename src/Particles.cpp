@@ -2,23 +2,25 @@
 
 Particle :: Particle () : Item(){
 
-    set<ofVec3f>("loc");
-    set<ofVec3f>("vel");
-    set<ofVec3f>("acc");
-    set<ofColor>("color");
-    set<bool>("visible",true);
-    set<int>("rad",9);
+    set<ofVec3f>("loc",&locat);
+    set<ofVec3f>("vel",&veloc);
+    set<ofVec3f>("acc",&accel);
+    set<ofColor>("color",&color);
+    set<bool>("visible",&_is_visible);
+    set<bool>("is_alive",&isAlive);
+    set<float>("relax",&relax_fact);
+    set<int>("rad",&rad);
 
-    //rad = 6;
+    rad = 6;
     _is_visible = true;
-    ofVec3fPtr_map["loc"]      = &locat;
-    ofVec3fPtr_map["vel"]      = &veloc;
-    ofVec3fPtr_map["acc"]      = &accel;
-    ofColorPtr_map["color"]    = &color;
-    intPtr_map["rad"]          = &rad;
-    floatPtr_map["relax_fact"] = &relax_fact;
-    boolPtr_map["isAlive"]     = &isAlive;
-    boolPtr_map["isVisible"]     = &_is_visible;
+    //ofVec3fPtr_map["loc"]      = &locat;
+    //ofVec3fPtr_map["vel"]      = &veloc;
+    //ofVec3fPtr_map["acc"]      = &accel;
+    //ofColorPtr_map["color"]    = &color;
+    //intPtr_map["rad"]          = &rad;
+    //floatPtr_map["relax_fact"] = &relax_fact;
+    //boolPtr_map["isAlive"]     = &isAlive;
+    //boolPtr_map["isVisible"]     = &_is_visible;
 }
 
 Particle :: ~Particle (){
@@ -28,13 +30,6 @@ Particle :: ~Particle (){
          iter_tag++){
         (*iter_tag)->remove_particle(this);
     }
-
-    erase<bool>("visible");
-    erase<ofVec3f>("loc");
-    erase<ofVec3f>("vel");
-    erase<ofVec3f>("acc");
-    erase<ofColor>("color");
-    erase<int>("rad");
 }
 
 bool Particle::is_visible() {
@@ -103,7 +98,7 @@ void Particle :: set_speedLimit(int maxSpeed){
 */
 
 void Particle :: elastic_boundery(){
-    int offset = get<int>("rad");
+    int offset = *get<int>("rad");
 
     //Elastic bounds
     if ( (locat.x <= offset &&  veloc.x < 0) ||
@@ -124,7 +119,7 @@ void Circle :: display() {
     //ofFill();
     ofSetColor(color);
     //ofEllipse(locat.x,locat.y,rad,rad);
-    int rad = get<int>("rad");
+    int rad = *get<int>("rad");
     ofEllipse(locat.x,locat.y,rad,rad);
 }
 

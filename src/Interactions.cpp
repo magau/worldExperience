@@ -58,8 +58,12 @@ void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host
     dist = _host_particle->locat.distance(actuated_particle->locat);
 
 #ifdef USE_UNORDERED_MAP
-    dx = actuated_particle->get_ofVec3f("loc")->x - _host_particle->get_ofVec3f("loc")->x;
-    dy = actuated_particle->get_ofVec3f("loc")->y - _host_particle->get_ofVec3f("loc")->y;
+    //dx = actuated_particle->get_ofVec3f("loc")->x - _host_particle->get_ofVec3f("loc")->x;
+    //dy = actuated_particle->get_ofVec3f("loc")->y - _host_particle->get_ofVec3f("loc")->y;
+    ofVec3f* actuated_loc = actuated_particle->get<ofVec3f>("loc");
+    ofVec3f* _host_loc = _host_particle->get<ofVec3f>("loc");
+    dx = actuated_loc->x - _host_loc->x;
+    dy = actuated_loc->y - _host_loc->y;
 #else
     dx = actuated_particle->locat.x - _host_particle->locat.x;
     dy = actuated_particle->locat.y - _host_particle->locat.y;
@@ -68,8 +72,11 @@ void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host
     acc = weight / pow(dist,2);
 
 #ifdef USE_UNORDERED_MAP
-    actuated_particle->get_ofVec3f("acc")->x += dx * acc;
-    actuated_particle->get_ofVec3f("acc")->y += dy * acc;
+    //actuated_particle->get_ofVec3f("acc")->x += dx * acc;
+    //actuated_particle->get_ofVec3f("acc")->y += dy * acc;
+    ofVec3f* actuated_acc = actuated_particle->get<ofVec3f>("acc");
+    actuated_acc->x += dx * acc;
+    actuated_acc->y += dy * acc;
 #else
     actuated_particle->accel.x += dx * acc;
     actuated_particle->accel.y += dy * acc;

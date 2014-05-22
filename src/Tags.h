@@ -1,17 +1,5 @@
 class Tag : public Item {
     public:
-        unordered_map<string, ofEvent<bool_attr>*> bool_events;
-        unordered_map<string, ofEvent<int_attr>*> int_events;
-        unordered_map<string, ofEvent<float_attr>*> float_events;
-        unordered_map<string, ofEvent<ofVec3f_attr>*> ofVec3f_events;
-        unordered_map<string, ofEvent<ofColor_attr>*> ofColor_events;
-
-        ofEvent<bool_attr> bool_event;
-        ofEvent<int_attr> int_event;
-        ofEvent<float_attr> float_event;
-        ofEvent<ofVec3f_attr> ofVec3f_event;
-        ofEvent<ofColor_attr> ofColor_event;
-
         PointersVector<Particle*> particles;
         //PointersVector<Action*> actions;
         PointersVector<Interaction*> interactions;
@@ -45,8 +33,18 @@ class Tag : public Item {
 
         void run();
 
-        void add_listener_to_particles(string attr_name);
-        void remove_listener_from_particles(string attr_name);
+        template<typename T>
+        void add_listener_to_particles(string event_name){
+            set_event<pair<string,T>>(event_name);
+            PointersVector<Particle*>::iterator iter_particle;
+            for (iter_particle = particles.begin();
+                iter_particle != particles.end();
+                iter_particle++){
+                (*iter_particle)->add_listener<T>(get_event<pair<string,T>>(event_name));
+            }
+        }
+
+        void remove_listener_from_particles(string event_name);
 };
 
 

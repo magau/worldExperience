@@ -7,7 +7,6 @@ const type_info& Behavior::get_typeid() {
 }
 
 GravityGlue::GravityGlue() : Behavior(){
-    location_key = get_name()+"_loc";
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
@@ -17,7 +16,7 @@ const type_info& GravityGlue::get_typeid() {
 
 void GravityGlue::setup(Particle* _host_particle){
     ofVec3f var_value = _host_particle->locat;
-    _host_particle->add_ofVec3f(location_key, var_value);
+    _host_particle->set<ofVec3f>("loc", var_value, this);
 }
 
 void GravityGlue::setup(){
@@ -34,24 +33,27 @@ void GravityGlue::free(){
 }
 
 void GravityGlue::free(Particle* _host_particle){
-    _host_particle->delete_ofVec3f(location_key);
+    _host_particle->erase<ofVec3f>("loc",this);
 }
 
 void GravityGlue::run(Particle* _host_particle){
     float dist,dx,dy,weight,weight_fact,acc;
     ofVec3f* _locat;
-    _locat = _host_particle->get_ofVec3f(location_key);
+    _locat = _host_particle->get<ofVec3f>("loc",this);
 
     weight_fact = 0.1;
     min_dist = 40;
 
     weight = max_dist*weight_fact;
 
-    dist = _locat->distance(_host_particle->locat);
+    dist = _locat->distance(*_host_particle->get<ofVec3f>("loc"));
 
 #ifdef USE_UNORDERED_MAP
-    dx = _host_particle->get_ofVec3f("loc")->x - _locat->x;
-    dy = _host_particle->get_ofVec3f("loc")->y - _locat->y;
+    //dx = _host_particle->get_ofVec3f("loc")->x - _locat->x;
+    //dy = _host_particle->get_ofVec3f("loc")->y - _locat->y;
+    ofVec3f* _host_loc = _host_particle->get<ofVec3f>("loc");
+    dx = _host_loc->x - _locat->x;
+    dy = _host_loc->y - _locat->y;
 #else
     dx = _host_particle->locat.x - _locat->x;
     dy = _host_particle->locat.y - _locat->y;
@@ -62,8 +64,11 @@ void GravityGlue::run(Particle* _host_particle){
     acc = weight / pow(dist,2);
 
 #ifdef USE_UNORDERED_MAP
-    _host_particle->get_ofVec3f("acc")->x += - dx * acc;
-    _host_particle->get_ofVec3f("acc")->y += - dy * acc;
+    ofVec3f* _host_acc = _host_particle->get<ofVec3f>("acc");
+    _host_acc->x += - dx * acc;
+    _host_acc->y += - dy * acc;
+    //_host_particle->get_ofVec3f("acc")->x += - dx * acc;
+    //_host_particle->get_ofVec3f("acc")->y += - dy * acc;
 #else
     _host_particle->accel.x += - dx * acc;
     _host_particle->accel.y += - dy * acc;
@@ -77,7 +82,8 @@ void GravityGlue::run(Particle* _host_particle){
     //    _host_particle->locat.y < ofGetWindowHeight() - offset ){
 
 #ifdef USE_UNORDERED_MAP
-    _host_particle->set_float("relax_fact",0.7);
+    //_host_particle->set_float("relax_fact",0.7);
+    _host_particle->set<float>("relax",0.7);
 #else
     _host_particle->relax_fact = 0.7;
 #endif
