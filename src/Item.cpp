@@ -1,9 +1,11 @@
 #include "testApp.h"
 
 Item::Item(){
-    isAlive = true;
-    isActive = true;
-    set_name(get_type_name());
+    //cout << "item constructor..." << endl;
+    is_alive = Item_Parameter<bool>(true);
+    is_active = Item_Parameter<bool>(true);
+    set<bool>("is_alive",&is_alive);
+    set<bool>("is_active",&is_active);
 }
 
 Item :: ~Item(){
@@ -21,23 +23,21 @@ string Item::get_type_name(){
 
 string Item::get_name(){return name;}
 
+void Item::print_shared_var_names(){
+    for(unordered_map<string,pair<void*,pair<size_t,bool>>>::iterator var_it = var_ptr_map.begin();
+        var_it != var_ptr_map.end(); var_it++)
+        cout << var_it->first << endl;
+}
+
 int    Item::get_id(){return id;}
 
 World* Item::get_world(){return world;}
-
-bool   Item::is_alive(){return isAlive;}
-
-bool   Item::is_active(){return isActive;}
 
 void   Item::set_name(string _name){name=_name;}
 
 void   Item::set_id(int _id){id=_id;}
 
 void   Item::set_world(World* _world){world=_world;}
-
-void   Item::set_live_state(bool live_state){isAlive=live_state;}
-
-void   Item::set_active_state(bool active_state){isActive=active_state;}
 
 void   Item::iterate_attribute(string attr_name, bool forward){}
 

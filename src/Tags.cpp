@@ -104,9 +104,9 @@ void Tag::setup_action(Action* action, bool isActive){
     action->set_world(get_world());
     if(isActive){
         action->setup(); 
-        action->set_active_state(true);
+        action->set<bool>("is_active",true);
     } else {
-        action->set_active_state(false);
+        action->set<bool>("is_active",false);
     }
 }
 
@@ -191,6 +191,7 @@ void Tag::run(){
     for (iter_interaction = interactions.begin();
          iter_interaction != interactions.end();
          iter_interaction++){
+         //cout << (*iter_interaction)->get_type_name() << endl;
          (*iter_interaction)->run();
     }
 
@@ -198,6 +199,7 @@ void Tag::run(){
     for (iter_behavior = behaviors.begin();
          iter_behavior != behaviors.end();
          iter_behavior++){
+         //cout << (*iter_behavior)->get_type_name() << endl;
          (*iter_behavior)->run();
     }
 }

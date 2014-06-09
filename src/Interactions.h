@@ -13,6 +13,7 @@ class Interaction : public Action {
 
         Interaction();
         const type_info& get_typeid();
+        string get_type_name();
         virtual void run(){Action::run();};
         virtual void run(Particle* _host_particle);
         virtual void interact(Particle* actuated_particle, Particle* _host_particle);
@@ -27,6 +28,7 @@ class Electrical_Repulsion : public Interaction{
     public:
         Electrical_Repulsion();
         const type_info& get_typeid();
+        string get_type_name();
         void add_listener(string var_name);
         void interact(Particle* actuated_particle, Particle* _host_particle);
 };
@@ -35,6 +37,7 @@ class Electrical_Attraction : public Interaction{
     public:
         Electrical_Attraction();
         const type_info& get_typeid();
+        string get_type_name();
         void interact(Particle* actuated_particle, Particle* _host_particle);
 };
 
@@ -45,6 +48,7 @@ class Wave_Source : public Interaction{
 
         Wave_Source();
         const type_info& get_typeid();
+        string get_type_name();
         void interact(Particle* actuated_particle, Particle* _host_particle);
         void run(Particle* _host_particle);
 };

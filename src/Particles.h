@@ -1,16 +1,17 @@
 class Particle : public Item {
     public:
-        ofVec3f locat, veloc, accel;
-        ofColor color;
-        int rad;
-        float relax_fact;
-        bool _is_visible;
+        Item_Parameter<ofVec3f> loc, vel, acc;
+        Item_Parameter<ofColor> color;
+        Item_Parameter<int> rad;
+        Item_Parameter<float> relax;
+        Item_Parameter<bool> visible;
 
         PointersVector<Tag*> tags;
 
         Particle ();
         ~Particle();
 
+        virtual string get_type_name();
         virtual void setup();
         virtual void run();
         virtual void update();
@@ -26,8 +27,9 @@ class Particle : public Item {
 class Circle : public Particle{
     public:
         Circle ();
-        void display();
         const type_info& get_typeid();
+        string get_type_name();
+        void display();
 };
 
 

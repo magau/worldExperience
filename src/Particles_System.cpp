@@ -56,12 +56,11 @@ void RegularGrid_MP::setup(){
 
             slave_particle = create_slaveParticle();
 
-            slave_particle->locat = temp_locat;
-            slave_particle->veloc.set(0);
-            slave_particle->accel.set(0);
-            slave_particle->rad = 9;
-            slave_particle->relax_fact = 1.0;
-            slave_particle->color = ofColor(255);
+            //cout << "slave particle:" << slave_particle->get_type_name() << endl;
+            slave_particle->set<ofVec3f>("loc", temp_locat);
+            slave_particle->set<float>("relax", 1.0);
+            slave_particle->set<ofColor>("color", ofColor(255));
+            slave_particle->set<int>("rad", 9, pair<int,int>(0,500));
         }
     }
 }

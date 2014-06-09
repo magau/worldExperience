@@ -4,27 +4,42 @@ class Interaction;
 class Behavior;
 class Action;
 
+template<typename T>
+class Item_Parameter{
+    public:
+        Item_Parameter<T>() {}
+
+        Item_Parameter<T>(T var) {
+            value = var;
+        }
+
+        Item_Parameter<T>(T val, pair<T,T> ran) {
+           value = val;
+           range = ran; 
+        }
+
+        T value;
+        pair<T,T> range;
+};
 
 class Item{
 
     public:
         Item();
+
         //Item(World* _world);
         virtual ~Item();
 
         virtual const type_info& get_typeid();
-        string get_type_name();
+        virtual string get_type_name();
 
+        void print_shared_var_names();
         string get_name();
         int get_id();
         World* get_world();
-        bool is_alive();
-        bool is_active();
         void set_name(string _name);
         void set_id(int _id);
         void set_world(World* _world);
-        void set_live_state(bool live_state);
-        void set_active_state(bool active_state);
 
         void iterate_attribute(string attr_name, bool forward);
 
@@ -51,27 +66,34 @@ class Item{
          */
 
         template<typename T>
-        void set(string var_name, T value=(T)0, Item* item_ptr=NULL){
+        void set(string var_name, Item_Parameter<T> value, Item* item_ptr=NULL){
             string var_key;
             if (item_ptr == NULL)
                 var_key=string(var_name + ":" + to_string((long unsigned int)this));
             else
                 var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
-            unordered_map <string,pair<void*,size_t>>::const_iterator map_it = var_ptr_map.find(var_key);
+            unordered_map <string,pair<void*,pair<size_t,bool>>>::iterator map_it = var_ptr_map.find(var_key);
+            Item_Parameter<T>* new_var;
             if (map_it == var_ptr_map.end()) {
                 // Add new element.
-                var_ptr_map[var_key] = pair<void*,size_t>(new T(value),sizeof(T));
+                new_var = new Item_Parameter<T>(value);
+                pair<size_t,bool> aux_param = pair<size_t,bool>(sizeof(T),true);
+                var_ptr_map[var_key] = pair<void*,pair<size_t,bool>>(new_var,aux_param);
+                //cout << "set var:" << var_key << " value:" << new_var->value << endl;
                     
-            } else if(map_it->second.second != sizeof(T)) {
+            } else if(map_it->second.second.first != sizeof(T)) {
                 // Element already exists with diferent size_t.
 	        stringstream error_msg;
                 error_msg << "invalid conversion from variable of size_t: " <<
-                             sizeof(T) << " to size_t: " << map_it->second.second <<
+                             sizeof(T) << " to size_t: " << map_it->second.second.first <<
                              "; variable name:" << var_name;
                 //throw runtime_error(error_msg.str());
                 cout << error_msg.str() << endl;
             } else {
-                *static_cast<T*>(map_it->second.first) = value;
+                Item_Parameter<T>* parameter = static_cast<Item_Parameter<T>*>(map_it->second.first);
+                //cout << "overwiting var:" << var_key << " value:" << parameter->value << endl;
+                *parameter = value;
+                //cout << "new value:" << value.value << endl;
             }
         }
 
@@ -79,58 +101,66 @@ class Item{
          *  Add elements with already existent pointers.
          */
         template<typename T>
-        void set(string var_name, T* value, Item* item_ptr=NULL){
+        void set(string var_name, Item_Parameter<T>* var_ptr, Item* item_ptr=NULL){
             string var_key;
             if (item_ptr == NULL)
                 var_key=string(var_name + ":" + to_string((long unsigned int)this));
             else
                 var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
-            unordered_map <string,pair<void*,size_t>>::const_iterator map_it = var_ptr_map.find(var_key);
+            unordered_map <string,pair<void*,pair<size_t,bool>>>::iterator map_it = var_ptr_map.find(var_key);
             if (map_it == var_ptr_map.end()) {
                 // Add an existent poiter as a new element.
-                var_ptr_map[var_key] = pair<void*,size_t>(value,sizeof(T));
-                    
-            } else if(map_it->second.second != sizeof(T)) {
+                pair<size_t,bool> aux_param = pair<size_t,bool>(sizeof(T),false);
+                var_ptr_map[var_key] = pair<void*,pair<size_t,bool>>(var_ptr,aux_param);
+                //cout << "set var ptr:" << var_key << " value:" << var_ptr->value << endl;
+            } else if(map_it->second.second.first != sizeof(T)) {
                 // Element already exists with diferent size_t.
 	        stringstream error_msg;
                 error_msg << "invalid conversion from variable of size_t: " <<
-                             sizeof(T) << " to size_t: " << map_it->second.second <<
+                             sizeof(T) << " to size_t: " << map_it->second.second.first <<
                              "; variable name:" << var_name;
                 //throw runtime_error(error_msg.str());
                 cout << error_msg.str() << endl;
             } else {
                 // Replace element with an existent pointer.
-                delete static_cast<T*>(map_it->second.first); 
-                var_ptr_map.erase(map_it);
-                var_ptr_map[var_key] = pair<void*,size_t>(value,sizeof(T));
+                Item_Parameter<T>* old_var = static_cast<Item_Parameter<T>*>(map_it->second.first);
+                //cout << "overwiting var:" << var_key << " value:" << old_var->value << endl;
+                if (map_it->second.second.second)
+                    delete old_var; 
+                pair<size_t,bool> aux_param = pair<size_t,bool>(sizeof(T),false);
+                pair<void*,pair<size_t,bool>> new_el = pair<void*,pair<size_t,bool>>(var_ptr,aux_param);
+                map_it->second = new_el;
+                //cout << "new value:" << var_ptr->value << endl;
             }
         }
 
         template<typename T>
-        T* get(string var_name, Item* item_ptr=NULL){
-            T* result = (T*)NULL;
+        Item_Parameter<T>* get(string var_name, Item* item_ptr=NULL){
+            Item_Parameter<T>* result = (Item_Parameter<T>*)NULL;
             string var_key;
             if (item_ptr == NULL)
                 var_key=string(var_name + ":" + to_string((long unsigned int)this));
             else
                 var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
-            unordered_map <string,pair<void*,size_t>>::const_iterator map_it = var_ptr_map.find(var_key);
+            //cout << "get map key:" << var_key << endl;
+            unordered_map <string,pair<void*,pair<size_t,bool>>>::const_iterator map_it = var_ptr_map.find(var_key);
             if(map_it == var_ptr_map.end()) {
                 // Element doesn't exists.
                 stringstream error_msg;
                 error_msg << "get undefined variable " << var_name;
                 cout << error_msg.str() << endl;
                 //throw runtime_error(error_msg.str());
-            } else if(map_it->second.second != sizeof(T)) {
+            } else if(map_it->second.second.first != sizeof(T)) {
                 // Element already exists with diferent size_t.
                 stringstream error_msg;
                 error_msg << "invalid conversion from variable of size_t: " <<
-                             sizeof(T) << " to size_t: " << map_it->second.second <<
+                             sizeof(T) << " to size_t: " << map_it->second.second.first <<
                              "; variable name:" << var_name;
                 cout << error_msg.str() << endl;
                 //throw runtime_error(error_msg.str());
             } else {
-                result = static_cast<T*>(map_it->second.first);
+                result = static_cast<Item_Parameter<T>*>(map_it->second.first);
+                //cout << result->value << endl;
             }
             return result;
         }
@@ -142,120 +172,133 @@ class Item{
                 var_key=string(var_name + ":" + to_string((long unsigned int)this));
             else
                 var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
-            unordered_map <string,pair<void*,size_t>>::const_iterator map_it = var_ptr_map.find(var_key);
+            unordered_map <string,pair<void*,pair<size_t,bool>>>::const_iterator map_it = var_ptr_map.find(var_key);
             if(map_it == var_ptr_map.end()) {
                 // Element doesn't exists.
                 stringstream error_msg;
                 error_msg << "erase undefined variable " << var_name;
                 cout << error_msg.str() << endl;
                 //throw runtime_error(error_msg.str());
-            } else if(map_it->second.second != sizeof(T)) {
+            } else if(map_it->second.second.first != sizeof(T)) {
                 // Element already exists with diferent size_t.
                 stringstream error_msg;
                 error_msg << "invalid conversion from variable of size_t: " <<
-                             sizeof(T) << " to size_t: " << map_it->second.second <<
+                             sizeof(T) << " to size_t: " << map_it->second.second.first <<
                              "; erase variable name:" << var_name;
                 cout << error_msg.str() << endl;
                 //throw runtime_error(error_msg.str());
             } else {
-                delete static_cast<T*>(map_it->second.first); 
-                var_ptr_map.erase(var_key);
+                Item_Parameter<T>* parameter = static_cast<Item_Parameter<T>*>(map_it->second.first);
+                if (map_it->second.second.second)
+                    delete parameter; 
+                var_ptr_map.erase(map_it);
             }
         }
 
         template<typename T>
         void set_event(string event_name, Item* item_ptr=NULL){
-            string var_key;
-            if (item_ptr == NULL)
-                var_key=string(event_name + ":" + to_string((long unsigned int)this));
-            else
-                var_key=string(event_name + ":" + to_string((long unsigned int)item_ptr));
-            unordered_map <string,pair<void*,size_t>>::const_iterator map_it = var_ptr_map.find(var_key);
-            if (map_it == var_ptr_map.end()) {
-                // Add new element.
-                var_ptr_map[var_key] = pair<void*,size_t>(new ofEvent<T>,sizeof(T));
-                //value: callback
-                //var_ptr_map[var_key] = pair<void*,size_t>(new T(value),sizeof(T));
-                    
-            } else if(map_it->second.second != sizeof(T)) {
-                // Element already exists with diferent size_t.
-	        stringstream error_msg;
-                error_msg << "invalid conversion from variable of size_t: " <<
-                             sizeof(T) << " to size_t: " << map_it->second.second <<
-                             "; event name:" << event_name;
-                //throw runtime_error(error_msg.str());
-                cout << error_msg.str() << endl;
-            } else {
-                delete static_cast<ofEvent<T>*>(map_it->second.first); 
-                var_ptr_map.erase(map_it);
-                var_ptr_map[var_key] = pair<void*,size_t>(new ofEvent<T>,sizeof(T));
-                //value: callback
-                //*static_cast<T*>(map_it->second.first) = value;
-            }
+        //    string var_key;
+        //    if (item_ptr == NULL)
+        //        var_key=string(event_name + ":" + to_string((long unsigned int)this));
+        //    else
+        //        var_key=string(event_name + ":" + to_string((long unsigned int)item_ptr));
+        //    unordered_map <string,pair<void*,pair<size_t,bool>>>::const_iterator map_it = var_ptr_map.find(var_key);
+        //    if (map_it == var_ptr_map.end()) {
+        //        // Add new element.
+        //        var_ptr_map[var_key] = pair<void*,size_t>(new ofEvent<T>,sizeof(T));
+        //        //value: callback
+        //        //var_ptr_map[var_key] = pair<void*,size_t>(new T(value),sizeof(T));
+        //            
+        //    } else if(map_it->second.second != sizeof(T)) {
+        //        // Element already exists with diferent size_t.
+	//        stringstream error_msg;
+        //        error_msg << "invalid conversion from variable of size_t: " <<
+        //                     sizeof(T) << " to size_t: " << map_it->second.second <<
+        //                     "; event name:" << event_name;
+        //        //throw runtime_error(error_msg.str());
+        //        cout << error_msg.str() << endl;
+        //    } else {
+        //        delete static_cast<ofEvent<T>*>(map_it->second.first); 
+        //        var_ptr_map.erase(map_it);
+        //        var_ptr_map[var_key] = pair<void*,size_t>(new ofEvent<T>,sizeof(T));
+        //        //value: callback
+        //        //*static_cast<T*>(map_it->second.first) = value;
+        //    }
         }
 
         template<typename T>
         ofEvent<T>* get_event(string var_name, Item* item_ptr=NULL){
             ofEvent<T>* result = (ofEvent<T>*)NULL;
-            string var_key;
-            if (item_ptr == NULL)
-                var_key=string(var_name + ":" + to_string((long unsigned int)this));
-            else
-                var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
-            unordered_map <string,pair<void*,size_t>>::const_iterator map_it = var_ptr_map.find(var_key);
-            if(map_it == var_ptr_map.end()) {
-                // Element doesn't exists.
-                stringstream error_msg;
-                error_msg << "get undefined event " << var_name;
-                cout << error_msg.str() << endl;
-                //throw runtime_error(error_msg.str());
-            } else if(map_it->second.second != sizeof(T)) {
-                // Element already exists with diferent size_t.
-                stringstream error_msg;
-                error_msg << "invalid conversion from variable of size_t: " <<
-                             sizeof(T) << " to size_t: " << map_it->second.second <<
-                             "; event name:" << var_name;
-                cout << error_msg.str() << endl;
-                //throw runtime_error(error_msg.str());
-            } else {
-                result = static_cast<ofEvent<T>*>(map_it->second.first);
-            }
+        //    string var_key;
+        //    if (item_ptr == NULL)
+        //        var_key=string(var_name + ":" + to_string((long unsigned int)this));
+        //    else
+        //        var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
+        //    unordered_map <string,pair<void*,pair<size_t,bool>>>::const_iterator map_it = var_ptr_map.find(var_key);
+        //    if(map_it == var_ptr_map.end()) {
+        //        // Element doesn't exists.
+        //        stringstream error_msg;
+        //        error_msg << "get undefined event " << var_name;
+        //        cout << error_msg.str() << endl;
+        //        //throw runtime_error(error_msg.str());
+        //    } else if(map_it->second.second != sizeof(T)) {
+        //        // Element already exists with diferent size_t.
+        //        stringstream error_msg;
+        //        error_msg << "invalid conversion from variable of size_t: " <<
+        //                     sizeof(T) << " to size_t: " << map_it->second.second <<
+        //                     "; event name:" << var_name;
+        //        cout << error_msg.str() << endl;
+        //        //throw runtime_error(error_msg.str());
+        //    } else {
+        //        result = static_cast<ofEvent<T>*>(map_it->second.first);
+        //    }
             return result;
         }
 
 
         template<typename T>
         void erase_event(string var_name, Item* item_ptr=NULL) {
-            string var_key;
-            if (item_ptr == NULL)
-                var_key=string(var_name + ":" + to_string((long unsigned int)this));
-            else
-                var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
-            unordered_map <string,pair<void*,size_t>>::const_iterator map_it = var_ptr_map.find(var_key);
-            if(map_it == var_ptr_map.end()) {
-                // Element doesn't exists.
-                stringstream error_msg;
-                error_msg << "erase undefined event " << var_name;
-                cout << error_msg.str() << endl;
-                //throw runtime_error(error_msg.str());
-            } else if(map_it->second.second != sizeof(T)) {
-                // Element already exists with diferent size_t.
-                stringstream error_msg;
-                error_msg << "invalid conversion from variable of size_t: " <<
-                             sizeof(T) << " to size_t: " << map_it->second.second <<
-                             "; erase event name:" << var_name;
-                cout << error_msg.str() << endl;
-                //throw runtime_error(error_msg.str());
-            } else {
-                delete static_cast<ofEvent<T>*>(map_it->second.first); 
-                var_ptr_map.erase(var_key);
-            }
+        //    string var_key;
+        //    if (item_ptr == NULL)
+        //        var_key=string(var_name + ":" + to_string((long unsigned int)this));
+        //    else
+        //        var_key=string(var_name + ":" + to_string((long unsigned int)item_ptr));
+        //    unordered_map <string,pair<void*,pair<size_t,bool>>>::const_iterator map_it = var_ptr_map.find(var_key);
+        //    if(map_it == var_ptr_map.end()) {
+        //        // Element doesn't exists.
+        //        stringstream error_msg;
+        //        error_msg << "erase undefined event " << var_name;
+        //        cout << error_msg.str() << endl;
+        //        //throw runtime_error(error_msg.str());
+        //    } else if(map_it->second.second != sizeof(T)) {
+        //        // Element already exists with diferent size_t.
+        //        stringstream error_msg;
+        //        error_msg << "invalid conversion from variable of size_t: " <<
+        //                     sizeof(T) << " to size_t: " << map_it->second.second <<
+        //                     "; erase event name:" << var_name;
+        //        cout << error_msg.str() << endl;
+        //        //throw runtime_error(error_msg.str());
+        //    } else {
+        //        delete static_cast<ofEvent<T>*>(map_it->second.first); 
+        //        var_ptr_map.erase(var_key);
+        //    }
         }
 
         template<typename T>
-        void set(pair<string,T>& name_value_pair){
+        void set(pair<string,Item_Parameter<T>>& name_value_pair){
             set<T>(name_value_pair.first, name_value_pair.second);
         }
+
+        template<typename T>
+        void set(string name,T value, Item* item_ptr=NULL){
+            set<T>(name, Item_Parameter<T>(value), item_ptr);
+        }
+
+        template<typename T>
+        void set(string name,T value, pair<T,T> range, Item* item_ptr=NULL){
+            set<T>(name, Item_Parameter<T>(value,range), item_ptr);
+        }
+
 
         /*
          *  To manage with variables added by other Items
@@ -264,12 +307,12 @@ class Item{
          *  variable.
          */
         template<typename T>
-        void set(pair<pair<string,Item*>,T>& keypair_val){
+        void set(pair<pair<string,Item*>,Item_Parameter<T>>& keypair_val){
             set<T>(keypair_val.first.first, keypair_val.second, keypair_val.first.second);
         }
 
         template<typename T>
-        T* get(pair<string,Item*>& var_key){
+        Item_Parameter<T>* get(pair<string,Item*>& var_key){
             return get<T>(var_key.first, var_key.second);
         }
 
@@ -287,7 +330,7 @@ class Item{
 
     private:
         World* world;
-        bool isAlive, isActive;
+        Item_Parameter<bool> is_alive, is_active;
         int id;
         string name;
 
@@ -305,6 +348,6 @@ class Item{
 
         //static const types_map(u_int8)
 
-        unordered_map<string,pair<void*,size_t>> var_ptr_map;
+        unordered_map<string,pair<void*,pair<size_t,bool>>> var_ptr_map;
 
 };

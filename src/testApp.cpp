@@ -18,6 +18,7 @@ void testApp::setup(){
     // grelha regular de particulas com o tipo "P_Circle". 
 
     p = world.create_particle("RegularGrid_MP");
+    //cout << p->get_type_name() << endl;
     //p = world.create_particle(typeid(RegularGrid_MP*));
     
     // Cria uma tag t0 à qual adiciona as particulas da grelha regular
@@ -49,8 +50,8 @@ void testApp::setup(){
     // da grelha, à interacção.
     i0->add_actuated_tag(t0);
 
-    t0->add_listener_to_particles<bool>("e1");
-    t0->add_listener_to_particles<ofColor>("e2");
+    //t0->add_listener_to_particles<bool>("e1");
+    //t0->add_listener_to_particles<ofColor>("e2");
 
     
 }
@@ -82,31 +83,31 @@ void testApp::keyPressed(int key){
 
      //managerInterface.listen(key);
      switch (key){
-         case 'd':{
-             Tag* t0 = world.tags.get_item_by_id(0);
-             pair<string,bool> attr("is_alive", false);
-             ofNotifyEvent(*(t0->get_event<pair<string,bool>>("e1")), attr);
-             break;}
-         case 'b':{
-             Tag* t0 = world.tags.get_item_by_id(0);
-             pair<string,ofColor> attr("color", ofColor(0,0,255));
-             ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
-             break;}
-         case 'g':{
-             Tag* t0 = world.tags.get_item_by_id(0);
-             pair<string,ofColor> attr("color", ofColor(0,255,0));
-             ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
-             break;}
-         case 'r':{
-             Tag* t0 = world.tags.get_item_by_id(0);
-             pair<string,ofColor> attr("color", ofColor(255,0,0));
-             ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
-             break;}
-         case 'w':{
-             Tag* t0 = world.tags.get_item_by_id(0);
-             pair<string,ofColor> attr("color", ofColor(255));
-             ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
-             break;}
+    //     case 'd':{
+    //         Tag* t0 = world.tags.get_item_by_id(0);
+    //         pair<string,bool> attr("is_alive", false);
+    //         ofNotifyEvent(*(t0->get_event<pair<string,bool>>("e1")), attr);
+    //         break;}
+    //     case 'b':{
+    //         Tag* t0 = world.tags.get_item_by_id(0);
+    //         pair<string,ofColor> attr("color", ofColor(0,0,255));
+    //         ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
+    //         break;}
+    //     case 'g':{
+    //         Tag* t0 = world.tags.get_item_by_id(0);
+    //         pair<string,ofColor> attr("color", ofColor(0,255,0));
+    //         ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
+    //         break;}
+    //     case 'r':{
+    //         Tag* t0 = world.tags.get_item_by_id(0);
+    //         pair<string,ofColor> attr("color", ofColor(255,0,0));
+    //         ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
+    //         break;}
+    //     case 'w':{
+    //         Tag* t0 = world.tags.get_item_by_id(0);
+    //         pair<string,ofColor> attr("color", ofColor(255));
+    //         ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
+    //         break;}
          case 'f':{
              Tag* t1 = world.tags.get_item_by_id(1);
              t1->behaviors.erase_items_by_typeid(typeid(MouseTracking*));

@@ -3,6 +3,11 @@
 Interaction::Interaction() : Action() {
 }
 
+string Interaction::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
 const type_info& Interaction::get_typeid() {
     return typeid(this);
 }
@@ -37,6 +42,11 @@ Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
+string Electrical_Repulsion::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
 const type_info& Electrical_Repulsion::get_typeid() {
     return typeid(this);
 }
@@ -55,18 +65,16 @@ void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host
 
     weight = max_dist*weight_fact;
 
-    dist = _host_particle->locat.distance(actuated_particle->locat);
+    ofVec3f* actuated_loc = &actuated_particle->get<ofVec3f>("loc")->value;
+    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
+    dist = _host_loc->distance(*actuated_loc);
 
 #ifdef USE_UNORDERED_MAP
-    //dx = actuated_particle->get_ofVec3f("loc")->x - _host_particle->get_ofVec3f("loc")->x;
-    //dy = actuated_particle->get_ofVec3f("loc")->y - _host_particle->get_ofVec3f("loc")->y;
-    ofVec3f* actuated_loc = actuated_particle->get<ofVec3f>("loc");
-    ofVec3f* _host_loc = _host_particle->get<ofVec3f>("loc");
     dx = actuated_loc->x - _host_loc->x;
     dy = actuated_loc->y - _host_loc->y;
 #else
-    dx = actuated_particle->locat.x - _host_particle->locat.x;
-    dy = actuated_particle->locat.y - _host_particle->locat.y;
+    dx = actuated_loc->x - _host_loc->x;
+    dy = actuated_loc->y - _host_loc->y;
 #endif
 
     acc = weight / pow(dist,2);
@@ -74,7 +82,7 @@ void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host
 #ifdef USE_UNORDERED_MAP
     //actuated_particle->get_ofVec3f("acc")->x += dx * acc;
     //actuated_particle->get_ofVec3f("acc")->y += dy * acc;
-    ofVec3f* actuated_acc = actuated_particle->get<ofVec3f>("acc");
+    ofVec3f* actuated_acc = &actuated_particle->get<ofVec3f>("acc")->value;
     actuated_acc->x += dx * acc;
     actuated_acc->y += dy * acc;
 #else
@@ -97,6 +105,11 @@ Electrical_Attraction::Electrical_Attraction() : Interaction(){
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
+string Electrical_Attraction::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
 const type_info& Electrical_Attraction::get_typeid() {
     return typeid(this);
 }
@@ -108,15 +121,19 @@ void Electrical_Attraction::interact(Particle* actuated_particle, Particle* _hos
     min_dist = 40;
     weight = max_dist*weight_fact;
 
-    dist = _host_particle->locat.distance(actuated_particle->locat);
-    dx = actuated_particle->locat.x - _host_particle->locat.x;
-    dy = actuated_particle->locat.y - _host_particle->locat.y;
+    ofVec3f* actuated_loc = &actuated_particle->get<ofVec3f>("loc")->value;
+    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
+
+    dist = _host_loc->distance(*actuated_loc);
+    dx = actuated_loc->x - _host_loc->x;
+    dy = actuated_loc->y - _host_loc->y;
 
     if (dist < min_dist) dist = min_dist;
     acc = weight / pow(dist,2);
 
-    actuated_particle->accel.x += - dx * acc;
-    actuated_particle->accel.y += - dy * acc;
+    ofVec3f* actuated_acc = &actuated_particle->get<ofVec3f>("acc")->value;
+    actuated_acc->x += - dx * acc;
+    actuated_acc->y += - dy * acc;
 
     // //Over relaxation
     // if (dist == min_dist) {
@@ -134,6 +151,11 @@ Wave_Source::Wave_Source() : Interaction(){
     wave_speed = 5;
 }
 
+string Wave_Source::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
 const type_info& Wave_Source::get_typeid() {
     return typeid(this);
 }
@@ -147,26 +169,29 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
     float dist,acc,size_ds;
     ofPoint ds, dir, wavePos;
 
-    ds.x = actuated_particle->locat.x - _host_particle->locat.x;
-    ds.y = actuated_particle->locat.y - _host_particle->locat.y;
+    ofVec3f* actuated_loc = &actuated_particle->get<ofVec3f>("loc")->value;
+    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
+
+    ds.x = actuated_loc->x - _host_loc->x;
+    ds.y = actuated_loc->y - _host_loc->y;
     size_ds = ofVec3f(0).distance(ds);
     dir.set(ds.x/size_ds,ds.y/size_ds);
     
-    wavePos.set(_host_particle->locat.x + timer * dir.x, _host_particle->locat.y + timer * dir.y);
-    dist = actuated_particle->locat.distance(wavePos);
+    wavePos.set(_host_loc->x + timer * dir.x, _host_loc->y + timer * dir.y);
+    dist = actuated_loc->distance(wavePos);
     if (dist > max_dist) {
-        _host_particle->set_live_state(false);
-        set_live_state(false);
+        _host_particle->set<bool>("is_alive",Item_Parameter<bool>(false));
     } else {
 
         if (dist < min_dist) dist = min_dist;
 
         acc = weight / pow(dist,2);
 
-        ds.x = actuated_particle->locat.x - wavePos.x ;
-        ds.y = actuated_particle->locat.y - wavePos.y;
-        actuated_particle->accel.x += ds.x * acc;
-        actuated_particle->accel.y += ds.y * acc;
+        ds.x = actuated_loc->x - wavePos.x ;
+        ds.y = actuated_loc->y - wavePos.y;
+        ofVec3f* actuated_acc = &actuated_particle->get<ofVec3f>("acc")->value;
+        actuated_acc->x += ds.x * acc;
+        actuated_acc->y += ds.y * acc;
 
 //        cout<<"dir.x:"<<dir.x<<" wavePos.x:"<<wavePos.x<<" ds.x:"<<ds.x<<" dist:"<<dist<<endl;
 

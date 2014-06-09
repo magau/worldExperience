@@ -1,12 +1,21 @@
 #include "testApp.h"
 
-Behavior::Behavior() : Action(){}
+Behavior::Behavior() : Action(){
+    set_name(get_type_name());
+}
 
 const type_info& Behavior::get_typeid() {
     return typeid(this);
 }
 
+string Behavior::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
+
 GravityGlue::GravityGlue() : Behavior(){
+    set_name(get_type_name());
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
@@ -14,14 +23,18 @@ const type_info& GravityGlue::get_typeid() {
     return typeid(this);
 }
 
+string GravityGlue::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
 void GravityGlue::setup(Particle* _host_particle){
-    ofVec3f var_value = _host_particle->locat;
-    _host_particle->set<ofVec3f>("loc", var_value, this);
+    _host_particle->set<ofVec3f>("loc", *_host_particle->get<ofVec3f>("loc"), this);
 }
 
-void GravityGlue::setup(){
-    Action::setup();
-}
+//void GravityGlue::setup(){
+//    Action::setup();
+//}
 
 void GravityGlue::free(){
     PointersVector<Particle*>::iterator iter_particle;
@@ -38,41 +51,31 @@ void GravityGlue::free(Particle* _host_particle){
 
 void GravityGlue::run(Particle* _host_particle){
     float dist,dx,dy,weight,weight_fact,acc;
-    ofVec3f* _locat;
-    _locat = _host_particle->get<ofVec3f>("loc",this);
+    ofVec3f* glue_loc = &_host_particle->get<ofVec3f>("loc",this)->value;
+    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
+    ofVec3f* _host_acc = &_host_particle->get<ofVec3f>("acc")->value;
+    //cout << "p name:" << _host_particle->get_type_name()<< endl;
+    //_host_particle->print_shared_var_names();
+
 
     weight_fact = 0.1;
     min_dist = 40;
 
     weight = max_dist*weight_fact;
 
-    dist = _locat->distance(*_host_particle->get<ofVec3f>("loc"));
+    dist = glue_loc->distance(*_host_loc);
 
-#ifdef USE_UNORDERED_MAP
-    //dx = _host_particle->get_ofVec3f("loc")->x - _locat->x;
-    //dy = _host_particle->get_ofVec3f("loc")->y - _locat->y;
-    ofVec3f* _host_loc = _host_particle->get<ofVec3f>("loc");
-    dx = _host_loc->x - _locat->x;
-    dy = _host_loc->y - _locat->y;
-#else
-    dx = _host_particle->locat.x - _locat->x;
-    dy = _host_particle->locat.y - _locat->y;
-#endif
+    //dx = _host_particle->get_ofVec3f("loc")->x - glue_loc->x;
+    //dy = _host_particle->get_ofVec3f("loc")->y - glue_loc->y;
+    dx = _host_loc->x - glue_loc->x;
+    dy = _host_loc->y - glue_loc->y;
 
     if (dist < min_dist) dist = min_dist;
 
     acc = weight / pow(dist,2);
 
-#ifdef USE_UNORDERED_MAP
-    ofVec3f* _host_acc = _host_particle->get<ofVec3f>("acc");
     _host_acc->x += - dx * acc;
     _host_acc->y += - dy * acc;
-    //_host_particle->get_ofVec3f("acc")->x += - dx * acc;
-    //_host_particle->get_ofVec3f("acc")->y += - dy * acc;
-#else
-    _host_particle->accel.x += - dx * acc;
-    _host_particle->accel.y += - dy * acc;
-#endif
 
     //Do not aplly relaxation at the bounthery wall  
     //int offset = _host_particle->rad;
@@ -81,29 +84,33 @@ void GravityGlue::run(Particle* _host_particle){
     //    _host_particle->locat.y > offset &&
     //    _host_particle->locat.y < ofGetWindowHeight() - offset ){
 
-#ifdef USE_UNORDERED_MAP
     //_host_particle->set_float("relax_fact",0.7);
     _host_particle->set<float>("relax",0.7);
-#else
-    _host_particle->relax_fact = 0.7;
-#endif
     //}
 }
 
 MouseTracking::MouseTracking() : Behavior(){
+    set_name(get_type_name());
 }
+
+string MouseTracking::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
 
 const type_info& MouseTracking::get_typeid() {
     return typeid(this);
 }
 
 void MouseTracking::run(Particle* _host_particle){
+    ofVec3f* _host_vel = &_host_particle->get<ofVec3f>("vel")->value;
+    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
 #ifdef USE_MOUSE_THREAD
     extern getMouseLocation mouse;
-    _host_particle->veloc.x = mouse.x - _host_particle->locat.x;
-    _host_particle->veloc.y = mouse.y - _host_particle->locat.y;
+    _host_vel->x = mouse.x - _host_loc->x;
+    _host_vel->y = mouse.y - _host_loc->y;
 #else
-    _host_particle->veloc.x = ofGetMouseX() - _host_particle->locat.x;
-    _host_particle->veloc.y = ofGetMouseY() - _host_particle->locat.y;
+    _host_vel->x = ofGetMouseX() - _host_loc->x;
+    _host_vel->y = ofGetMouseY() - _host_loc->y;
 #endif
 }

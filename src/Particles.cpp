@@ -2,25 +2,22 @@
 
 Particle :: Particle () : Item(){
 
-    set<ofVec3f>("loc",&locat);
-    set<ofVec3f>("vel",&veloc);
-    set<ofVec3f>("acc",&accel);
+    set_name(get_type_name());
+    //cout << get_type_name() << " constructor..." << endl;
+    loc = Item_Parameter<ofVec3f>(ofVec3f(0), pair<ofVec3f,ofVec3f> (ofVec3f(0),ofVec3f(0)));
+    vel = Item_Parameter<ofVec3f>(ofVec3f(0), pair<ofVec3f,ofVec3f> (ofVec3f(0),ofVec3f(0)));
+    acc = Item_Parameter<ofVec3f>(ofVec3f(0), pair<ofVec3f,ofVec3f> (ofVec3f(0),ofVec3f(0)));
+    color = Item_Parameter<ofColor>(ofColor(0), pair<ofColor,ofColor> (ofColor(0),ofColor(0)));
+    rad = Item_Parameter<int>(6, pair<int,int> (0,500));
+    relax = Item_Parameter<float>(0);
+    visible = Item_Parameter<bool>(true);
+    set<ofVec3f>("loc",&loc);
+    set<ofVec3f>("vel",&vel);
+    set<ofVec3f>("acc",&acc);
     set<ofColor>("color",&color);
-    set<bool>("visible",&_is_visible);
-    set<bool>("is_alive",&isAlive);
-    set<float>("relax",&relax_fact);
     set<int>("rad",&rad);
-
-    rad = 6;
-    _is_visible = true;
-    //ofVec3fPtr_map["loc"]      = &locat;
-    //ofVec3fPtr_map["vel"]      = &veloc;
-    //ofVec3fPtr_map["acc"]      = &accel;
-    //ofColorPtr_map["color"]    = &color;
-    //intPtr_map["rad"]          = &rad;
-    //floatPtr_map["relax_fact"] = &relax_fact;
-    //boolPtr_map["isAlive"]     = &isAlive;
-    //boolPtr_map["isVisible"]     = &_is_visible;
+    set<float>("relax",&relax);
+    set<bool>("is_visible",&visible);
 }
 
 Particle :: ~Particle (){
@@ -33,11 +30,11 @@ Particle :: ~Particle (){
 }
 
 bool Particle::is_visible() {
-    return _is_visible;    
+    return visible.value;    
 };
 
-void Particle::set_visible(bool visible){
-    _is_visible = visible;
+void Particle::set_visible(bool visible_val){
+    visible.value = visible_val;
 };
 
 void Particle::setup(){}
@@ -51,18 +48,23 @@ const type_info& Particle::get_typeid() {
     return typeid(this);
 }
 
+string Particle::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
 void Particle :: update() {
-    veloc += accel;
+    vel.value += acc.value;
     elastic_boundery();
-    locat += veloc;
+    loc.value += vel.value;
     //Aplly relax_fact
-    veloc *= ofVec3f(relax_fact);
-    relax_fact = 1.0;
+    vel.value *= ofVec3f(relax.value);
+    relax.value = 1.0;
     //bound_particles_location();
 
     // Clear accelaration to allow comulative 
     // interactions and order independency:
-    accel = ofVec3f(0);
+    acc.value = ofVec3f(0);
 }
 
 
@@ -98,31 +100,40 @@ void Particle :: set_speedLimit(int maxSpeed){
 */
 
 void Particle :: elastic_boundery(){
-    int offset = *get<int>("rad");
+    //int offset = *get<int>("rad");
+    int* offset = &get<int>("rad")->value;
+    ofVec3f* locat = &loc.value;
+    ofVec3f* veloc = &vel.value;
 
     //Elastic bounds
-    if ( (locat.x <= offset &&  veloc.x < 0) ||
-         (locat.x >= ofGetWindowWidth()-offset &&  veloc.x > 0) ){
-        veloc.x *= -1;
+    if ( (locat->x <= *offset &&  veloc->x < 0) ||
+         (locat->x >= ofGetWindowWidth() - *offset &&  veloc->x > 0) ){
+        veloc->x *= -1;
     }
-    if ( (locat.y <= offset && veloc.y < 0) ||
-         (locat.y >= ofGetWindowHeight()-offset && veloc.y > 0) ){
-        veloc.y *= -1;
+    if ( (locat->y <= *offset && veloc->y < 0) ||
+         (locat->y >= ofGetWindowHeight() - *offset && veloc->y > 0) ){
+        veloc->y *= -1;
     }
 }
 
 Circle::Circle() : Particle(){
 }
 
+const type_info& Circle::get_typeid() {
+    return typeid(this);
+}
+
+string Circle::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
 void Circle :: display() {
     //ofColor(...);
     //ofFill();
-    ofSetColor(color);
+    ofSetColor(color.value);
     //ofEllipse(locat.x,locat.y,rad,rad);
-    int rad = *get<int>("rad");
-    ofEllipse(locat.x,locat.y,rad,rad);
-}
-
-const type_info& Circle::get_typeid(){
-    return typeid(this);
+    int* rad_val = &rad.value;
+    ofVec3f* loc_val = &loc.value;
+    ofEllipse(loc_val->x,loc_val->y,*rad_val,*rad_val);
 }
