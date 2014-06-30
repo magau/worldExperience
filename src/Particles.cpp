@@ -29,13 +29,13 @@ Particle :: ~Particle (){
     }
 }
 
-bool Particle::is_visible() {
-    return visible.value;    
-};
+//bool Particle::is_visible() {
+//    return visible.value;    
+//};
 
-void Particle::set_visible(bool visible_val){
-    visible.value = visible_val;
-};
+//void Particle::set_visible(bool visible_val){
+//    visible.value = visible_val;
+//};
 
 void Particle::setup(){}
 
@@ -117,6 +117,7 @@ void Particle :: elastic_boundery(){
 }
 
 Circle::Circle() : Particle(){
+    set_name(get_type_name());
 }
 
 const type_info& Circle::get_typeid() {

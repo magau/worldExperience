@@ -1,24 +1,14 @@
 class Controller : public Item {
     public:
-
-        // inputs:
-        unordered_map<string,bool> switch_map;
-        unordered_map<string,int8_t> knob_8bit_map;
-
-        // outputs:
-        //ofEvent<bool>    bool_var;
-        //ofEvent<int>     int_var;
-        //ofEvent<float>   float_var;
-        //ofEvent<ofVec3f> ofVec3f_var;
-        //ofEvent<ofColor> of_Color_var;
-
         //void notify(){ofNotifyEvent(iterate_variable,rise,this);}
         //void set_val(bool rise){_rise = rise;}
 };
 
 class MidiController : public Controller, ofxMidiListener{
     public:
-
+        MidiController();
+        const type_info& get_typeid();
+        string get_type_name();
         ofxMidiIn midiIn;
         ofxMidiMessage midiMessage;
 	stringstream text;

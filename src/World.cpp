@@ -146,6 +146,8 @@ void World::draw(){
     for(PointersVector<Particle*>::iterator iter_particle = particles.begin();
                                     iter_particle != particles.end();
                                     iter_particle++){
-        (*iter_particle)->display();
+        //if ((*iter_particle)->get<bool>("is_visible")->value)
+        if ((*iter_particle)->visible.value)
+            (*iter_particle)->display();
     }
 }

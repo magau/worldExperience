@@ -17,8 +17,8 @@ class Particle : public Item {
         virtual void update();
         virtual void display();
         virtual const type_info& get_typeid();
-        bool is_visible();
-        void set_visible(bool _is_visible);
+        //bool is_visible();
+        //void set_visible(bool _is_visible);
         //void bound_particles_location();
         //void set_speedLimit(int max_speed);
         void elastic_boundery();
