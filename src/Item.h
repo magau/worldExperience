@@ -46,9 +46,13 @@ class Item{
 
         template <typename T>
         void add_listener(ofEvent<pair<string,Item_Parameter<T>>>* event){
-            ofAddListener(*event, this ,& Item::set<T>);
+            ofAddListener(*event, this ,& Item::map_parameter<T>);
         }
 
+        template <typename T>
+        void remove_listener(ofEvent<pair<string,Item_Parameter<T>>>* event){
+            ofRemoveListener(*event, this ,& Item::set<T>);
+        }
 
         /*
          *  The purpose of the "setup" function is to set and/or
@@ -198,10 +202,14 @@ class Item{
 
         template<typename T>
         void map_parameter(string var_name, Item_Parameter<T> param, Item* item_ptr=NULL){
-            Item_Parameter<T>* current_param = get<T>(var_name,item_ptr);
-            current_param->value = (param->value - param->ran.first) *
-                                   (current_param->ran.second - current_param->ran.first) /
-                                   (param->ran.second - param->ran.first) + current_param->ran.first;
+            if (typeid(T) == typeid(int) or typeid(T) == typeid(float)) {
+                Item_Parameter<T>* current_param = get<T>(var_name,item_ptr);
+                current_param->value = (param.value - param.range.first) *
+                                       (current_param->range.second - current_param->range.first) /
+                                       (param.range.second - param.range.first) + current_param->range.first;
+            } else {
+                set<T>(var_name,param,item_ptr);
+            }
         }
 
         template<typename T>
@@ -344,8 +352,8 @@ class Item{
         }
 
         template<typename T>
-        void map_parameter(pair<pair<string,Item*>,Item_Parameter<T>>& keypair_val){
-            map_parameter<T>(keypair_val.first.first, keypair_val.second, keypair_val.first.second);
+        void map_parameter(pair<string,Item_Parameter<T>>& name_value_pair){
+            map_parameter<T>(name_value_pair.first, name_value_pair.second);
         }
 
         friend class Particle; 

@@ -46,6 +46,19 @@ class Tag : public Item {
             }
         }
 
+        template<typename T>
+        void remove_listener_from_particles(string event_name, Item* host_item_ptr) {
+            ofEvent<pair<string,Item_Parameter<T>>>* event_ptr = host_item_ptr->get_event<bool>(event_name);
+            erase_event<T>(event_name, host_item_ptr);
+            PointersVector<Particle*>::iterator iter_particle;
+            for (iter_particle = particles.begin();
+                iter_particle != particles.end();
+                iter_particle++){
+                (*iter_particle)->remove_listener<T>(event_ptr);
+            }
+        }
+
+
         void remove_listener_from_particles(string event_name);
 };
 
