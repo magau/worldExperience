@@ -51,7 +51,7 @@ class getMouseLocation : public ofThread {
 class testApp : public ofBaseApp{
 	public:
            
-           Controller* cl;
+           //Controller* cl;
   
            World world;
            //Manager_KeyboardInterface managerInterface;

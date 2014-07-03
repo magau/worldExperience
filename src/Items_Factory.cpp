@@ -132,7 +132,9 @@ Controller* Items_Factory::create_controller(const type_info& item_typeid){
 
     Controller* newItem = (Controller*)NULL;
 
-    if (item_typeid == typeid(MidiController*)){
+    if (item_typeid == typeid(Controller*)){
+        newItem = new Controller();
+    } else if (item_typeid == typeid(MidiController*)){
         newItem = new MidiController();
     } 
     /*
@@ -150,7 +152,9 @@ Controller* Items_Factory::create_controller(string item_name){
 
     Controller* newItem = (Controller*)NULL;
 
-    if (item_name.compare("MidiController") == 0){
+    if (item_name.compare("Controller") == 0){
+        newItem = new Controller();
+    } else if (item_name.compare("MidiController") == 0){
         newItem = new MidiController();
     }
     /*

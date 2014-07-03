@@ -1,5 +1,7 @@
 class Controller : public Item {
     public:
+        virtual void setup();
+        virtual void run();
         //void notify(){ofNotifyEvent(iterate_variable,rise,this);}
         //void set_val(bool rise){_rise = rise;}
 };

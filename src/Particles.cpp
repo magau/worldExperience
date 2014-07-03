@@ -8,7 +8,7 @@ Particle :: Particle () : Item(){
     vel = Item_Parameter<ofVec3f>(ofVec3f(0), pair<ofVec3f,ofVec3f> (ofVec3f(0),ofVec3f(0)));
     acc = Item_Parameter<ofVec3f>(ofVec3f(0), pair<ofVec3f,ofVec3f> (ofVec3f(0),ofVec3f(0)));
     color = Item_Parameter<ofColor>(ofColor(0), pair<ofColor,ofColor> (ofColor(0),ofColor(0)));
-    rad = Item_Parameter<int>(6, pair<int,int> (0,500));
+    rad = Item_Parameter<int>(10, pair<int,int> (0,500));
     relax = Item_Parameter<float>(0);
     visible = Item_Parameter<bool>(true);
     set<ofVec3f>("loc",&loc);

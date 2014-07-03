@@ -4,7 +4,9 @@
 getMouseLocation mouse;
 #endif
 void testApp::setup(){
-    cl = world.create_controller("MidiController");
+    //cl = world.create_controller("Controller");
+    Controller* cl = world.create_controller("Controller");
+    //cl = world.create_controller("MidiController");
     Particle* p;
     //ofSetFrameRate(1);
     ofSetVerticalSync(true);
@@ -51,6 +53,7 @@ void testApp::setup(){
     i0->add_actuated_tag(t0);
 
     t0->add_listener_to_particles<bool>("ctrl1", cl);
+    t0->add_listener_to_particles<int>("ctrl2", cl);
  
 }
    
@@ -106,16 +109,22 @@ void testApp::keyPressed(int key){
     //         pair<string,ofColor> attr("color", ofColor(255));
     //         ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
     //         break;}
-         case 'v':{
-             pair<string,Item_Parameter<bool>> attr("is_visible",
-                                                    Item_Parameter<bool>(true));
-             ofNotifyEvent(*(cl->get_event<bool>("ctrl1")), attr);
-             break;}
-         case 'i':{
-             pair<string,Item_Parameter<bool>> attr("is_visible",
-                                                    Item_Parameter<bool>(false));
-             ofNotifyEvent(*(cl->get_event<bool>("ctrl1")), attr);
-             break;}
+    //     case '+':{
+    //         pair<string,Item_Parameter<int>> attr("rad",Item_Parameter<int>(30,pair<int,int>(0,500)));
+    //         ofNotifyEvent(*(cl->get_event<int>("ctrl2")), attr);
+    //         break;}
+    //     case '-':{
+    //         pair<string,Item_Parameter<int>> attr("rad",Item_Parameter<int>(10,pair<int,int>(0,500)));
+    //         ofNotifyEvent(*(cl->get_event<int>("ctrl2")), attr);
+    //         break;}
+    //   case 'v':{
+    //       pair<string,Item_Parameter<bool>> attr("is_visible",Item_Parameter<bool>(true));
+    //       ofNotifyEvent(*(cl->get_event<bool>("ctrl1")), attr);
+    //       break;}
+    //   case 'i':{
+    //       pair<string,Item_Parameter<bool>> attr("is_visible",Item_Parameter<bool>(false));
+    //       ofNotifyEvent(*(cl->get_event<bool>("ctrl1")), attr);
+    //       break;}
          case 'f':{
              Tag* t1 = world.tags.get_item_by_id(1);
              t1->behaviors.erase_items_by_typeid(typeid(MouseTracking*));

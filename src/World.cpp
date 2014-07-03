@@ -139,6 +139,13 @@ PointersVector<Particle*>* World :: update(){
             (*iter_particle)->run();
         }
     }
+
+    for(PointersVector<Controller*>::iterator iter_controller = controllers.end() - 1;
+                                    iter_controller >= controllers.begin();
+                                    iter_controller--) {
+        (*iter_controller)->run();
+    }
+
     return &(particles);
 }
 

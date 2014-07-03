@@ -60,7 +60,7 @@ void RegularGrid_MP::setup(){
             slave_particle->set<ofVec3f>("loc", temp_locat);
             slave_particle->set<float>("relax", 1.0);
             slave_particle->set<ofColor>("color", ofColor(255));
-            slave_particle->set<int>("rad", 9, pair<int,int>(0,500));
+            slave_particle->set<int>("rad", 10, pair<int,int>(0,500));
         }
     }
 }

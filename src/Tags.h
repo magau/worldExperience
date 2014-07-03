@@ -36,7 +36,7 @@ class Tag : public Item {
         template<typename T>
         void add_listener_to_particles(string event_name, Item* host_item_ptr) {
                                        //void (*callback)(pair<pair<string,Item*>,Item_Parameter<T>>& keypair_val)){
-            ofEvent<pair<string,Item_Parameter<T>>>* event_ptr = host_item_ptr->get_event<bool>(event_name);
+            ofEvent<pair<string,Item_Parameter<T>>>* event_ptr = host_item_ptr->get_event<T>(event_name);
             set_event<T>(event_name, event_ptr, host_item_ptr);
             PointersVector<Particle*>::iterator iter_particle;
             for (iter_particle = particles.begin();
