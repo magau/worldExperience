@@ -5,20 +5,20 @@ void Controller::setup() {
     set_event<int>("ctrl2", NULL, this);
     set<bool>("ctrl1",True,pair<bool,bool>(False,True));
     set<int>("ctrl2",10,pair<int,int>(0,500));
-    set<string>("ctrl2_attr","rad");
+    set<vector<string>>("ctrl2_attr",vector<string>());
+    get<vector<string>>("ctrl2_attr")->value.push_back("rad");
 }
 
 void Controller::run() {
     if (ofGetKeyPressed('+')){
-            Item_Parameter<int>* ctrl2_ptr = get<int>("ctrl2");
-            ctrl2_ptr->value++;
-            pair<string,Item_Parameter<int>> attr(get<string>("ctrl2_attr")->value,*ctrl2_ptr);
-            ofNotifyEvent(*(this->get_event<int>("ctrl2")), attr);
+        Item_Parameter<int>* val_ptr = get<int>("ctrl2");
+        val_ptr->value++;
+        notify_ctrl_event<int>("ctrl2");
     } else if (ofGetKeyPressed('-')){
-            Item_Parameter<int>* ctrl2_ptr = get<int>("ctrl2");
-            ctrl2_ptr->value--;
-            pair<string,Item_Parameter<int>> attr(get<string>("ctrl2_attr")->value,*ctrl2_ptr);
-            ofNotifyEvent(*(this->get_event<int>("ctrl2")), attr);
+            
+        Item_Parameter<int>* val_ptr = get<int>("ctrl2");
+        val_ptr->value--;
+        notify_ctrl_event<int>("ctrl2");
     }
 
 }
