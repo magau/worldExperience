@@ -16,10 +16,10 @@ Particle* World::create_particle(string iName, bool isActive){
     Particle* particle = nature.create_particle(iName);
     particle->set_world(this);
     if (isActive) {
-        particle->set<bool>("is_active",true);
+        particle->set_item_parameter<bool>("is_active",true);
         particle->setup(); 
     } else {
-        particle->set<bool>("is_active",false);
+        particle->set_item_parameter<bool>("is_active",false);
     }
     particles.push_back(particle);
 
@@ -37,10 +37,10 @@ Particle* World::create_particle(const type_info& particle_type, bool isActive){
     Particle* particle = nature.create_particle(particle_type);
     particle->set_world(this);
     if (isActive) {
-        particle->set<bool>("is_active",true);
+        particle->set_item_parameter<bool>("is_active",true);
         particle->setup(); 
     } else {
-        particle->set<bool>("is_active",false);
+        particle->set_item_parameter<bool>("is_active",false);
     }
     particles.push_back(particle);
 
@@ -51,10 +51,10 @@ Controller* World::create_controller(string iName, bool isActive) {
     Controller* controller = nature.create_controller(iName);
     controller->set_world(this);
     if (isActive) {
-        controller->set<bool>("is_active",true);
+        controller->set_item_parameter<bool>("is_active",true);
         controller->setup(); 
     } else {
-        controller->set<bool>("is_active",false);
+        controller->set_item_parameter<bool>("is_active",false);
     }
     controllers.push_back(controller);
 
@@ -65,10 +65,10 @@ Controller* World::create_controller(const type_info& controller_type, bool isAc
     Controller* controller = nature.create_controller(controller_type);
     controller->set_world(this);
     if (isActive) {
-        controller->set<bool>("is_active",true);
+        controller->set_item_parameter<bool>("is_active",true);
         controller->setup(); 
     } else {
-        controller->set<bool>("is_active",false);
+        controller->set_item_parameter<bool>("is_active",false);
     }
     controllers.push_back(controller);
 
@@ -133,9 +133,9 @@ PointersVector<Particle*>* World :: update(){
     for(PointersVector<Particle*>::iterator iter_particle = particles.end() - 1;
                                     iter_particle >= particles.begin();
                                     iter_particle--) {
-        if(!(*iter_particle)->get<bool>("is_alive")->value) {
+        if(!(*iter_particle)->get_item_parameter<bool>("is_alive")->value) {
             remove_particle(*iter_particle);
-        } else if ((*iter_particle)->get<bool>("is_active")->value) {
+        } else if ((*iter_particle)->get_item_parameter<bool>("is_active")->value) {
             (*iter_particle)->run();
         }
     }
@@ -153,7 +153,7 @@ void World::draw(){
     for(PointersVector<Particle*>::iterator iter_particle = particles.begin();
                                     iter_particle != particles.end();
                                     iter_particle++){
-        //if ((*iter_particle)->get<bool>("is_visible")->value)
+        //if ((*iter_particle)->get_item_parameter<bool>("is_visible")->value)
         if ((*iter_particle)->visible.value)
             (*iter_particle)->display();
     }

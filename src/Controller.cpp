@@ -3,20 +3,20 @@
 void Controller::setup() {
     set_event<bool>("ctrl1", NULL, this);
     set_event<int>("ctrl2", NULL, this);
-    set<bool>("ctrl1",True,pair<bool,bool>(False,True));
-    set<int>("ctrl2",10,pair<int,int>(0,500));
-    set<vector<string>>("ctrl2_attr",vector<string>());
-    get<vector<string>>("ctrl2_attr")->value.push_back("rad");
+    set_item_parameter<bool>("ctrl1",True,pair<bool,bool>(False,True));
+    set_item_parameter<int>("ctrl2",10,pair<int,int>(0,500));
+    set_variable<vector<string>>("ctrl2_attr",vector<string>());
+    get_variable<vector<string>>("ctrl2_attr")->push_back("rad");
 }
 
 void Controller::run() {
     if (ofGetKeyPressed('+')){
-        Item_Parameter<int>* val_ptr = get<int>("ctrl2");
+        Item_Parameter<int>* val_ptr = get_item_parameter<int>("ctrl2");
         val_ptr->value++;
         notify_ctrl_event<int>("ctrl2");
     } else if (ofGetKeyPressed('-')){
             
-        Item_Parameter<int>* val_ptr = get<int>("ctrl2");
+        Item_Parameter<int>* val_ptr = get_item_parameter<int>("ctrl2");
         val_ptr->value--;
         notify_ctrl_event<int>("ctrl2");
     }

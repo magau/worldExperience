@@ -29,7 +29,7 @@ string GravityGlue::get_type_name(){
 };
 
 void GravityGlue::setup(Particle* _host_particle){
-    _host_particle->set<ofVec3f>("loc", *_host_particle->get<ofVec3f>("loc"), this);
+    _host_particle->set_item_parameter<ofVec3f>("loc", *_host_particle->get_item_parameter<ofVec3f>("loc"), this);
 }
 
 //void GravityGlue::setup(){
@@ -46,14 +46,14 @@ void GravityGlue::free(){
 }
 
 void GravityGlue::free(Particle* _host_particle){
-    _host_particle->erase<ofVec3f>("loc",this);
+    _host_particle->erase_item_parameter<ofVec3f>("loc",this);
 }
 
 void GravityGlue::run(Particle* _host_particle){
     float dist,dx,dy,weight,weight_fact,acc;
-    ofVec3f* glue_loc = &_host_particle->get<ofVec3f>("loc",this)->value;
-    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
-    ofVec3f* _host_acc = &_host_particle->get<ofVec3f>("acc")->value;
+    ofVec3f* glue_loc = &_host_particle->get_item_parameter<ofVec3f>("loc",this)->value;
+    ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
+    ofVec3f* _host_acc = &_host_particle->get_item_parameter<ofVec3f>("acc")->value;
     //cout << "p name:" << _host_particle->get_type_name()<< endl;
     //_host_particle->print_shared_var_names();
 
@@ -85,7 +85,7 @@ void GravityGlue::run(Particle* _host_particle){
     //    _host_particle->locat.y < ofGetWindowHeight() - offset ){
 
     //_host_particle->set_float("relax_fact",0.7);
-    _host_particle->set<float>("relax",0.7);
+    _host_particle->set_item_parameter<float>("relax",0.7);
     //}
 }
 
@@ -103,8 +103,8 @@ const type_info& MouseTracking::get_typeid() {
 }
 
 void MouseTracking::run(Particle* _host_particle){
-    ofVec3f* _host_vel = &_host_particle->get<ofVec3f>("vel")->value;
-    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
+    ofVec3f* _host_vel = &_host_particle->get_item_parameter<ofVec3f>("vel")->value;
+    ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
 #ifdef USE_MOUSE_THREAD
     extern getMouseLocation mouse;
     _host_vel->x = mouse.x - _host_loc->x;

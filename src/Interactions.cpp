@@ -65,8 +65,8 @@ void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host
 
     weight = max_dist*weight_fact;
 
-    ofVec3f* actuated_loc = &actuated_particle->get<ofVec3f>("loc")->value;
-    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
+    ofVec3f* actuated_loc = &actuated_particle->get_item_parameter<ofVec3f>("loc")->value;
+    ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
     dist = _host_loc->distance(*actuated_loc);
 
 #ifdef USE_UNORDERED_MAP
@@ -82,7 +82,7 @@ void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host
 #ifdef USE_UNORDERED_MAP
     //actuated_particle->get_ofVec3f("acc")->x += dx * acc;
     //actuated_particle->get_ofVec3f("acc")->y += dy * acc;
-    ofVec3f* actuated_acc = &actuated_particle->get<ofVec3f>("acc")->value;
+    ofVec3f* actuated_acc = &actuated_particle->get_item_parameter<ofVec3f>("acc")->value;
     actuated_acc->x += dx * acc;
     actuated_acc->y += dy * acc;
 #else
@@ -121,8 +121,8 @@ void Electrical_Attraction::interact(Particle* actuated_particle, Particle* _hos
     min_dist = 40;
     weight = max_dist*weight_fact;
 
-    ofVec3f* actuated_loc = &actuated_particle->get<ofVec3f>("loc")->value;
-    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
+    ofVec3f* actuated_loc = &actuated_particle->get_item_parameter<ofVec3f>("loc")->value;
+    ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
 
     dist = _host_loc->distance(*actuated_loc);
     dx = actuated_loc->x - _host_loc->x;
@@ -131,7 +131,7 @@ void Electrical_Attraction::interact(Particle* actuated_particle, Particle* _hos
     if (dist < min_dist) dist = min_dist;
     acc = weight / pow(dist,2);
 
-    ofVec3f* actuated_acc = &actuated_particle->get<ofVec3f>("acc")->value;
+    ofVec3f* actuated_acc = &actuated_particle->get_item_parameter<ofVec3f>("acc")->value;
     actuated_acc->x += - dx * acc;
     actuated_acc->y += - dy * acc;
 
@@ -169,8 +169,8 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
     float dist,acc,size_ds;
     ofPoint ds, dir, wavePos;
 
-    ofVec3f* actuated_loc = &actuated_particle->get<ofVec3f>("loc")->value;
-    ofVec3f* _host_loc = &_host_particle->get<ofVec3f>("loc")->value;
+    ofVec3f* actuated_loc = &actuated_particle->get_item_parameter<ofVec3f>("loc")->value;
+    ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
 
     ds.x = actuated_loc->x - _host_loc->x;
     ds.y = actuated_loc->y - _host_loc->y;
@@ -180,7 +180,7 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
     wavePos.set(_host_loc->x + timer * dir.x, _host_loc->y + timer * dir.y);
     dist = actuated_loc->distance(wavePos);
     if (dist > max_dist) {
-        _host_particle->set<bool>("is_alive",Item_Parameter<bool>(false));
+        _host_particle->set_item_parameter<bool>("is_alive",Item_Parameter<bool>(false));
     } else {
 
         if (dist < min_dist) dist = min_dist;
@@ -189,7 +189,7 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
 
         ds.x = actuated_loc->x - wavePos.x ;
         ds.y = actuated_loc->y - wavePos.y;
-        ofVec3f* actuated_acc = &actuated_particle->get<ofVec3f>("acc")->value;
+        ofVec3f* actuated_acc = &actuated_particle->get_item_parameter<ofVec3f>("acc")->value;
         actuated_acc->x += ds.x * acc;
         actuated_acc->y += ds.y * acc;
 

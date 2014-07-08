@@ -4,11 +4,10 @@ class Controller : public Item {
         virtual void run();
         template <typename T>
         void notify_ctrl_event(string ctrl_name) {
-            Item_Parameter<int>* val_ptr = get<int>(ctrl_name);
-            //val_ptr->value++;
-            vector<string> attached_attrs = get<vector<string>>(ctrl_name+"_attr")->value;
-            for (typename vector<string>::iterator attached_attr_it = attached_attrs.begin();
-                                                   attached_attr_it != attached_attrs.end();
+            Item_Parameter<int>* val_ptr = get_item_parameter<int>(ctrl_name);
+            vector<string>* attached_attrs = get_variable<vector<string>>(ctrl_name+"_attr");
+            for (typename vector<string>::iterator attached_attr_it = attached_attrs->begin();
+                                                   attached_attr_it != attached_attrs->end();
                                                    attached_attr_it++) {
                 pair<string,Item_Parameter<T>> attr(*attached_attr_it,*val_ptr);
                 ofNotifyEvent(*(this->get_event<T>(ctrl_name)), attr);

@@ -4,8 +4,8 @@ Item::Item(){
     //cout << "item constructor..." << endl;
     is_alive = Item_Parameter<bool>(true);
     is_active = Item_Parameter<bool>(true);
-    set<bool>("is_alive",&is_alive);
-    set<bool>("is_active",&is_active);
+    set_item_parameter<bool>("is_alive",&is_alive);
+    set_item_parameter<bool>("is_active",&is_active);
 }
 
 Item :: ~Item(){

@@ -11,13 +11,13 @@ Particle :: Particle () : Item(){
     rad = Item_Parameter<int>(10, pair<int,int> (0,500));
     relax = Item_Parameter<float>(0);
     visible = Item_Parameter<bool>(true);
-    set<ofVec3f>("loc",&loc);
-    set<ofVec3f>("vel",&vel);
-    set<ofVec3f>("acc",&acc);
-    set<ofColor>("color",&color);
-    set<int>("rad",&rad);
-    set<float>("relax",&relax);
-    set<bool>("is_visible",&visible);
+    set_item_parameter<ofVec3f>("loc",&loc);
+    set_item_parameter<ofVec3f>("vel",&vel);
+    set_item_parameter<ofVec3f>("acc",&acc);
+    set_item_parameter<ofColor>("color",&color);
+    set_item_parameter<int>("rad",&rad);
+    set_item_parameter<float>("relax",&relax);
+    set_item_parameter<bool>("is_visible",&visible);
 }
 
 Particle :: ~Particle (){
@@ -100,8 +100,8 @@ void Particle :: set_speedLimit(int maxSpeed){
 */
 
 void Particle :: elastic_boundery(){
-    //int offset = *get<int>("rad");
-    int* offset = &get<int>("rad")->value;
+    //int offset = *get_item_parameter<int>("rad");
+    int* offset = &get_item_parameter<int>("rad")->value;
     ofVec3f* locat = &loc.value;
     ofVec3f* veloc = &vel.value;
 

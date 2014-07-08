@@ -43,7 +43,7 @@ void RegularGrid_MP::setup(){
     grid_offset.x = (win_w - grd_w)/2;
     grid_offset.y = (win_h - grd_h)/2;
     grid_num.set(grd_w/grid_ds , grd_h/grid_ds);
-    //grid_num.set(2 , 2);
+    //grid_num.set_item_parameter(2 , 2);
 
 
     for (i=0; i<grid_num.y; i++){
@@ -57,10 +57,10 @@ void RegularGrid_MP::setup(){
             slave_particle = create_slaveParticle();
 
             //cout << "slave particle:" << slave_particle->get_type_name() << endl;
-            slave_particle->set<ofVec3f>("loc", temp_locat);
-            slave_particle->set<float>("relax", 1.0);
-            slave_particle->set<ofColor>("color", ofColor(255));
-            slave_particle->set<int>("rad", 10, pair<int,int>(0,500));
+            slave_particle->set_item_parameter<ofVec3f>("loc", temp_locat);
+            slave_particle->set_item_parameter<float>("relax", 1.0);
+            slave_particle->set_item_parameter<ofColor>("color", ofColor(255));
+            slave_particle->set_item_parameter<int>("rad", 10, pair<int,int>(0,500));
         }
     }
 }

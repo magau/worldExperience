@@ -104,9 +104,9 @@ void Tag::setup_action(Action* action, bool isActive){
     action->set_world(get_world());
     if(isActive){
         action->setup(); 
-        action->set<bool>("is_active",true);
+        action->set_item_parameter<bool>("is_active",true);
     } else {
-        action->set<bool>("is_active",false);
+        action->set_item_parameter<bool>("is_active",false);
     }
 }
 

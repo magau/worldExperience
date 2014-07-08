@@ -34,7 +34,7 @@ void testApp::setup(){
     // Cria uma nova particula vermelha.
     //p = world.create_particle("Circle");
     p = world.create_particle(typeid(Circle*));
-    p->set<ofColor>("color",ofColor(255,0,0));
+    p->set_item_parameter<ofColor>("color",ofColor(255,0,0));
     //p->set_ofColor("color",ofColor(255,0,0));
 
     // Cria uma nova tag t1 à qual adiciona a particula vermelha
