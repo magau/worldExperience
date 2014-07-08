@@ -1,24 +1,19 @@
 #include "testApp.h"
 
 void Controller::setup() {
-    set_event<bool>("ctrl1", NULL, this);
-    set_event<int>("ctrl2", NULL, this);
-    set_item_parameter<bool>("ctrl1",True,pair<bool,bool>(False,True));
-    set_item_parameter<int>("ctrl2",10,pair<int,int>(0,500));
-    set_variable<vector<string>>("ctrl2_attr",vector<string>());
-    get_variable<vector<string>>("ctrl2_attr")->push_back("rad");
+    add_ctrl<int>("ctrl3");
+    setup_ctrl_parameter<int>("ctrl3",10,pair<int,int>(0,500));
+    attach_ctrl_parameter<int>("ctrl3","rad");
 }
 
 void Controller::run() {
     if (ofGetKeyPressed('+')){
-        Item_Parameter<int>* val_ptr = get_item_parameter<int>("ctrl2");
-        val_ptr->value++;
-        notify_ctrl_event<int>("ctrl2");
+        iterate_ctrl_parameter<int>("ctrl3");
+        notify_ctrl_event<int>("ctrl3");
     } else if (ofGetKeyPressed('-')){
             
-        Item_Parameter<int>* val_ptr = get_item_parameter<int>("ctrl2");
-        val_ptr->value--;
-        notify_ctrl_event<int>("ctrl2");
+        iterate_ctrl_parameter<int>("ctrl3", true);
+        notify_ctrl_event<int>("ctrl3");
     }
 
 }
