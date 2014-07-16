@@ -60,3 +60,14 @@ void   Item :: setup(){}
 
 void   Item :: run(){}
 
+arg_t  Item::get_event_arg_t(string event_name) {
+    arg_t event_arg_t = EAT_NULL;
+    unordered_map <string,arg_t>::iterator map_it = events_arg_t_map.find(event_name);
+    if (map_it == events_arg_t_map.end())
+       cout << "Invalid event name:" << event_name << "." << endl;
+    else
+       event_arg_t = map_it->second;
+    return event_arg_t;
+}
+
+

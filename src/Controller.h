@@ -61,7 +61,8 @@ class Controller : public Item {
 
         template <typename T>
         void remove_ctrl(string ctrl_name) {
-            erase_event<T>(ctrl_name);
+            //erase_event<T>(ctrl_name);
+            erase_event(ctrl_name);
             erase_variable<pair<vector<string>, Item_Parameter<T>>>(ctrl_name);
         }
 

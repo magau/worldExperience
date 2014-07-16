@@ -4,6 +4,8 @@ void Controller::setup() {
     add_ctrl<int>("ctrl3");
     setup_ctrl_parameter<int>("ctrl3",10,pair<int,int>(0,500));
     attach_ctrl_parameter<int>("ctrl3","rad");
+    add_ctrl<int>("ctrl4");
+    remove_ctrl<int>("ctrl4");
 }
 
 void Controller::run() {

@@ -37,25 +37,45 @@ class Tag : public Item {
         void add_listener_to_particles(string event_name, Item* host_item_ptr) {
                                        //void (*callback)(pair<pair<string,Item*>,Item_Parameter<T>>& keypair_val)){
             ofEvent<pair<string,Item_Parameter<T>>>* event_ptr = host_item_ptr->get_event<T>(event_name);
-            set_event<T>(event_name, event_ptr, host_item_ptr);
-            PointersVector<Particle*>::iterator iter_particle;
-            for (iter_particle = particles.begin();
-                iter_particle != particles.end();
-                iter_particle++){
-                (*iter_particle)->add_listener<T>(event_ptr);
+            if (event_ptr != NULL) {
+                set_event<T>(event_name, event_ptr, host_item_ptr);
+                PointersVector<Particle*>::iterator iter_particle;
+                for (iter_particle = particles.begin();
+                    iter_particle != particles.end();
+                    iter_particle++){
+                    (*iter_particle)->add_listener<T>(event_ptr);
+                }
+            } else {
+                cout << "error: Invalid event name for Controller: " << host_item_ptr->get_name() << "." << endl;
             }
         }
 
         template<typename T>
         void remove_listener_from_particles(string event_name, Item* host_item_ptr) {
-            ofEvent<pair<string,Item_Parameter<T>>>* event_ptr = host_item_ptr->get_event<bool>(event_name);
-            erase_event<T>(event_name, host_item_ptr);
+            //ofEvent<pair<string,Item_Parameter<T>>>* event_ptr = host_item_ptr->get_event<bool>(event_name);
+            arg_t event_arg_t = host_item_ptr->get_event_arg_t(event_name);
             PointersVector<Particle*>::iterator iter_particle;
             for (iter_particle = particles.begin();
                 iter_particle != particles.end();
                 iter_particle++){
-                (*iter_particle)->remove_listener<T>(event_ptr);
+                switch (event_arg_t) {
+                    case EAT_BOOL:
+                        (*iter_particle)->remove_listener<bool>(host_item_ptr->get_event<bool>(event_name));
+                        break;
+                    case EAT_INT:
+                        (*iter_particle)->remove_listener<int>(host_item_ptr->get_event<int>(event_name));
+                        break;
+                    case EAT_FLOAT:
+                        (*iter_particle)->remove_listener<float>(host_item_ptr->get_event<float>(event_name));
+                        break;
+                    case EAT_DOUBLE:
+                        (*iter_particle)->remove_listener<double>(host_item_ptr->get_event<double>(event_name));
+                        break;
+                }
             }
+
+            //erase_event<T>(event_name, host_item_ptr);
+            erase_event(event_name, host_item_ptr);
         }
 
 
