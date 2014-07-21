@@ -53,6 +53,8 @@ void testApp::setup(){
     i0->add_actuated_tag(t0);
 
     t0->add_listener_to_particles<int>("ctrl3", cl);
+    //t0->add_listener_to_particles<int>("ctrl4", cl);
+    //t0->remove_listener_from_particles<int>("ctrl4", cl);
  
 }
    

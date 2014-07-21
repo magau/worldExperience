@@ -50,32 +50,38 @@ class Tag : public Item {
             }
         }
 
+        // !! ready to remove template!!
         template<typename T>
-        void remove_listener_from_particles(string event_name, Item* host_item_ptr) {
-            //ofEvent<pair<string,Item_Parameter<T>>>* event_ptr = host_item_ptr->get_event<bool>(event_name);
-            arg_t event_arg_t = host_item_ptr->get_event_arg_t(event_name);
+        void remove_listener_from_particles(string event_name, Item* host_ctrl_ptr) {
+            arg_t event_arg_t = host_ctrl_ptr->get_event_arg_t(event_name);
             PointersVector<Particle*>::iterator iter_particle;
             for (iter_particle = particles.begin();
                 iter_particle != particles.end();
                 iter_particle++){
+
                 switch (event_arg_t) {
                     case EAT_BOOL:
-                        (*iter_particle)->remove_listener<bool>(host_item_ptr->get_event<bool>(event_name));
+                        (*iter_particle)->remove_listener<bool>(host_ctrl_ptr->get_event<bool>(event_name));
                         break;
                     case EAT_INT:
-                        (*iter_particle)->remove_listener<int>(host_item_ptr->get_event<int>(event_name));
+                        (*iter_particle)->remove_listener<int>(host_ctrl_ptr->get_event<int>(event_name));
                         break;
                     case EAT_FLOAT:
-                        (*iter_particle)->remove_listener<float>(host_item_ptr->get_event<float>(event_name));
+                        (*iter_particle)->remove_listener<float>(host_ctrl_ptr->get_event<float>(event_name));
                         break;
                     case EAT_DOUBLE:
-                        (*iter_particle)->remove_listener<double>(host_item_ptr->get_event<double>(event_name));
+                        (*iter_particle)->remove_listener<double>(host_ctrl_ptr->get_event<double>(event_name));
+                        break;
+                    case T_NULL:
+                        cout << "arg_t not defined for this type!!" << endl;
+                        break;
+                    default:
+                        cout << "arg_t not defined for this type!!" << endl;
                         break;
                 }
             }
 
-            //erase_event<T>(event_name, host_item_ptr);
-            erase_event(event_name, host_item_ptr);
+            erase_event(event_name, host_ctrl_ptr);
         }
 
 
