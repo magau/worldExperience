@@ -5,65 +5,52 @@ class Controller : public Item {
 
         template <typename T>
         void add_ctrl(string ctrl_name) {
-            set_event<T>(ctrl_name, NULL, this);
-            set_variable<pair<vector<string>, Item_Parameter<T>>>(
-                ctrl_name+"_map",
-                pair<vector<string>,Item_Parameter<T>>( vector<string>(), Item_Parameter<T>() )
-            );
+            set_ctrl<T>(ctrl_name, NULL, this);
         }
 
         template <typename T>
         void setup_ctrl_parameter(string ctrl_name, T value, pair<T,T> range) {
-            pair<vector<string>, Item_Parameter<T>>* ctrl_aux_pair = get_variable<pair<vector<string>, Item_Parameter<T>>>(ctrl_name+"_map");
-            ctrl_aux_pair->second = Item_Parameter<T>(value, range);
+            get_ctrl<T>(ctrl_name)->second.first = Item_Parameter<T>(value, range);
         }
 
         template <typename T>
         void set_ctrl_parameter(string ctrl_name, T value) {
-            pair<vector<string>, Item_Parameter<T>>* ctrl_aux_pair = get_variable<pair<vector<string>, Item_Parameter<T>>>(ctrl_name+"_map");
-            ctrl_aux_pair->second.value = value;
+            get_ctrl<T>(ctrl_name)->second.first.value = value;
+
         }
 
         template <typename T>
         void iterate_ctrl_parameter(string ctrl_name, bool reverse=false) {
-            pair<vector<string>, Item_Parameter<T>>* ctrl_aux_pair = get_variable<pair<vector<string>, Item_Parameter<T>>>(ctrl_name+"_map");
             if(reverse)
-                ctrl_aux_pair->second.value--;
+                get_ctrl<T>(ctrl_name)->second.first.value--;
             else
-                ctrl_aux_pair->second.value++;
+                get_ctrl<T>(ctrl_name)->second.first.value++;
         }
 
         template <typename T>
         void detach_ctrl_parameter(string ctrl_name, string parameter_name) {
-            pair<vector<string>, Item_Parameter<T>>* ctrl_aux_pair = get_variable<pair<vector<string>, Item_Parameter<T>>>(ctrl_name+"_map");
-            
-            ctrl_aux_pair->first.pop(parameter_name);
-        }        template <typename T>
-
+            get_ctrl<T>(ctrl_name)->first.pop(parameter_name);
+        }
+        
+        template <typename T>
         void attach_ctrl_parameter(string ctrl_name, string parameter_name) {
-            pair<vector<string>, Item_Parameter<T>>* ctrl_aux_pair = get_variable<pair<vector<string>, Item_Parameter<T>>>(ctrl_name+"_map");
-            
-            ctrl_aux_pair->first.push_back(parameter_name);
+            get_ctrl<T>(ctrl_name)->first.push_back(parameter_name);
         }
 
         template <typename T>
         void notify_ctrl_event(string ctrl_name) {
-            pair<vector<string>, Item_Parameter<T>>* ctrl_aux_pair = get_variable<pair<vector<string>, Item_Parameter<T>>>(ctrl_name+"_map");
-            
-
-            for (typename vector<string>::iterator attached_attr_it = ctrl_aux_pair->first.begin();
-                                                   attached_attr_it != ctrl_aux_pair->first.end();
+            pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<string,Item_Parameter<T>>>>>* ctrl_aux_all = get_ctrl<T>(ctrl_name);
+            for (typename vector<string>::iterator attached_attr_it = ctrl_aux_all->first.begin();
+                                                   attached_attr_it != ctrl_aux_all->first.end();
                                                    attached_attr_it++) {
-                pair<string,Item_Parameter<T>> attr(*attached_attr_it,ctrl_aux_pair->second);
-                ofNotifyEvent(*(this->get_event<T>(ctrl_name)), attr);
+                pair<string,Item_Parameter<T>> attr(*attached_attr_it,ctrl_aux_all->second.first);
+                ofNotifyEvent(ctrl_aux_all->second.second, attr);
             }
         }
 
         template <typename T>
         void remove_ctrl(string ctrl_name) {
-            //erase_event<T>(ctrl_name);
-            erase_event(ctrl_name);
-            erase_variable<pair<vector<string>, Item_Parameter<T>>>(ctrl_name+"_map");
+            erase_ctrl(ctrl_name);
         }
 
 };

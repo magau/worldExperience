@@ -20,6 +20,7 @@ enum arg_t{
     IP_COLOR,
 
     CTRL_INT_MAP,
+    CTRL_INT,
 };
 
 template<typename T>
@@ -57,9 +58,9 @@ static arg_t type_info_2_arg_t(const type_info& type_id){
         result = IP_BOOL;
     } else if(type_id==typeid(pair<vector<string>,Item_Parameter<int>>*)){
         result = CTRL_INT_MAP;
+    } else if(type_id==typeid(pair<vector<string>,pair<Item_Parameter<int>, ofEvent<pair<string,Item_Parameter<int>>>>>*)){
+        result = CTRL_INT;
     }
-
-
 
 
      //...
@@ -130,8 +131,6 @@ class Item{
                 // Add new element.
                 new_var = new U(value);
                 var_ptr_map[var_key] = pair<void*,pair<arg_t,bool>>(new_var, pair<arg_t,bool>(arg_num,true));
-                //pair<size_t,bool> aux_param = pair<size_t,bool>(sizeof(T),true);
-                //var_ptr_map[var_key] = pair<void*,pair<size_t,bool>>(new_var,aux_param);
                 //cout << "set var:" << var_key << " value:" << new_var->value << endl;
                     
             } else if(map_it->second.second.first != arg_num) {
@@ -229,6 +228,11 @@ class Item{
             set_template_variable<T,ofEvent<pair<string,Item_Parameter<T>>>>(event_name, event_ptr, item_ptr);
         }
 
+        template<typename T>
+        void set_ctrl(string event_name, pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<string,Item_Parameter<T>>>>>* ctrl_ptr=NULL, Item* item_ptr=NULL){
+            set_template_variable<T,pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<string,Item_Parameter<T>>>>>>(event_name, ctrl_ptr, item_ptr);
+        }
+
         template<typename T, typename U>
         U* get_template_variable(string var_name, Item* host_item_ptr=NULL){
             U* result = (U*)NULL;
@@ -246,10 +250,10 @@ class Item{
                 error_msg << "get undefined variable " << var_name;
                 cout << error_msg.str() << endl;
                 //throw runtime_error(error_msg.str());
-            } else if(map_it->second.second.first != arg_num) {
+            } else if(map_it->second.second.first != arg_num) {// or arg_num == T_NULL) {
                 // Element already exists with diferent arg_t.
                 stringstream error_msg;
-                error_msg << "invalid conversion from variable of arg_t: " <<
+                error_msg << "arg_t(T_NULL):" << T_NULL << " invalid conversion from variable of arg_t: " <<
                              arg_num << " to arg_t: " << map_it->second.second.first <<
                              "; variable name:" << var_name;
                 cout << error_msg.str() << endl;
@@ -274,6 +278,11 @@ class Item{
         template<typename T>
         ofEvent<pair<string,Item_Parameter<T>>>* get_event(string var_name, Item* host_item_ptr=NULL){
             return get_template_variable<T,ofEvent<pair<string,Item_Parameter<T>>>>(var_name, host_item_ptr);
+        }
+
+        template<typename T>
+        pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<string,Item_Parameter<T>>>>>* get_ctrl(string event_name, Item* host_item_ptr=NULL){
+            return get_template_variable<T,pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<string,Item_Parameter<T>>>>>>(event_name, host_item_ptr);
         }
 
         template<typename T, typename U>
@@ -323,7 +332,10 @@ class Item{
                             delete static_cast<Item_Parameter<ofColor>*>(map_it->second.first); 
                             break;
                         case CTRL_INT_MAP:
-                            delete static_cast<vector<string>*>(map_it->second.first); 
+                            delete static_cast<pair<vector<string>, Item_Parameter<T>>*>(map_it->second.first); 
+                            break;
+                        case CTRL_INT:
+                            delete static_cast<pair<vector<string>,pair<Item_Parameter<int>, ofEvent<pair<string,Item_Parameter<int>>>>>*>(map_it->second.first);
                             break;
                         case T_NULL:
                             cout << "arg_t not defined for this type!!" << endl;
@@ -350,6 +362,10 @@ class Item{
 
         void erase_event(string var_name, Item* item_ptr=NULL) {
             erase_template_variable<int,ofEvent<pair<string,Item_Parameter<int>>>>(var_name, item_ptr);
+        }
+
+        void erase_ctrl(string event_name, Item* item_ptr=NULL){
+            erase_template_variable<int,pair<vector<string>, pair<Item_Parameter<int>,ofEvent<pair<string,Item_Parameter<int>>>>>>(event_name, item_ptr);
         }
 
         template<typename T>
