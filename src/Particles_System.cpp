@@ -43,7 +43,7 @@ void RegularGrid_MP::setup(){
     grid_offset.x = (win_w - grd_w)/2;
     grid_offset.y = (win_h - grd_h)/2;
     grid_num.set(grd_w/grid_ds , grd_h/grid_ds);
-    //grid_num.set_item_parameter(2 , 2);
+    //grid_num.set(2 , 2);
 
 
     for (i=0; i<grid_num.y; i++){

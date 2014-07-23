@@ -46,7 +46,7 @@ void GravityGlue::free(){
 }
 
 void GravityGlue::free(Particle* _host_particle){
-    _host_particle->erase_item_parameter<ofVec3f>("loc",this);
+    _host_particle->erase_item_parameter("loc",this);
 }
 
 void GravityGlue::run(Particle* _host_particle){

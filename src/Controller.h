@@ -5,7 +5,8 @@ class Controller : public Item {
 
         template <typename T>
         void add_ctrl(string ctrl_name) {
-            set_ctrl<T>(ctrl_name, NULL, this);
+            //set_ctrl<T>(ctrl_name, NULL, this);
+            set_variable(ctrl_name, NULL, CTRL_INT, this);
         }
 
         template <typename T>
