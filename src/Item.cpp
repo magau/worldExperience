@@ -208,7 +208,7 @@ pair<void*,arg_t> Item::get_variable(string var_name, Item* host_item_ptr){
     if(map_it == var_ptr_map.end()) {
         // Element doesn't exists.
         stringstream error_msg;
-        error_msg << "get undefined variable " << var_name;
+        error_msg << "get undefined variable: " << var_name;
         cout << error_msg.str() << endl;
         //throw runtime_error(error_msg.str());
     } else {
