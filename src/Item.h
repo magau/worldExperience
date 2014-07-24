@@ -280,6 +280,8 @@ class Item{
             return result;
         }
 
+        pair<void*,arg_t> get_variable(string var_name, Item* host_item_ptr=NULL);
+
         template<typename T>
         Item_Parameter<T>* get_item_parameter(string var_name, Item* host_item_ptr=NULL){
             return get_variable<Item_Parameter<T>>(var_name, host_item_ptr);

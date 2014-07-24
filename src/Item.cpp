@@ -196,6 +196,29 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t arg_num, Item* ite
     }
 }
 
+pair<void*,arg_t> Item::get_variable(string var_name, Item* host_item_ptr){
+    pair<void*,arg_t> result(NULL,T_NULL);
+    string var_key;
+    if (host_item_ptr == NULL)
+        var_key=string(var_name + ":" + to_string((long unsigned int)this));
+    else
+        var_key=string(var_name + ":" + to_string((long unsigned int)host_item_ptr));
+    //cout << "get map key:" << var_key << endl;
+    unordered_map <string,pair<void*,pair<arg_t,bool>>>::const_iterator map_it = var_ptr_map.find(var_key);
+    if(map_it == var_ptr_map.end()) {
+        // Element doesn't exists.
+        stringstream error_msg;
+        error_msg << "get undefined variable " << var_name;
+        cout << error_msg.str() << endl;
+        //throw runtime_error(error_msg.str());
+    } else {
+        result = pair<void*,arg_t>(map_it->second.first,map_it->second.second.first);
+        //cout << result->value << endl;
+    }
+    return result;
+}
+
+
 void Item::erase_variable(string var_name, Item* item_ptr){
     string var_key;
     if (item_ptr == NULL)
