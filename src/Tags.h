@@ -60,16 +60,16 @@ class Tag : public Item {
                 iter_particle++){
 
                 switch (event_arg_t) {
-                    case EAT_BOOL:
+                    case EVENT_IP_BOOL:
                         (*iter_particle)->remove_listener<bool>(host_ctrl_ptr->get_event<bool>(event_name));
                         break;
-                    case EAT_INT:
+                    case EVENT_IP_INT:
                         (*iter_particle)->remove_listener<int>(host_ctrl_ptr->get_event<int>(event_name));
                         break;
-                    case EAT_FLOAT:
+                    case EVENT_IP_FLOAT:
                         (*iter_particle)->remove_listener<float>(host_ctrl_ptr->get_event<float>(event_name));
                         break;
-                    case EAT_DOUBLE:
+                    case EVENT_IP_DOUBLE:
                         (*iter_particle)->remove_listener<double>(host_ctrl_ptr->get_event<double>(event_name));
                         break;
                     case T_NULL:
