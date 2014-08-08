@@ -33,59 +33,21 @@ class Tag : public Item {
 
         void run();
 
-        template<typename T>
-        void add_listener_to_particles(string event_name, Item* host_item_ptr) {
-                                       //void (*callback)(pair<pair<string,Item*>,Item_Parameter<T>>& keypair_val)){
-            ofEvent<pair<string,Item_Parameter<T>>>* event_ptr = &(host_item_ptr->get_variable<pair<vector<string>,pair<Item_Parameter<T>,ofEvent<pair<string,Item_Parameter<T>>>>>>(event_name)->second.second);
-            if (event_ptr != NULL) {
-                set_event<T>(event_name, event_ptr, host_item_ptr);
-                PointersVector<Particle*>::iterator iter_particle;
-                for (iter_particle = particles.begin();
-                    iter_particle != particles.end();
-                    iter_particle++){
-                    (*iter_particle)->add_listener<T>(event_ptr);
-                }
-            } else {
-                cout << "error: Invalid event name for Controller: " << host_item_ptr->get_name() << "." << endl;
-            }
-        }
+        void add_listener_to_particles(Item* host_controller, string button_name);
+        void remove_listener_from_particles(string event_name, Item* host_ctrl_ptr);
+// missing implementation...
+        void add_listener_to_interaction(string event_name, Item* host_controller);// interaction_id);
+// missing implementation...
+        void add_listener_to_behavior(string event_name, Item* host_controller);// behafior_id);
+// missing implementation...
+        //void remove_listener_from_interaction(string event_name, Item* host_ctrl_ptr, interaction_id);
+// missing implementation...
+        //void remove_listener_from_behavior(string event_name, Item* host_ctrl_ptr, behafior_id);
 
-        // !! ready to remove template!!
-        template<typename T>
-        void remove_listener_from_particles(string event_name, Item* host_ctrl_ptr) {
-            arg_t event_arg_t = host_ctrl_ptr->get_event_arg_t(event_name);
-            PointersVector<Particle*>::iterator iter_particle;
-            for (iter_particle = particles.begin();
-                iter_particle != particles.end();
-                iter_particle++){
-
-                switch (event_arg_t) {
-                    case EVENT_IP_BOOL:
-                        (*iter_particle)->remove_listener<bool>(host_ctrl_ptr->get_event<bool>(event_name));
-                        break;
-                    case EVENT_IP_INT:
-                        (*iter_particle)->remove_listener<int>(host_ctrl_ptr->get_event<int>(event_name));
-                        break;
-                    case EVENT_IP_FLOAT:
-                        (*iter_particle)->remove_listener<float>(host_ctrl_ptr->get_event<float>(event_name));
-                        break;
-                    case EVENT_IP_DOUBLE:
-                        (*iter_particle)->remove_listener<double>(host_ctrl_ptr->get_event<double>(event_name));
-                        break;
-                    case T_NULL:
-                        cout << "arg_t not defined for this type!!" << endl;
-                        break;
-                    default:
-                        cout << "arg_t not defined for this type!!" << endl;
-                        break;
-                }
-            }
-
-            erase_event(event_name, host_ctrl_ptr);
-        }
-
-
-        void remove_listener_from_particles(string event_name);
+    private:
+        unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher> particles_events_map;
+        unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher> behaviors_events_map;
+        unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher> interactions_events_map;
 };
 
 

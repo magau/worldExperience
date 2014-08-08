@@ -204,6 +204,74 @@ void Tag::run(){
     }
 }
 
-void Tag::remove_listener_from_particles(string attr_name){
-//miss implementation!!
+
+void Tag::add_listener_to_particles(Item* host_controller, string button_name) {
+
+    Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
+    ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+
+    if (event != NULL) {
+        set_variable(button_name, event, EVENT_SH_VAR, host_controller, &(particles_events_map));
+        PointersVector<Particle*>::iterator iter_particle;
+        for (iter_particle = particles.begin();
+            iter_particle != particles.end();
+            iter_particle++){
+            (*iter_particle)->add_listener(event);
+        }
+    } else {
+        cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
+    }
+}
+
+void Tag::remove_listener_from_particles(string button_name, Item* host_controller) {
+    Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
+    ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+
+    if (event != NULL) {
+        PointersVector<Particle*>::iterator iter_particle;
+        for (iter_particle = particles.begin();
+            iter_particle != particles.end();
+            iter_particle++){
+            (*iter_particle)->remove_listener(event);
+        }
+    } else {
+        cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
+    }
+
+    erase_variable(button_name, host_controller, &(particles_events_map));
+
+//    arg_t event_arg_t = host_ctrl_ptr->get_variable(event_name).type_enum;
+//    PointersVector<Particle*>::iterator iter_particle;
+//    for (iter_particle = particles.begin();
+//        iter_particle != particles.end();
+//        iter_particle++){
+//
+//        switch (event_arg_t) {
+//            case EVENT_IP_BOOL:
+//                (*iter_particle)->remove_listener<bool>(host_ctrl_ptr->get_event<bool>(event_name));
+//                break;
+//            case EVENT_IP_INT:
+//                (*iter_particle)->remove_listener<int>(host_ctrl_ptr->get_event<int>(event_name));
+//                break;
+//            case EVENT_IP_FLOAT:
+//                (*iter_particle)->remove_listener<float>(host_ctrl_ptr->get_event<float>(event_name));
+//                break;
+//            case EVENT_IP_DOUBLE:
+//                (*iter_particle)->remove_listener<double>(host_ctrl_ptr->get_event<double>(event_name));
+//                break;
+//            case T_NULL:
+//                cout << "arg_t not defined for this type!!" << endl;
+//                break;
+//            default:
+//                cout << "arg_t not defined for this type!!" << endl;
+//                break;
+//        }
+//    }
+//    erase_event(event_name, host_ctrl_ptr);
+}
+
+
+void Tag::add_listener_to_interaction(string event_name, Item* host_controller) {
+}
+void Tag::add_listener_to_behavior(string event_name, Item* host_controller) {
 }

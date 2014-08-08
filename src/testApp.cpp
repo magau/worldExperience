@@ -52,7 +52,7 @@ void testApp::setup(){
     // da grelha, à interacção.
     i0->add_actuated_tag(t0);
 
-    t0->add_listener_to_particles<int>("ctrl3", cl);
+    t0->add_listener_to_particles(cl, "ctrl3");
     //t0->add_listener_to_particles<int>("ctrl4", cl);
     //t0->remove_listener_from_particles<int>("ctrl4", cl);
  

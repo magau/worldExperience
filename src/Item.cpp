@@ -25,13 +25,10 @@ string Item::get_type_name(){
 string Item::get_name(){return name;}
 
 void Item::print_shared_var_names(){
-    for(unordered_map<string,pair<void*,pair<arg_t,bool>>>::iterator var_it = var_ptr_map.begin();
-        var_it != var_ptr_map.end(); var_it++) {
-        //cout << "var:" << var_it->first << endl;
-        size_t str_token = var_it->first.find(":");
-        string var_name = var_it->first.substr(0,str_token);
-        Item* host_item = (Item*) strtoul(var_it->first.substr(str_token+1).c_str(),NULL,0);
-        cout << "var:" << var_name << " - " << host_item->get_name() << endl;
+    unordered_map<shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator var_it;
+    for(var_it = shared_variables_map.begin();
+        var_it != shared_variables_map.end(); var_it++) {
+        cout << "var:" << var_it->first.name << "; host item:" << var_it->first.host_item->get_name() << endl;
     }
 }
 
@@ -51,38 +48,23 @@ void   Item :: setup(){}
 
 void   Item :: run(){}
 
-arg_t  Item::get_event_arg_t(string event_name, Item* host_item_ptr) {
-    string var_key;
-    if (host_item_ptr == NULL)
-        var_key=string(event_name + ":" + to_string((long unsigned int)this));
-    else
-        var_key=string(event_name + ":" + to_string((long unsigned int)host_item_ptr));
-
-    unordered_map <string,pair<void*,pair<arg_t,bool>>>::iterator map_it = var_ptr_map.find(var_key);
-    arg_t event_arg_t = T_NULL;
-    //unordered_map <string,arg_t>::iterator map_it = events_arg_t_map.find(event_name);
-    if (map_it == var_ptr_map.end())
-       cout << "Invalid event name:" << event_name << "." << endl;
-    else
-       event_arg_t = map_it->second.second.first;
-    //   event_arg_t = map_it->second;
-    return event_arg_t;
-}
-
 void* Item::create_var_ptr(arg_t type_enum){
     void* var_ptr = NULL;
     switch (type_enum) {
         case EVENT_IP_BOOL:
-            var_ptr = new ofEvent<pair<string,Item_Parameter<bool>>>;
+            var_ptr = new ofEvent<pair<shared_variable_key,Item_Parameter<bool>>>;
             break;
         case EVENT_IP_INT:
-            var_ptr = new ofEvent<pair<string,Item_Parameter<int>>>;
+            var_ptr = new ofEvent<pair<shared_variable_key,Item_Parameter<int>>>;
             break;
         case EVENT_IP_FLOAT:
-            var_ptr = new ofEvent<pair<string,Item_Parameter<float>>>;
+            var_ptr = new ofEvent<pair<shared_variable_key,Item_Parameter<float>>>;
             break;
         case EVENT_IP_DOUBLE:
-            var_ptr = new ofEvent<pair<string,Item_Parameter<double>>>;
+            var_ptr = new ofEvent<pair<shared_variable_key,Item_Parameter<double>>>;
+            break;
+        case EVENT_SH_VAR:
+            var_ptr = new ofEvent<pair<shared_variable_key,shared_variable_value>>;
             break;
         case IP_INT:
             var_ptr = new Item_Parameter<int>;
@@ -100,7 +82,13 @@ void* Item::create_var_ptr(arg_t type_enum){
             var_ptr = new Item_Parameter<ofColor>;
             break;
         case CTRL_INT:
-            var_ptr = new pair<vector<string>,pair<Item_Parameter<int>, ofEvent<pair<string,Item_Parameter<int>>>>>;
+            var_ptr = new pair<vector<string>,pair<Item_Parameter<int>, ofEvent<pair<shared_variable_key,Item_Parameter<int>>>>>;
+            break;
+        case CTRL_SH_VAR:
+            var_ptr = new pair<vector<string>,pair<shared_variable_value, ofEvent<pair<shared_variable_key,pair<void*,arg_t>>>>>;
+            break;
+        case BUTTON:
+            var_ptr = new Button;
             break;
         case T_NULL:
             cout << "Can't create new variable! arg_t not defined for this type!!" << endl;
@@ -115,16 +103,19 @@ void* Item::create_var_ptr(arg_t type_enum){
 void Item::erase_var_ptr(void* var_value, arg_t type_enum){
     switch (type_enum) {
         case EVENT_IP_BOOL:
-            delete static_cast<ofEvent<pair<string,Item_Parameter<bool>>>*>(var_value); 
+            delete static_cast<ofEvent<pair<shared_variable_key,Item_Parameter<bool>>>*>(var_value); 
             break;
         case EVENT_IP_INT:
-            delete static_cast<ofEvent<pair<string,Item_Parameter<int>>>*>(var_value);
+            delete static_cast<ofEvent<pair<shared_variable_key,Item_Parameter<int>>>*>(var_value);
             break;
         case EVENT_IP_FLOAT:
-            delete static_cast<ofEvent<pair<string,Item_Parameter<float>>>*>(var_value); 
+            delete static_cast<ofEvent<pair<shared_variable_key,Item_Parameter<float>>>*>(var_value); 
             break;
         case EVENT_IP_DOUBLE:
-            delete static_cast<ofEvent<pair<string,Item_Parameter<double>>>*>(var_value); 
+            delete static_cast<ofEvent<pair<shared_variable_key,Item_Parameter<double>>>*>(var_value); 
+            break;
+        case EVENT_SH_VAR:
+            delete static_cast<ofEvent<pair<shared_variable_key,shared_variable_value>>*>(var_value); 
             break;
         case IP_INT:
             delete static_cast<Item_Parameter<int>*>(var_value); 
@@ -142,7 +133,13 @@ void Item::erase_var_ptr(void* var_value, arg_t type_enum){
             delete static_cast<Item_Parameter<ofColor>*>(var_value); 
             break;
         case CTRL_INT:
-            delete static_cast<pair<vector<string>,pair<Item_Parameter<int>, ofEvent<pair<string,Item_Parameter<int>>>>>*>(var_value);
+            delete static_cast<pair<vector<string>,pair<Item_Parameter<int>, ofEvent<pair<shared_variable_key,Item_Parameter<int>>>>>*>(var_value);
+            break;
+        case CTRL_SH_VAR:
+            delete static_cast<pair<vector<string>,pair<shared_variable_value, ofEvent<pair<shared_variable_key,pair<void*,arg_t>>>>>*>(var_value);
+            break;
+        case BUTTON:
+            delete static_cast<Button*>(var_value);
             break;
         case T_NULL:
             cout << "arg_t not defined for this type!!" << endl;
@@ -153,7 +150,8 @@ void Item::erase_var_ptr(void* var_value, arg_t type_enum){
     }
 }
 
-void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* host_item_ptr){
+void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* host_item_ptr,
+           unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr){
 
     shared_variable_value raw_value;
 
@@ -164,12 +162,16 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
     key.host_item = host_item_ptr;
     key.name      = var_name;
 
-    string var_key = string(var_name + ":" + to_string((long unsigned int)host_item_ptr));
-
     // Add an existent poiter as a new element.
     bool is_new_var = false;
-    unordered_map <string,pair<void*,pair<arg_t,bool>>>::iterator map_it = var_ptr_map.find(var_key);
-    unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shared_variables_map.find(key);
+
+    // The input argument "shvar_map_ptr" can be used if
+    // independent containes are required for this Item.
+    // The default container is the "shared_variables_map".
+    if (shvar_map_ptr == NULL)
+        shvar_map_ptr = &shared_variables_map;
+
+    unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
 
     if (var_ptr == NULL) {
         // Create a new element.
@@ -177,14 +179,12 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
         var_ptr = create_var_ptr(type_enum);
     }
 
-    if (map_it == var_ptr_map.end() and shvar_map_it == shared_variables_map.end()) {
+    if (shvar_map_it == shvar_map_ptr->end()) {
         // Add element.
-        var_ptr_map[var_key] = pair<void*,pair<arg_t,bool>>(var_ptr, pair<arg_t,bool>(type_enum,is_new_var));
-
         raw_value.value     = var_ptr;
         raw_value.type_enum = type_enum;
         raw_value.is_new    = is_new_var;
-        shared_variables_map[key] = raw_value;
+        (*shvar_map_ptr)[key] = raw_value;
 
         //cout << "add new variable:" << key.name << endl;
     } else if(type_enum == T_NULL) {
@@ -198,38 +198,24 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
         // Replace element.
         //cout << "overwiting var:" << var_key << " value:" << old_var->value << endl;
 
-        bool* el_is_new_var;
-        arg_t* el_type_enum;
-        void** el_value;
-
-        if(map_it != var_ptr_map.end()) {
-            el_is_new_var = &(map_it->second.second.second);
-            el_type_enum = &(map_it->second.second.first);
-            el_value = &(map_it->second.first);
-        } else {// if(shvar_map_it == shared_variables_map.end()) {
-            el_is_new_var = &(shvar_map_it->second.is_new);
-            el_type_enum = &(shvar_map_it->second.type_enum);
-            el_value = &(shvar_map_it->second.value);
+        if (shvar_map_it->second.is_new) {
+            erase_var_ptr(shvar_map_it->second.value,shvar_map_it->second.type_enum);
         }
 
-        if (*el_is_new_var) {
-            erase_var_ptr(*el_value, *el_type_enum);
-        }
-
-        if(*el_type_enum != type_enum) {
+        if(shvar_map_it->second.type_enum != type_enum) {
             // Element already exists with diferent arg_t.
             stringstream error_msg;
             error_msg << "Replacing variable of arg_t: " <<
-                         *el_type_enum << " by other of arg_t: " << type_enum <<
+                         shvar_map_it->second.type_enum << " by other of arg_t: " << type_enum <<
                          "; variable name: " << var_name;
             //throw runtime_error(error_msg.str());
             cout << error_msg.str() << endl;
-            *el_type_enum = type_enum;
+            shvar_map_it->second.type_enum = type_enum;
         } 
 
 
-        *el_value = var_ptr;
-        *el_is_new_var = is_new_var;
+        shvar_map_it->second.value = var_ptr;
+        shvar_map_it->second.is_new = is_new_var;
     }
 
     //cout << "variable name:" << key.name << endl;
@@ -238,8 +224,41 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
 
 }
 
-pair<void*,arg_t> Item::get_variable(string var_name, Item* host_item_ptr){
-    pair<void*,arg_t> result(NULL,T_NULL);
+shared_variable_value Item::get_variable(string var_name, Item* host_item_ptr,
+           unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr){
+
+    shared_variable_value raw_value;
+
+    if (host_item_ptr == NULL)
+        host_item_ptr = this;
+ 
+    shared_variable_key key;
+    key.host_item = host_item_ptr;
+    key.name      = var_name;
+
+    // The input argument "shvar_map_ptr" can be used if
+    // independent containes are required for this Item.
+    // The default container is the "shared_variables_map".
+    if (shvar_map_ptr == NULL)
+        shvar_map_ptr = &shared_variables_map;
+
+
+    unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
+
+    if(shvar_map_it == shvar_map_ptr->end()) {
+        // Element doesn't exists.
+        stringstream error_msg;
+        error_msg << "get undefined variable: " << var_name;
+        cout << error_msg.str() << endl;
+        //throw runtime_error(error_msg.str());
+    } else {
+        raw_value = shvar_map_it->second;
+    }
+    return raw_value;
+}
+
+void Item::erase_variable(string var_name, Item* host_item_ptr,
+           unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr){
 
     shared_variable_value raw_value;
 
@@ -249,60 +268,28 @@ pair<void*,arg_t> Item::get_variable(string var_name, Item* host_item_ptr){
     shared_variable_key key;
     key.host_item = host_item_ptr;
     key.name      = var_name;
-    
-    string var_key = string(var_name + ":" + to_string((long unsigned int)host_item_ptr));
 
-    unordered_map <string,pair<void*,pair<arg_t,bool>>>::iterator map_it = var_ptr_map.find(var_key);
-    unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shared_variables_map.find(key);
-
-
-    if(map_it == var_ptr_map.end()) {
-        // Element doesn't exists.
-        stringstream error_msg;
-        error_msg << "get undefined variable: " << var_name;
-        cout << error_msg.str() << endl;
-        //throw runtime_error(error_msg.str());
-    } else {
-        bool* el_is_new_var;
-        arg_t* el_type_enum;
-        void** el_value;
-
-        if(map_it != var_ptr_map.end()) {
-            el_is_new_var = &(map_it->second.second.second);
-            el_type_enum = &(map_it->second.second.first);
-            el_value = &(map_it->second.first);
-        } else {// if(shvar_map_it != shared_variables_map.end()) {
-            el_is_new_var = &(shvar_map_it->second.is_new);
-            el_type_enum = &(shvar_map_it->second.type_enum);
-            el_value = &(shvar_map_it->second.value);
-        }
+    // The input argument "shvar_map_ptr" can be used if
+    // independent containes are required for this Item.
+    // The default container is the "shared_variables_map".
+    if (shvar_map_ptr == NULL)
+        shvar_map_ptr = &shared_variables_map;
 
 
-        result = pair<void*,arg_t>(*el_value, *el_type_enum);
-        //cout << result->value << endl;
-    }
-    return result;
-}
+    unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
 
-
-void Item::erase_variable(string var_name, Item* host_item_ptr){
-    string var_key;
-    if (host_item_ptr == NULL)
-        var_key=string(var_name + ":" + to_string((long unsigned int)this));
-    else
-        var_key=string(var_name + ":" + to_string((long unsigned int)host_item_ptr));
-
-    unordered_map <string,pair<void*,pair<arg_t,bool>>>::iterator map_it = var_ptr_map.find(var_key);
-    if(map_it == var_ptr_map.end()) {
+    if(shvar_map_it == shvar_map_ptr->end()) {
         // Element doesn't exists.
         stringstream error_msg;
         error_msg << "erase undefined variable " << var_name;
         cout << error_msg.str() << endl;
         //throw runtime_error(error_msg.str());
     } else {
-        if (map_it->second.second.second){
-            arg_t type_enum = map_it->second.second.first;
-            if(type_enum == T_NULL) {
+
+        raw_value = shvar_map_it->second;
+
+        if (raw_value.is_new){
+            if(raw_value.type_enum == T_NULL) {
                 // Enumerator arg_t not defined for this type.
                 stringstream error_msg;
                 error_msg << "Enumerator arg_t not defined for this type." <<
@@ -310,48 +297,10 @@ void Item::erase_variable(string var_name, Item* host_item_ptr){
                 //throw runtime_error(error_msg.str());
                 cout << error_msg.str() << endl;
             } else { 
-                switch (type_enum) {
-                    case EVENT_IP_BOOL:
-                        delete static_cast<ofEvent<pair<string,Item_Parameter<bool>>>*>(map_it->second.first); 
-                        break;
-                    case EVENT_IP_INT:
-                        delete static_cast<ofEvent<pair<string,Item_Parameter<int>>>*>(map_it->second.first);
-                        break;
-                    case EVENT_IP_FLOAT:
-                        delete static_cast<ofEvent<pair<string,Item_Parameter<float>>>*>(map_it->second.first); 
-                        break;
-                    case EVENT_IP_DOUBLE:
-                        delete static_cast<ofEvent<pair<string,Item_Parameter<double>>>*>(map_it->second.first); 
-                        break;
-                    case IP_INT:
-                        delete static_cast<Item_Parameter<int>*>(map_it->second.first); 
-                        break;
-                    case IP_FLOAT:
-                        delete static_cast<Item_Parameter<float>*>(map_it->second.first); 
-                        break;
-                    case IP_BOOL:
-                        delete static_cast<Item_Parameter<bool>*>(map_it->second.first); 
-                        break;
-                    case IP_VEC3F:
-                        delete static_cast<Item_Parameter<ofVec3f>*>(map_it->second.first); 
-                        break;
-                    case IP_COLOR:
-                        delete static_cast<Item_Parameter<ofColor>*>(map_it->second.first); 
-                        break;
-                    case CTRL_INT:
-                        delete static_cast<pair<vector<string>,pair<Item_Parameter<int>, ofEvent<pair<string,Item_Parameter<int>>>>>*>(map_it->second.first);
-                        break;
-                    case T_NULL:
-                        cout << "arg_t not defined for this type!!" << endl;
-                        break;
-                    default:
-                        cout << "arg_t not defined for this type!!" << endl;
-                        break;
-                }
+                erase_var_ptr(raw_value.value,raw_value.type_enum);
             }
         }
-
-        var_ptr_map.erase(map_it);
+        shvar_map_ptr->erase(shvar_map_it);
     }
 }
 
@@ -367,13 +316,51 @@ void Item::erase_ctrl(string event_name, Item* host_item_ptr){
     erase_variable(event_name, host_item_ptr);
 }
 
-void Item::remove_listener(string event_name, Item* host_ctrl_ptr){
-    //pair<void*,arg_t> raw_event = get_variable(event_name,host_ctrl_ptr);
+// issue: Change ofEvent template type to pair<shared_variable_key, pair<void*, arg_t>>
+void Item::map_event_parameter(pair<shared_variable_key, shared_variable_value>& received_var){
+    Item* host_item_ptr = received_var.first.host_item;
+    if (host_item_ptr == NULL)
+        host_item_ptr = this;
+    switch (received_var.second.type_enum) {
+         case IP_INT:
+            map_parameter<int>(received_var.first.name,
+                               *static_cast<Item_Parameter<int>*>(received_var.second.value),
+                               host_item_ptr);
+            break;
+        case IP_FLOAT:
+            map_parameter<float>(received_var.first.name,
+                                 *static_cast<Item_Parameter<float>*>(received_var.second.value),
+                                 host_item_ptr);
+            break;
+        case IP_BOOL:
+            map_parameter<bool>(received_var.first.name,
+                                *static_cast<Item_Parameter<bool>*>(received_var.second.value),
+                                host_item_ptr);
+            break;
+        case IP_COLOR:
+            map_parameter<ofColor>(received_var.first.name,
+                                   *static_cast<Item_Parameter<ofColor>*>(received_var.second.value),
+                                   host_item_ptr);
+            break;
+        case IP_VEC3F:
+            map_parameter<ofVec3f>(received_var.first.name,
+                                   *static_cast<Item_Parameter<ofVec3f>*>(received_var.second.value),
+                                   host_item_ptr);
+            break;
+        case T_NULL:
+            cout << "arg_t not defined for this type!" << endl;
+            break;
+        default:
+            cout << "arg_t not defined for this type!" << endl;
+            break;
+    }
 
-    //ofRemoveListener(*event, this ,& Item::map_parameter);
 }
 
-void Item::map_parameter(string var_name, void* param, Item* host_item_ptr){
-    //pair<void*,arg_t> current_var = get_variable(string var_name,host_item_ptr);
-    //.... do something to the current_var ....
+void Item::add_listener(ofEvent<pair<shared_variable_key, shared_variable_value>>* event){
+    ofAddListener( *event, this, & Item::map_event_parameter);
+}
+
+void Item::remove_listener(ofEvent<pair<shared_variable_key, shared_variable_value>>* event){
+    ofRemoveListener( *event, this, & Item::map_event_parameter);
 }

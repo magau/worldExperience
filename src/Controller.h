@@ -1,58 +1,50 @@
+class Button{
+    public:
+        Button() {
+            type_enum = T_NULL;
+            parameter = NULL;
+        }
+
+        void* parameter;
+        arg_t type_enum;
+        ofEvent<pair<shared_variable_key,shared_variable_value>> event;
+        vector<shared_variable_key> attached_variables; 
+        
+};
+
 class Controller : public Item {
     public:
         virtual void setup();
         virtual void run();
 
+        void add_button(string ctrl_name);
+
         template <typename T>
-        void add_ctrl(string ctrl_name) {
-            //set_ctrl<T>(ctrl_name, NULL, this);
-            set_variable(ctrl_name, NULL, CTRL_INT, this);
+        void setup_button_parameter(string ctrl_name, T value, pair<T,T> range) {
+            Button* button = static_cast<Button*>(get_variable(ctrl_name).value);
+            if (button->type_enum != T_NULL)
+                erase_var_ptr(button->parameter, button->type_enum);
+            button->parameter = new Item_Parameter<T>(value, range);
+            button->type_enum = type_info_2_arg_t(typeid(Item_Parameter<T>*));
         }
 
-        template <typename T>
-        void setup_ctrl_parameter(string ctrl_name, T value, pair<T,T> range) {
-            get_ctrl<T>(ctrl_name)->second.first = Item_Parameter<T>(value, range);
-        }
+        void attach_button_parameter(string ctrl_name, string parameter_name, Item* host_item = NULL);
 
-        template <typename T>
-        void set_ctrl_parameter(string ctrl_name, T value) {
-            get_ctrl<T>(ctrl_name)->second.first.value = value;
+        void detach_button_parameter(string ctrl_name, string parameter_name, Item* host_item = NULL);
 
-        }
-
-        template <typename T>
-        void iterate_ctrl_parameter(string ctrl_name, bool reverse=false) {
+        template<typename T>
+        void iterate_button_parameter(string ctrl_name, bool reverse=false) {
+            Button* button = static_cast<Button*>(get_variable(ctrl_name).value);
+            Item_Parameter<T>* parameter = static_cast<Item_Parameter<T>*>(button->parameter);
             if(reverse)
-                get_ctrl<T>(ctrl_name)->second.first.value--;
+                parameter->value--;
             else
-                get_ctrl<T>(ctrl_name)->second.first.value++;
+                parameter->value++;
         }
 
-        template <typename T>
-        void detach_ctrl_parameter(string ctrl_name, string parameter_name) {
-            get_ctrl<T>(ctrl_name)->first.pop(parameter_name);
-        }
-        
-        template <typename T>
-        void attach_ctrl_parameter(string ctrl_name, string parameter_name) {
-            get_ctrl<T>(ctrl_name)->first.push_back(parameter_name);
-        }
+        void notify_button_event(string ctrl_name);
 
-        template <typename T>
-        void notify_ctrl_event(string ctrl_name) {
-            pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<string,Item_Parameter<T>>>>>* ctrl_aux_all = get_ctrl<T>(ctrl_name);
-            for (typename vector<string>::iterator attached_attr_it = ctrl_aux_all->first.begin();
-                                                   attached_attr_it != ctrl_aux_all->first.end();
-                                                   attached_attr_it++) {
-                pair<string,Item_Parameter<T>> attr(*attached_attr_it,ctrl_aux_all->second.first);
-                ofNotifyEvent(ctrl_aux_all->second.second, attr);
-            }
-        }
-
-        template <typename T>
-        void remove_ctrl(string ctrl_name) {
-            erase_ctrl(ctrl_name);
-        }
+        void erase_button(string ctrl_name);
 
 };
 
@@ -68,6 +60,4 @@ class MidiController : public Controller, ofxMidiListener{
         void setup();
         void run();
         void newMidiMessage(ofxMidiMessage& eventArgs);
-        //void notify(){ofNotifyEvent(iterate_variable,rise,this);}
-        //void set_val(bool rise){_rise = rise;}
 };
