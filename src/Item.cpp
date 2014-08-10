@@ -51,18 +51,6 @@ void   Item :: run(){}
 void* Item::create_var_ptr(arg_t type_enum){
     void* var_ptr = NULL;
     switch (type_enum) {
-        case EVENT_IP_BOOL:
-            var_ptr = new ofEvent<pair<shared_variable_key,Item_Parameter<bool>>>;
-            break;
-        case EVENT_IP_INT:
-            var_ptr = new ofEvent<pair<shared_variable_key,Item_Parameter<int>>>;
-            break;
-        case EVENT_IP_FLOAT:
-            var_ptr = new ofEvent<pair<shared_variable_key,Item_Parameter<float>>>;
-            break;
-        case EVENT_IP_DOUBLE:
-            var_ptr = new ofEvent<pair<shared_variable_key,Item_Parameter<double>>>;
-            break;
         case EVENT_SH_VAR:
             var_ptr = new ofEvent<pair<shared_variable_key,shared_variable_value>>;
             break;
@@ -81,12 +69,6 @@ void* Item::create_var_ptr(arg_t type_enum){
         case IP_COLOR:
             var_ptr = new Item_Parameter<ofColor>;
             break;
-        case CTRL_INT:
-            var_ptr = new pair<vector<string>,pair<Item_Parameter<int>, ofEvent<pair<shared_variable_key,Item_Parameter<int>>>>>;
-            break;
-        case CTRL_SH_VAR:
-            var_ptr = new pair<vector<string>,pair<shared_variable_value, ofEvent<pair<shared_variable_key,pair<void*,arg_t>>>>>;
-            break;
         case BUTTON:
             var_ptr = new Button;
             break;
@@ -102,18 +84,6 @@ void* Item::create_var_ptr(arg_t type_enum){
 
 void Item::erase_var_ptr(void* var_value, arg_t type_enum){
     switch (type_enum) {
-        case EVENT_IP_BOOL:
-            delete static_cast<ofEvent<pair<shared_variable_key,Item_Parameter<bool>>>*>(var_value); 
-            break;
-        case EVENT_IP_INT:
-            delete static_cast<ofEvent<pair<shared_variable_key,Item_Parameter<int>>>*>(var_value);
-            break;
-        case EVENT_IP_FLOAT:
-            delete static_cast<ofEvent<pair<shared_variable_key,Item_Parameter<float>>>*>(var_value); 
-            break;
-        case EVENT_IP_DOUBLE:
-            delete static_cast<ofEvent<pair<shared_variable_key,Item_Parameter<double>>>*>(var_value); 
-            break;
         case EVENT_SH_VAR:
             delete static_cast<ofEvent<pair<shared_variable_key,shared_variable_value>>*>(var_value); 
             break;
@@ -131,12 +101,6 @@ void Item::erase_var_ptr(void* var_value, arg_t type_enum){
             break;
         case IP_COLOR:
             delete static_cast<Item_Parameter<ofColor>*>(var_value); 
-            break;
-        case CTRL_INT:
-            delete static_cast<pair<vector<string>,pair<Item_Parameter<int>, ofEvent<pair<shared_variable_key,Item_Parameter<int>>>>>*>(var_value);
-            break;
-        case CTRL_SH_VAR:
-            delete static_cast<pair<vector<string>,pair<shared_variable_value, ofEvent<pair<shared_variable_key,pair<void*,arg_t>>>>>*>(var_value);
             break;
         case BUTTON:
             delete static_cast<Button*>(var_value);
@@ -361,6 +325,49 @@ void Item::add_listener(ofEvent<pair<shared_variable_key, shared_variable_value>
     ofAddListener( *event, this, & Item::map_event_parameter);
 }
 
+void Item::add_listener(Item* host_controller, string button_name) {
+    Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
+    if (button != NULL) {
+        ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+        if (event != NULL) {
+            // Add button to attached_buttons (vector<Button*>).
+            attached_buttons.push_back(button);
+            // Add this to the button listeners (vector<Items*>). 
+            button->listeners.push_back(this);
+            add_listener(event);
+        } else {
+            cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
+        }
+
+    } else {
+        cout << "error: Invalid button name for Controller: " << host_controller->get_name() << "." << endl;
+    }
+}
+
 void Item::remove_listener(ofEvent<pair<shared_variable_key, shared_variable_value>>* event){
     ofRemoveListener( *event, this, & Item::map_event_parameter);
 }
+
+void Item::remove_listener(string button_name, Item* host_controller) {
+    cout << "remove button from item..."<<endl;
+    Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
+    if (button != NULL) {
+        ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+        if (event != NULL) {
+            // Remove button from attached_buttons (vector<Button*>).
+            vector<Button*>::iterator button_it = find(attached_buttons.begin(),attached_buttons.end(),button);
+            if(button_it != attached_buttons.end())
+                attached_buttons.erase(button_it);
+            // Remove this from the button listeners (vector<Items*>). 
+            vector<Item*>::iterator listener_it = find(button->listeners.begin(),button->listeners.end(),this);
+            if(listener_it != button->listeners.end())
+                button->listeners.erase(listener_it);
+            remove_listener(event);
+        } else {
+            cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
+        }
+    } else {
+        cout << "error: Invalid button name for Controller: " << host_controller->get_name() << "." << endl;
+    }
+}
+

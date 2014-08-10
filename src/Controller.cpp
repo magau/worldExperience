@@ -1,24 +1,35 @@
 #include "testApp.h"
 
-void Controller::add_button(string ctrl_name){
-    set_variable(ctrl_name, NULL, BUTTON, this);
+void Controller::add_button(string button_name){
+    set_variable(button_name, NULL, BUTTON, this);
 }
 
-void Controller::erase_button(string ctrl_name){
-    // Button event must be removed from attached tag...
-    Button* button = static_cast<Button*>(get_variable(ctrl_name).value);
-    if (button->type_enum != T_NULL)
-        erase_var_ptr(button->parameter, button->type_enum);
-    erase_variable(ctrl_name);
+void Controller::erase_button(string button_name){
+    //cout << "remove button from controller..."<<endl;
+    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    if (button->type_enum != T_NULL){
+        // Remove button event from attached tag.
+        vector<Item*>::iterator listener_it;
+        for (listener_it = button->listeners.end()-1;
+             listener_it != button->listeners.begin();
+             listener_it--){
+             //cout << "Remove button:" << button_name << " from attaced listener:" << (*listener_it)->get_name() << endl;
+            (*listener_it)->remove_listener(button_name,this);
+        }
+        //cout << "all attached items has be removed successfully." << endl;
+    }
+    //cout << "delete button:" << button_name << endl;
+    erase_variable(button_name);
+    //cout << "button deleted." << endl;
 }
 
-void Controller::attach_button_parameter(string ctrl_name, string parameter_name, Item* host_item) {
-    Button* button = static_cast<Button*>(get_variable(ctrl_name).value);
+void Controller::attach_button_parameter(string button_name, string parameter_name, Item* host_item) {
+    Button* button = static_cast<Button*>(get_variable(button_name).value);
     button->attached_variables.push_back(shared_variable_key(parameter_name,host_item));
 }
 
-void Controller::detach_button_parameter(string ctrl_name, string parameter_name, Item* host_item) {
-    Button* button = static_cast<Button*>(get_variable(ctrl_name).value);
+void Controller::detach_button_parameter(string button_name, string parameter_name, Item* host_item) {
+    Button* button = static_cast<Button*>(get_variable(button_name).value);
     vector<shared_variable_key>::iterator attached_var_it = find(button->attached_variables.begin(),
                                                                  button->attached_variables.end(),
                                                                  shared_variable_key(parameter_name,host_item)); 
@@ -31,8 +42,8 @@ void Controller::setup() {
     attach_button_parameter("ctrl3","rad");
 }
 
-void Controller::notify_button_event(string ctrl_name) {
-    Button* button = static_cast<Button*>(get_variable(ctrl_name).value);
+void Controller::notify_button_event(string button_name) {
+    Button* button = static_cast<Button*>(get_variable(button_name).value);
     for (typename vector<shared_variable_key>::iterator attached_var_it = button->attached_variables.begin();
                                            attached_var_it != button->attached_variables.end();
                                            attached_var_it++) {
@@ -45,15 +56,16 @@ void Controller::notify_button_event(string ctrl_name) {
 
 
 void Controller::run() {
-    if (ofGetKeyPressed('+')){
-        iterate_button_parameter<int>("ctrl3");
-        notify_button_event("ctrl3");
-    } else if (ofGetKeyPressed('-')){
-            
-        iterate_button_parameter<int>("ctrl3", true);
-        notify_button_event("ctrl3");
+    if (get_variable("ctrl3").value != NULL){
+        if (ofGetKeyPressed('+')){
+            iterate_button_parameter<int>("ctrl3");
+            notify_button_event("ctrl3");
+        } else if (ofGetKeyPressed('-')){
+                
+            iterate_button_parameter<int>("ctrl3", true);
+            notify_button_event("ctrl3");
+        }
     }
-
 }
 
 MidiController::MidiController(){

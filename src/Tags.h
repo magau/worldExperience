@@ -13,7 +13,7 @@ class Tag : public Item {
         void remove_particle(Particle* particle);
         void free_particle(Particle* particle);
         void setup_particle(Particle* particle);
-        void remove_particles(PointersVector<Particle*> added_particles);
+        void remove_particles(PointersVector<Particle*>* particles_selection=NULL);
 
         void setup_action(Action* action, bool isActive);
 
@@ -33,21 +33,8 @@ class Tag : public Item {
 
         void run();
 
-        void add_listener_to_particles(Item* host_controller, string button_name);
-        void remove_listener_from_particles(string event_name, Item* host_ctrl_ptr);
-// missing implementation...
-        void add_listener_to_interaction(string event_name, Item* host_controller);// interaction_id);
-// missing implementation...
-        void add_listener_to_behavior(string event_name, Item* host_controller);// behafior_id);
-// missing implementation...
-        //void remove_listener_from_interaction(string event_name, Item* host_ctrl_ptr, interaction_id);
-// missing implementation...
-        //void remove_listener_from_behavior(string event_name, Item* host_ctrl_ptr, behafior_id);
-
-    private:
-        unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher> particles_events_map;
-        unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher> behaviors_events_map;
-        unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher> interactions_events_map;
+        void add_listener(Item* host_controller, string button_name);
+        void remove_listener(string event_name, Item* host_ctrl_ptr);
 };
 
 

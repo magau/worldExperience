@@ -1,15 +1,28 @@
-class Button{
+class Button : public Item{
     public:
         Button() {
             type_enum = T_NULL;
             parameter = NULL;
         }
 
+        ~Button () {
+            if (type_enum != T_NULL)
+                erase_var_ptr(parameter, type_enum);
+        }
+
+        template<typename T>
+        void set_parameter( T value, pair<T,T> range){
+            if (type_enum != T_NULL)
+                erase_var_ptr(parameter, type_enum);
+            parameter = new Item_Parameter<T>(value, range);
+            type_enum = type_info_2_arg_t(typeid(Item_Parameter<T>*));
+        }
+
         void* parameter;
         arg_t type_enum;
         ofEvent<pair<shared_variable_key,shared_variable_value>> event;
         vector<shared_variable_key> attached_variables; 
-        
+        vector<Item*> listeners;
 };
 
 class Controller : public Item {
@@ -17,24 +30,24 @@ class Controller : public Item {
         virtual void setup();
         virtual void run();
 
-        void add_button(string ctrl_name);
+        void add_button(string button_name);
 
         template <typename T>
-        void setup_button_parameter(string ctrl_name, T value, pair<T,T> range) {
-            Button* button = static_cast<Button*>(get_variable(ctrl_name).value);
-            if (button->type_enum != T_NULL)
-                erase_var_ptr(button->parameter, button->type_enum);
-            button->parameter = new Item_Parameter<T>(value, range);
-            button->type_enum = type_info_2_arg_t(typeid(Item_Parameter<T>*));
+        void setup_button_parameter(string button_name, T value, pair<T,T> range) {
+            Button* button = static_cast<Button*>(get_variable(button_name).value);
+            button->set_parameter(value, range);
+            //if (button->type_enum != T_NULL)
+            //    erase_var_ptr(button->parameter, button->type_enum);
+            //button->parameter = new Item_Parameter<T>(value, range);
+            //button->type_enum = type_info_2_arg_t(typeid(Item_Parameter<T>*));
         }
 
-        void attach_button_parameter(string ctrl_name, string parameter_name, Item* host_item = NULL);
-
-        void detach_button_parameter(string ctrl_name, string parameter_name, Item* host_item = NULL);
+        void attach_button_parameter(string button_name, string parameter_name, Item* host_item = NULL);
+        void detach_button_parameter(string button_name, string parameter_name, Item* host_item = NULL);
 
         template<typename T>
-        void iterate_button_parameter(string ctrl_name, bool reverse=false) {
-            Button* button = static_cast<Button*>(get_variable(ctrl_name).value);
+        void iterate_button_parameter(string button_name, bool reverse=false) {
+            Button* button = static_cast<Button*>(get_variable(button_name).value);
             Item_Parameter<T>* parameter = static_cast<Item_Parameter<T>*>(button->parameter);
             if(reverse)
                 parameter->value--;
@@ -42,9 +55,8 @@ class Controller : public Item {
                 parameter->value++;
         }
 
-        void notify_button_event(string ctrl_name);
-
-        void erase_button(string ctrl_name);
+        void notify_button_event(string button_name);
+        void erase_button(string button_name);
 
 };
 

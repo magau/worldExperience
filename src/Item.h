@@ -10,20 +10,14 @@ enum arg_t{
 
     T_NULL,
 
-    EVENT_IP_BOOL,
-    EVENT_IP_INT,
-    EVENT_IP_FLOAT,
-    EVENT_IP_DOUBLE,
-    EVENT_SH_VAR,
-
     IP_INT,
     IP_FLOAT,
     IP_BOOL,
     IP_VEC3F,
     IP_COLOR,
 
-    CTRL_INT,
-    CTRL_SH_VAR,
+    EVENT_SH_VAR,
+
     BUTTON
 };
 
@@ -70,7 +64,10 @@ struct shared_variable_hasher {
 
 struct shared_variable_value {
 
-    shared_variable_value(){}
+    shared_variable_value(){
+        value = NULL;
+        type_enum = T_NULL;
+    }
 
     shared_variable_value(void* var_value, arg_t var_type_enum){
         value = var_value;
@@ -85,15 +82,7 @@ struct shared_variable_value {
 static arg_t type_info_2_arg_t(const type_info& type_id){
     arg_t result = T_NULL;
 
-    if       (type_id==typeid(ofEvent<pair<shared_variable_key,Item_Parameter<int>>>*)){
-        result = EVENT_IP_INT;
-    } else if(type_id==typeid(ofEvent<pair<shared_variable_key,Item_Parameter<float>>>*)){
-        result = EVENT_IP_FLOAT;
-    } else if(type_id==typeid(ofEvent<pair<shared_variable_key,Item_Parameter<double>>>*)){
-        result = EVENT_IP_DOUBLE;
-    } else if(type_id==typeid(ofEvent<pair<shared_variable_key,Item_Parameter<bool>>>*)){
-        result = EVENT_IP_BOOL;
-    } else if(type_id==typeid(ofEvent<pair<shared_variable_key,shared_variable_value>>*)){
+    if(type_id==typeid(ofEvent<pair<shared_variable_key,shared_variable_value>>*)){
         result = EVENT_SH_VAR;
     } else if(type_id==typeid(Item_Parameter<int>*)){
         result = IP_INT;
@@ -105,11 +94,6 @@ static arg_t type_info_2_arg_t(const type_info& type_id){
         result = IP_VEC3F;
     } else if(type_id==typeid(Item_Parameter<ofColor>*)){
         result = IP_COLOR;
-    } else if(type_id==typeid(pair<vector<string>,
-                                   pair<Item_Parameter<int>, ofEvent<pair<shared_variable_key,Item_Parameter<int>>>>>*)){
-        result = CTRL_INT;
-    } else if(type_id==typeid(pair<vector<string>,pair<shared_variable_value, ofEvent<pair<shared_variable_key,pair<void*,arg_t>>>>>*)){
-        result = CTRL_SH_VAR;
     } else if(type_id==typeid(Button*)){
         result = BUTTON;
     }
@@ -140,19 +124,11 @@ class Item{
 
         void iterate_attribute(string attr_name, bool forward);
 
-        template <typename T>
-        void add_listener(ofEvent<pair<shared_variable_key,Item_Parameter<T>>>* event){
-            ofAddListener(*event, this ,& Item::map_parameter<T>);
-        }
-
-        template <typename T>
-        void remove_listener(ofEvent<pair<shared_variable_key,Item_Parameter<T>>>* event){
-            ofRemoveListener(*event, this ,& Item::map_parameter<T>);
-        }
-
         void add_listener(ofEvent<pair<shared_variable_key, shared_variable_value>>* event);
+        void add_listener(Item* host_controller, string button_name);
 
         void remove_listener(ofEvent<pair<shared_variable_key, shared_variable_value>>* event);
+        virtual void remove_listener(string event_name, Item* host_ctrl_ptr);
 
         void map_event_parameter(pair<shared_variable_key, shared_variable_value>& received_var);
 
@@ -412,7 +388,7 @@ class Item{
         int id;
         string name;
 
-
+    protected:
         /* 
          * All the shared variables must be added to the "var_ptr_map" inside
          * the Item constructor or setup functions using the template function "add".
@@ -424,8 +400,9 @@ class Item{
          * of the shared variables are added by the Item it self.
          */
 
-        unordered_map<string,pair<void*,pair<arg_t,bool>>> var_ptr_map;
+        //unordered_map<string,pair<void*,pair<arg_t,bool>>> var_ptr_map;
         unordered_map<shared_variable_key, shared_variable_value, shared_variable_hasher> shared_variables_map;
+        vector<Button*> attached_buttons;
 
 };
 

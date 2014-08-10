@@ -8,7 +8,7 @@ Tag::Tag (World* _world){
 }
 
 Tag::~Tag (){
-    remove_particles(particles);    
+    remove_particles();    
     remove_behaviors();
     remove_interactions();
 }
@@ -84,10 +84,12 @@ void Tag::free_particle(Particle* particle){
 
 }
 
-void Tag::remove_particles(PointersVector<Particle*> particles_to_remove){
+void Tag::remove_particles(PointersVector<Particle*>* particles_selection){
+    if (particles_selection == NULL)
+        particles_selection = &particles;
     PointersVector<Particle*>::iterator iter_particle;
-    for (iter_particle = particles_to_remove.begin();
-         iter_particle < particles_to_remove.end();
+    for (iter_particle = particles_selection->begin();
+         iter_particle < particles_selection->end();
          iter_particle++){
         remove_particle(*iter_particle);
     }
@@ -204,74 +206,60 @@ void Tag::run(){
     }
 }
 
-
-void Tag::add_listener_to_particles(Item* host_controller, string button_name) {
-
+void Tag::add_listener(Item* host_controller, string button_name) {
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
-    ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+    if (button != NULL) {
+        ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+        if (event != NULL) {
+            // Add button to attached_buttons (vector<Button*>).
+            attached_buttons.push_back(button);
+            // Add this to the button listeners vector<Items*>. 
+            button->listeners.push_back(this);
 
-    if (event != NULL) {
-        set_variable(button_name, event, EVENT_SH_VAR, host_controller, &(particles_events_map));
-        PointersVector<Particle*>::iterator iter_particle;
-        for (iter_particle = particles.begin();
-            iter_particle != particles.end();
-            iter_particle++){
-            (*iter_particle)->add_listener(event);
+            PointersVector<Particle*>::iterator iter_particle;
+            for (iter_particle = particles.begin();
+                iter_particle != particles.end();
+                iter_particle++){
+                (*iter_particle)->add_listener(event);
+            }
+        } else {
+            cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
         }
     } else {
-        cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
+        cout << "error: Invalid button name for Controller: " << host_controller->get_name() << "." << endl;
     }
 }
 
-void Tag::remove_listener_from_particles(string button_name, Item* host_controller) {
+void Tag::remove_listener(string button_name, Item* host_controller) {
+    cout << "remove button from tag..."<<endl;
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
-    ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
-
-    if (event != NULL) {
-        PointersVector<Particle*>::iterator iter_particle;
-        for (iter_particle = particles.begin();
-            iter_particle != particles.end();
-            iter_particle++){
-            (*iter_particle)->remove_listener(event);
+    if (button != NULL) {
+        ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+        if (event != NULL) {
+            PointersVector<Particle*>::iterator iter_particle;
+            for (iter_particle = particles.begin();
+                iter_particle != particles.end();
+                iter_particle++){
+                (*iter_particle)->remove_listener(event);
+            //cout<< "Remove listener from particle:" << (*iter_particle)->get_name() << endl;
+            }
+            // Remove button from attached_buttons (vector<Button*>).
+            //cout << "Remove button from the attached_buttons." << endl;
+            vector<Button*>::iterator button_it = find(attached_buttons.begin(),attached_buttons.end(),button);
+            if(button_it != attached_buttons.end())
+                attached_buttons.erase(button_it);
+            // Remove this from the button listeners (vector<Items*>). 
+            //cout << "Remove tag:" << get_name() << " from the button listeners." << endl; 
+            vector<Item*>::iterator listener_it = find(button->listeners.begin(),button->listeners.end(),this);
+            if(listener_it != button->listeners.end())
+                button->listeners.erase(listener_it);
+            //cout << "tag:" << get_name() << " removed sccessfully." << endl; 
+        } else {
+            cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
         }
     } else {
-        cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
+        cout << "error: Invalid button name for Controller: " << host_controller->get_name() << "." << endl;
     }
-
-    erase_variable(button_name, host_controller, &(particles_events_map));
-
-//    arg_t event_arg_t = host_ctrl_ptr->get_variable(event_name).type_enum;
-//    PointersVector<Particle*>::iterator iter_particle;
-//    for (iter_particle = particles.begin();
-//        iter_particle != particles.end();
-//        iter_particle++){
-//
-//        switch (event_arg_t) {
-//            case EVENT_IP_BOOL:
-//                (*iter_particle)->remove_listener<bool>(host_ctrl_ptr->get_event<bool>(event_name));
-//                break;
-//            case EVENT_IP_INT:
-//                (*iter_particle)->remove_listener<int>(host_ctrl_ptr->get_event<int>(event_name));
-//                break;
-//            case EVENT_IP_FLOAT:
-//                (*iter_particle)->remove_listener<float>(host_ctrl_ptr->get_event<float>(event_name));
-//                break;
-//            case EVENT_IP_DOUBLE:
-//                (*iter_particle)->remove_listener<double>(host_ctrl_ptr->get_event<double>(event_name));
-//                break;
-//            case T_NULL:
-//                cout << "arg_t not defined for this type!!" << endl;
-//                break;
-//            default:
-//                cout << "arg_t not defined for this type!!" << endl;
-//                break;
-//        }
-//    }
-//    erase_event(event_name, host_ctrl_ptr);
+    //cout << "exit tag.remove_listener..." << endl;
 }
 
-
-void Tag::add_listener_to_interaction(string event_name, Item* host_controller) {
-}
-void Tag::add_listener_to_behavior(string event_name, Item* host_controller) {
-}

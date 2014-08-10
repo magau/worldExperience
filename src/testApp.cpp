@@ -52,9 +52,7 @@ void testApp::setup(){
     // da grelha, à interacção.
     i0->add_actuated_tag(t0);
 
-    t0->add_listener_to_particles(cl, "ctrl3");
-    //t0->add_listener_to_particles<int>("ctrl4", cl);
-    //t0->remove_listener_from_particles<int>("ctrl4", cl);
+    t0->add_listener(cl, "ctrl3");
  
 }
    
@@ -123,8 +121,9 @@ void testApp::keyPressed(int key){
     //       ofNotifyEvent(*(cl->get_event<bool>("ctrl1")), attr);
     //       break;}
     //   case 'i':{
-    //       pair<string,Item_Parameter<bool>> attr("is_visible",Item_Parameter<bool>(false));
-    //       ofNotifyEvent(*(cl->get_event<bool>("ctrl1")), attr);
+    //         Controller* cl = world.controllers.get_item_by_id(0);
+    //         if (cl != NULL)
+    //             cl->erase_button("ctrl3");
     //       break;}
          case 'f':{
              Tag* t1 = world.tags.get_item_by_id(1);
