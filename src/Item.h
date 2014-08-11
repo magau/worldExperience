@@ -133,6 +133,7 @@ class Item{
 
         void remove_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event);
         virtual void remove_listener(string event_name, Item* host_ctrl_ptr);
+        virtual void remove_attached_buttons();
 
         void map_event_parameter(pair<shared_variable_key, shared_variable>& received_var);
 

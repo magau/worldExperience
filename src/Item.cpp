@@ -10,8 +10,13 @@ Item::Item(){
 }
 
 Item :: ~Item(){
-    /* delete added variables. */
+    /* Delete added variables. */
     clear_variables();
+
+    /* Remove this item from the
+     * attached_buttons remove listeners
+     * and clear buttons. */
+    remove_attached_buttons(); 
 }
 
 const type_info& Item::get_typeid(){
@@ -388,3 +393,20 @@ void Item::remove_listener(string button_name, Item* host_controller) {
     }
 }
 
+void Item::remove_attached_buttons() {
+    // Remove button from attached_buttons (vector<Button*>).
+    vector<Button*>::iterator button_it;
+    
+    for (button_it = attached_buttons.end()-1;
+         button_it >= attached_buttons.begin();
+         button_it--){
+        // Remove this item from the button listeners (vector<Items*>). 
+        vector<Item*>::iterator listener_it = find((*button_it)->listeners.begin(),(*button_it)->listeners.end(),this);
+        if(listener_it != (*button_it)->listeners.end())
+            (*button_it)->listeners.erase(listener_it);
+        ofEvent<pair<shared_variable_key, shared_variable>>* event = &((*button_it)->event);
+        if (event != NULL)
+            remove_listener(event);
+    }
+    attached_buttons.clear();
+}
