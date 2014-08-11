@@ -11,6 +11,7 @@ Item::Item(){
 
 Item :: ~Item(){
     /* delete added variables. */
+    clear_variables();
 }
 
 const type_info& Item::get_typeid(){
@@ -25,7 +26,7 @@ string Item::get_type_name(){
 string Item::get_name(){return name;}
 
 void Item::print_shared_var_names(){
-    unordered_map<shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator var_it;
+    unordered_map<shared_variable_key, shared_variable, shared_variable_hasher>::iterator var_it;
     for(var_it = shared_variables_map.begin();
         var_it != shared_variables_map.end(); var_it++) {
         cout << "var:" << var_it->first.name << "; host item:" << var_it->first.host_item->get_name() << endl;
@@ -52,7 +53,7 @@ void* Item::create_var_ptr(arg_t type_enum){
     void* var_ptr = NULL;
     switch (type_enum) {
         case EVENT_SH_VAR:
-            var_ptr = new ofEvent<pair<shared_variable_key,shared_variable_value>>;
+            var_ptr = new ofEvent<pair<shared_variable_key,shared_variable>>;
             break;
         case IP_INT:
             var_ptr = new Item_Parameter<int>;
@@ -85,7 +86,7 @@ void* Item::create_var_ptr(arg_t type_enum){
 void Item::erase_var_ptr(void* var_value, arg_t type_enum){
     switch (type_enum) {
         case EVENT_SH_VAR:
-            delete static_cast<ofEvent<pair<shared_variable_key,shared_variable_value>>*>(var_value); 
+            delete static_cast<ofEvent<pair<shared_variable_key,shared_variable>>*>(var_value); 
             break;
         case IP_INT:
             delete static_cast<Item_Parameter<int>*>(var_value); 
@@ -115,27 +116,23 @@ void Item::erase_var_ptr(void* var_value, arg_t type_enum){
 }
 
 void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* host_item_ptr,
-           unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr){
-
-    shared_variable_value raw_value;
+           unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr){
 
     if (host_item_ptr == NULL)
         host_item_ptr = this;
 
-    shared_variable_key key;
-    key.host_item = host_item_ptr;
-    key.name      = var_name;
+    shared_variable_key key(var_name, host_item_ptr);
 
     // Add an existent poiter as a new element.
     bool is_new_var = false;
 
     // The input argument "shvar_map_ptr" can be used if
-    // independent containes are required for this Item.
+    // independent containes are required for the base Item.
     // The default container is the "shared_variables_map".
     if (shvar_map_ptr == NULL)
         shvar_map_ptr = &shared_variables_map;
 
-    unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
+    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
 
     if (var_ptr == NULL) {
         // Create a new element.
@@ -145,10 +142,7 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
 
     if (shvar_map_it == shvar_map_ptr->end()) {
         // Add element.
-        raw_value.value     = var_ptr;
-        raw_value.type_enum = type_enum;
-        raw_value.is_new    = is_new_var;
-        (*shvar_map_ptr)[key] = raw_value;
+        (*shvar_map_ptr)[key] = shared_variable(var_ptr,type_enum,is_new_var);
 
         //cout << "add new variable:" << key.name << endl;
     } else if(type_enum == T_NULL) {
@@ -188,26 +182,24 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
 
 }
 
-shared_variable_value Item::get_variable(string var_name, Item* host_item_ptr,
-           unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr){
+shared_variable Item::get_variable(string var_name, Item* host_item_ptr,
+           unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr){
 
-    shared_variable_value raw_value;
+    shared_variable raw_value;
 
     if (host_item_ptr == NULL)
         host_item_ptr = this;
  
-    shared_variable_key key;
-    key.host_item = host_item_ptr;
-    key.name      = var_name;
+    shared_variable_key key(var_name, host_item_ptr);
 
     // The input argument "shvar_map_ptr" can be used if
-    // independent containes are required for this Item.
+    // independent containes are required for the base Item.
     // The default container is the "shared_variables_map".
     if (shvar_map_ptr == NULL)
         shvar_map_ptr = &shared_variables_map;
 
 
-    unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
+    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
 
     if(shvar_map_it == shvar_map_ptr->end()) {
         // Element doesn't exists.
@@ -222,25 +214,20 @@ shared_variable_value Item::get_variable(string var_name, Item* host_item_ptr,
 }
 
 void Item::erase_variable(string var_name, Item* host_item_ptr,
-           unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr){
-
-    shared_variable_value raw_value;
+           unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr){
 
     if (host_item_ptr == NULL)
         host_item_ptr = this;
     
-    shared_variable_key key;
-    key.host_item = host_item_ptr;
-    key.name      = var_name;
+    shared_variable_key key(var_name, host_item_ptr);
 
     // The input argument "shvar_map_ptr" can be used if
-    // independent containes are required for this Item.
+    // independent containes are required for the base Item.
     // The default container is the "shared_variables_map".
     if (shvar_map_ptr == NULL)
         shvar_map_ptr = &shared_variables_map;
 
-
-    unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
+    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
 
     if(shvar_map_it == shvar_map_ptr->end()) {
         // Element doesn't exists.
@@ -250,14 +237,14 @@ void Item::erase_variable(string var_name, Item* host_item_ptr,
         //throw runtime_error(error_msg.str());
     } else {
 
-        raw_value = shvar_map_it->second;
+        shared_variable raw_value = shvar_map_it->second;
 
         if (raw_value.is_new){
             if(raw_value.type_enum == T_NULL) {
                 // Enumerator arg_t not defined for this type.
                 stringstream error_msg;
                 error_msg << "Enumerator arg_t not defined for this type." <<
-                             "; variable name:" << var_name;
+                             "; can't delete variable:" << var_name;
                 //throw runtime_error(error_msg.str());
                 cout << error_msg.str() << endl;
             } else { 
@@ -280,8 +267,38 @@ void Item::erase_ctrl(string event_name, Item* host_item_ptr){
     erase_variable(event_name, host_item_ptr);
 }
 
-// issue: Change ofEvent template type to pair<shared_variable_key, pair<void*, arg_t>>
-void Item::map_event_parameter(pair<shared_variable_key, shared_variable_value>& received_var){
+void Item::clear_variables(unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr){
+
+    // The input argument "shvar_map_ptr" can be used if
+    // independent containes are required for the base Item.
+    // The default container is the "shared_variables_map".
+    if (shvar_map_ptr == NULL)
+        shvar_map_ptr = &shared_variables_map;
+
+    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it;
+
+    for (shvar_map_it = shvar_map_ptr->begin();
+         shvar_map_it != shvar_map_ptr->end();
+         shvar_map_it++) {
+
+        shared_variable raw_value = shvar_map_it->second;
+
+        if (raw_value.is_new){
+            if(raw_value.type_enum == T_NULL) {
+                // Enumerator arg_t not defined for this type.
+                stringstream error_msg;
+                error_msg << "Enumerator arg_t not defined for this type." <<
+                             "; can't delete variable:" << shvar_map_it->first.name;
+                //throw runtime_error(error_msg.str());
+                cout << error_msg.str() << endl;
+            } else { 
+                erase_var_ptr(raw_value.value,raw_value.type_enum);
+            }
+        }
+    }
+    shvar_map_ptr->clear();
+}
+void Item::map_event_parameter(pair<shared_variable_key, shared_variable>& received_var){
     Item* host_item_ptr = received_var.first.host_item;
     if (host_item_ptr == NULL)
         host_item_ptr = this;
@@ -321,14 +338,14 @@ void Item::map_event_parameter(pair<shared_variable_key, shared_variable_value>&
 
 }
 
-void Item::add_listener(ofEvent<pair<shared_variable_key, shared_variable_value>>* event){
+void Item::add_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event){
     ofAddListener( *event, this, & Item::map_event_parameter);
 }
 
 void Item::add_listener(Item* host_controller, string button_name) {
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
     if (button != NULL) {
-        ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+        ofEvent<pair<shared_variable_key, shared_variable>>* event = &(button->event);
         if (event != NULL) {
             // Add button to attached_buttons (vector<Button*>).
             attached_buttons.push_back(button);
@@ -344,7 +361,7 @@ void Item::add_listener(Item* host_controller, string button_name) {
     }
 }
 
-void Item::remove_listener(ofEvent<pair<shared_variable_key, shared_variable_value>>* event){
+void Item::remove_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event){
     ofRemoveListener( *event, this, & Item::map_event_parameter);
 }
 
@@ -352,7 +369,7 @@ void Item::remove_listener(string button_name, Item* host_controller) {
     cout << "remove button from item..."<<endl;
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
     if (button != NULL) {
-        ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+        ofEvent<pair<shared_variable_key, shared_variable>>* event = &(button->event);
         if (event != NULL) {
             // Remove button from attached_buttons (vector<Button*>).
             vector<Button*>::iterator button_it = find(attached_buttons.begin(),attached_buttons.end(),button);

@@ -209,7 +209,7 @@ void Tag::run(){
 void Tag::add_listener(Item* host_controller, string button_name) {
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
     if (button != NULL) {
-        ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+        ofEvent<pair<shared_variable_key, shared_variable>>* event = &(button->event);
         if (event != NULL) {
             // Add button to attached_buttons (vector<Button*>).
             attached_buttons.push_back(button);
@@ -234,7 +234,7 @@ void Tag::remove_listener(string button_name, Item* host_controller) {
     cout << "remove button from tag..."<<endl;
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
     if (button != NULL) {
-        ofEvent<pair<shared_variable_key, shared_variable_value>>* event = &(button->event);
+        ofEvent<pair<shared_variable_key, shared_variable>>* event = &(button->event);
         if (event != NULL) {
             PointersVector<Particle*>::iterator iter_particle;
             for (iter_particle = particles.begin();

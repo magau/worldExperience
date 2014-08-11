@@ -20,7 +20,7 @@ class Button : public Item{
 
         void* parameter;
         arg_t type_enum;
-        ofEvent<pair<shared_variable_key,shared_variable_value>> event;
+        ofEvent<pair<shared_variable_key,shared_variable>> event;
         vector<shared_variable_key> attached_variables; 
         vector<Item*> listeners;
 };

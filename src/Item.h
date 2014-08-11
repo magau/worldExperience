@@ -43,7 +43,9 @@ struct shared_variable_key {
     Item* host_item;
     string name;
 
-    shared_variable_key(){}
+    shared_variable_key(){
+        host_item = NULL;
+    }
 
     shared_variable_key(string var_name, Item* item=NULL){
         name = var_name;
@@ -62,16 +64,18 @@ struct shared_variable_hasher {
     }
 };
 
-struct shared_variable_value {
+struct shared_variable {
 
-    shared_variable_value(){
+    shared_variable(){
         value = NULL;
         type_enum = T_NULL;
+        is_new = true;
     }
 
-    shared_variable_value(void* var_value, arg_t var_type_enum){
+    shared_variable(void* var_value, arg_t var_type_enum, bool var_is_new = true){
         value = var_value;
         type_enum = var_type_enum;
+        is_new = var_is_new;
     }
 
     void* value;
@@ -82,7 +86,7 @@ struct shared_variable_value {
 static arg_t type_info_2_arg_t(const type_info& type_id){
     arg_t result = T_NULL;
 
-    if(type_id==typeid(ofEvent<pair<shared_variable_key,shared_variable_value>>*)){
+    if(type_id==typeid(ofEvent<pair<shared_variable_key,shared_variable>>*)){
         result = EVENT_SH_VAR;
     } else if(type_id==typeid(Item_Parameter<int>*)){
         result = IP_INT;
@@ -124,13 +128,13 @@ class Item{
 
         void iterate_attribute(string attr_name, bool forward);
 
-        void add_listener(ofEvent<pair<shared_variable_key, shared_variable_value>>* event);
+        void add_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event);
         void add_listener(Item* host_controller, string button_name);
 
-        void remove_listener(ofEvent<pair<shared_variable_key, shared_variable_value>>* event);
+        void remove_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event);
         virtual void remove_listener(string event_name, Item* host_ctrl_ptr);
 
-        void map_event_parameter(pair<shared_variable_key, shared_variable_value>& received_var);
+        void map_event_parameter(pair<shared_variable_key, shared_variable>& received_var);
 
         /*
          *  The purpose of the "setup" function is to set and/or
@@ -151,29 +155,19 @@ class Item{
         template<typename U>
         void set_variable(string var_name, U value, Item* host_item_ptr=NULL){
 
-            shared_variable_value raw_value;
-
             if (host_item_ptr == NULL)
                 host_item_ptr = this;
     
-            shared_variable_key key;
-            key.host_item = host_item_ptr;
-            key.name      = var_name;
+            shared_variable_key key(var_name,host_item_ptr);
     
             arg_t type_enum = type_info_2_arg_t(typeid(&value));
 
-            unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shared_variables_map.find(key);
+            unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it = shared_variables_map.find(key);
 
             if (shvar_map_it == shared_variables_map.end()) {
                 // Add new element.
                 U* new_var = new U(value);
-
-                //var_ptr_map[var_key] = pair<void*,pair<arg_t,bool>>(new_var, pair<arg_t,bool>(type_enum,true));
-
-                raw_value.value     = new_var;
-                raw_value.type_enum = type_enum;
-                raw_value.is_new    = true;
-                shared_variables_map[key] = raw_value;
+                shared_variables_map[key] = shared_variable(new_var,type_enum);
                     
                 //cout << "add new variable:" << key.name << endl;
             } else if(shvar_map_it->second.type_enum != type_enum) {
@@ -194,8 +188,6 @@ class Item{
             } else {
                 // Replace value.
                 *static_cast<U*>(shvar_map_it->second.value) = value;
-                //U* variable = static_cast<U*>(shvar_map_it->second.value);
-                //*variable = value;
                 //cout << "overwiting var:" << var_key << " value:" << variable->value << endl;
                 //cout << "new value:" << value.value << endl;
             }
@@ -220,7 +212,7 @@ class Item{
         void erase_var_ptr(void* var_value, arg_t type_enum);
 
         void set_variable(string var_name, void* var_ptr=NULL, arg_t type_enum=T_NULL, Item* host_item_ptr=NULL,
-             unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr=NULL);
+             unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL);
  
         template<typename T>
         void set_item_parameter(string var_name, Item_Parameter<T>* var_ptr, Item* host_item_ptr=NULL){
@@ -239,20 +231,18 @@ class Item{
 
         template<typename U>
         U* get_variable(string var_name, Item* host_item_ptr=NULL,
-             unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr=NULL){
+             unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL){
             U* result = (U*)NULL;
 
             arg_t type_enum = type_info_2_arg_t(typeid(result));
-            shared_variable_value raw_value;
+            shared_variable raw_value;
 
             if (host_item_ptr == NULL)
                 host_item_ptr = this;
             
-            shared_variable_key key;
-            key.host_item = host_item_ptr;
-            key.name      = var_name;
+            shared_variable_key key(var_name, host_item_ptr);
             
-            unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>::iterator shvar_map_it = shared_variables_map.find(key);
+            unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it = shared_variables_map.find(key);
 
             if(shvar_map_it == shared_variables_map.end()) {
                 // Element doesn't exists.
@@ -287,8 +277,8 @@ class Item{
             return result;
         }
 
-        shared_variable_value get_variable(string var_name, Item* host_item_ptr=NULL,
-             unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr=NULL);
+        shared_variable get_variable(string var_name, Item* host_item_ptr=NULL,
+             unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL);
 
         template<typename T>
         Item_Parameter<T>* get_item_parameter(string var_name, Item* host_item_ptr=NULL){
@@ -306,7 +296,9 @@ class Item{
         }
 
         void erase_variable(string var_name, Item* host_item_ptr=NULL,
-             unordered_map <shared_variable_key, shared_variable_value, shared_variable_hasher>* shvar_map_ptr=NULL);
+             unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL);
+
+        void clear_variables(unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL);
 
         void erase_item_parameter(string var_name, Item* host_item_ptr=NULL);
         
@@ -401,7 +393,7 @@ class Item{
          */
 
         //unordered_map<string,pair<void*,pair<arg_t,bool>>> var_ptr_map;
-        unordered_map<shared_variable_key, shared_variable_value, shared_variable_hasher> shared_variables_map;
+        unordered_map<shared_variable_key, shared_variable, shared_variable_hasher> shared_variables_map;
         vector<Button*> attached_buttons;
 
 };

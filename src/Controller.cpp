@@ -48,8 +48,8 @@ void Controller::notify_button_event(string button_name) {
                                            attached_var_it != button->attached_variables.end();
                                            attached_var_it++) {
         shared_variable_key key = *attached_var_it;
-        shared_variable_value value = shared_variable_value(button->parameter,button->type_enum);
-        pair<shared_variable_key,shared_variable_value> sent_value(key, value);
+        shared_variable value = shared_variable(button->parameter,button->type_enum);
+        pair<shared_variable_key,shared_variable> sent_value(key, value);
         ofNotifyEvent(button->event, sent_value);
     }
 }
