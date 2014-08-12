@@ -12,7 +12,6 @@ Item::Item(){
 Item :: ~Item(){
     /* Delete added variables. */
     clear_variables();
-
     /* Remove this item from the
      * attached_buttons remove listeners
      * and clear buttons. */
@@ -131,13 +130,16 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
     // Add an existent poiter as a new element.
     bool is_new_var = false;
 
-    // The input argument "shvar_map_ptr" can be used if
-    // independent containes are required for the base Item.
-    // The default container is the "shared_variables_map".
+    /*
+     * The input argument "shvar_map_ptr" can be used if
+     * independent containes are required for the base Item.
+     * The default container is the "shared_variables_map".
+     */ 
     if (shvar_map_ptr == NULL)
         shvar_map_ptr = &shared_variables_map;
 
-    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
+    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it;
+    shvar_map_it = shvar_map_ptr->find(key);
 
     if (var_ptr == NULL) {
         // Create a new element.
@@ -161,9 +163,8 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
         // Replace element.
         //cout << "overwiting var:" << var_key << " value:" << old_var->value << endl;
 
-        if (shvar_map_it->second.is_new) {
+        if (shvar_map_it->second.is_new)
             erase_var_ptr(shvar_map_it->second.value,shvar_map_it->second.type_enum);
-        }
 
         if(shvar_map_it->second.type_enum != type_enum) {
             // Element already exists with diferent arg_t.
@@ -176,14 +177,9 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
             shvar_map_it->second.type_enum = type_enum;
         } 
 
-
         shvar_map_it->second.value = var_ptr;
         shvar_map_it->second.is_new = is_new_var;
     }
-
-    //cout << "variable name:" << key.name << endl;
-    //cout << "key.name: " << key.name << "; key.host_item->get_name():" << key.host_item->get_name() << endl;
-    //cout << "shared_variables_map[key].type_enum: " << shared_variables_map[key].type_enum << "; shared_variables_map[key].is_new:" << shared_variables_map[key].is_new << endl;
 
 }
 
@@ -197,24 +193,27 @@ shared_variable Item::get_variable(string var_name, Item* host_item_ptr,
  
     shared_variable_key key(var_name, host_item_ptr);
 
-    // The input argument "shvar_map_ptr" can be used if
-    // independent containes are required for the base Item.
-    // The default container is the "shared_variables_map".
+    /*
+     * The input argument "shvar_map_ptr" can be used if
+     * independent containes are required for the base Item.
+     * The default container is the "shared_variables_map".
+     */ 
     if (shvar_map_ptr == NULL)
         shvar_map_ptr = &shared_variables_map;
 
 
-    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
+    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it;
+    shvar_map_it = shvar_map_ptr->find(key);
 
-    if(shvar_map_it == shvar_map_ptr->end()) {
-        // Element doesn't exists.
-        stringstream error_msg;
-        error_msg << "get undefined variable: " << var_name;
-        cout << error_msg.str() << endl;
-        //throw runtime_error(error_msg.str());
-    } else {
+    if(shvar_map_it != shvar_map_ptr->end()) {
         raw_value = shvar_map_it->second;
-    }
+    } //else {
+    //    // Element doesn't exists.
+    //    stringstream error_msg;
+    //    error_msg << "get undefined variable: " << var_name;
+    //    cout << error_msg.str() << endl;
+    //    //throw runtime_error(error_msg.str());
+    //}
     return raw_value;
 }
 
@@ -226,22 +225,18 @@ void Item::erase_variable(string var_name, Item* host_item_ptr,
     
     shared_variable_key key(var_name, host_item_ptr);
 
-    // The input argument "shvar_map_ptr" can be used if
-    // independent containes are required for the base Item.
-    // The default container is the "shared_variables_map".
+    /*
+     * The input argument "shvar_map_ptr" can be used if
+     * independent containes are required for the base Item.
+     * The default container is the "shared_variables_map".
+     */ 
     if (shvar_map_ptr == NULL)
         shvar_map_ptr = &shared_variables_map;
 
-    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it = shvar_map_ptr->find(key);
+    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it;
+    shvar_map_it = shvar_map_ptr->find(key);
 
-    if(shvar_map_it == shvar_map_ptr->end()) {
-        // Element doesn't exists.
-        stringstream error_msg;
-        error_msg << "erase undefined variable " << var_name;
-        cout << error_msg.str() << endl;
-        //throw runtime_error(error_msg.str());
-    } else {
-
+    if(shvar_map_it != shvar_map_ptr->end()) {
         shared_variable raw_value = shvar_map_it->second;
 
         if (raw_value.is_new){
@@ -257,26 +252,22 @@ void Item::erase_variable(string var_name, Item* host_item_ptr,
             }
         }
         shvar_map_ptr->erase(shvar_map_it);
+    } else {
+        // Element doesn't exists.
+        stringstream error_msg;
+        error_msg << "erase undefined variable " << var_name;
+        cout << error_msg.str() << endl;
+        //throw runtime_error(error_msg.str());
     }
-}
-
-void Item::erase_item_parameter(string var_name, Item* host_item_ptr){
-    erase_variable(var_name, host_item_ptr);
-}
-
-void Item::erase_event(string var_name, Item* host_item_ptr) {
-    erase_variable(var_name, host_item_ptr);
-}
-
-void Item::erase_ctrl(string event_name, Item* host_item_ptr){
-    erase_variable(event_name, host_item_ptr);
 }
 
 void Item::clear_variables(unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr){
 
-    // The input argument "shvar_map_ptr" can be used if
-    // independent containes are required for the base Item.
-    // The default container is the "shared_variables_map".
+    /*
+     * The input argument "shvar_map_ptr" can be used if
+     * independent containes are required for the base Item.
+     * The default container is the "shared_variables_map".
+     */  
     if (shvar_map_ptr == NULL)
         shvar_map_ptr = &shared_variables_map;
 
@@ -303,44 +294,86 @@ void Item::clear_variables(unordered_map <shared_variable_key, shared_variable, 
     }
     shvar_map_ptr->clear();
 }
+
 void Item::map_event_parameter(pair<shared_variable_key, shared_variable>& received_var){
     Item* host_item_ptr = received_var.first.host_item;
     if (host_item_ptr == NULL)
         host_item_ptr = this;
-    switch (received_var.second.type_enum) {
-         case IP_INT:
-            map_parameter<int>(received_var.first.name,
-                               *static_cast<Item_Parameter<int>*>(received_var.second.value),
-                               host_item_ptr);
-            break;
-        case IP_FLOAT:
-            map_parameter<float>(received_var.first.name,
-                                 *static_cast<Item_Parameter<float>*>(received_var.second.value),
-                                 host_item_ptr);
-            break;
-        case IP_BOOL:
-            map_parameter<bool>(received_var.first.name,
-                                *static_cast<Item_Parameter<bool>*>(received_var.second.value),
-                                host_item_ptr);
-            break;
-        case IP_COLOR:
-            map_parameter<ofColor>(received_var.first.name,
-                                   *static_cast<Item_Parameter<ofColor>*>(received_var.second.value),
-                                   host_item_ptr);
-            break;
-        case IP_VEC3F:
-            map_parameter<ofVec3f>(received_var.first.name,
-                                   *static_cast<Item_Parameter<ofVec3f>*>(received_var.second.value),
-                                   host_item_ptr);
-            break;
-        case T_NULL:
-            cout << "arg_t not defined for this type!" << endl;
-            break;
-        default:
-            cout << "arg_t not defined for this type!" << endl;
-            break;
-    }
 
+    shared_variable current_var = get_variable(received_var.first.name,host_item_ptr);
+    shared_variable input_var = received_var.second;
+
+    if(current_var.value != NULL) {
+        switch (input_var.type_enum) {
+
+            case IP_INT:
+            {
+
+                Item_Parameter<int> input_ip = *static_cast<Item_Parameter<int>*>(input_var.value);
+
+                switch (current_var.type_enum) {
+                    case IP_INT:
+                    {
+                        Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var.value);
+                        current_ip->value = map_parameter<int>(*current_ip, input_ip);
+                        break;
+                    }
+                    case IP_FLOAT:
+                    {
+                        Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var.value);
+                        Item_Parameter<float> cast_input_ip((float)input_ip.value,
+                                                            pair<float,float>((float)input_ip.range.first,
+                                                                              (float)input_ip.range.second));
+                        current_ip->value = map_parameter<float>(*current_ip, cast_input_ip);;
+                        break;
+                    }
+                    case T_NULL:
+                        cout << "arg_t not defined for this type!" << endl;
+                        break;
+                    default:
+                        cout << "arg_t not defined for this type!" << endl;
+                        break;
+                }
+                break;
+            }
+            case IP_FLOAT:
+            {
+
+                Item_Parameter<float> input_ip = *static_cast<Item_Parameter<float>*>(input_var.value);
+
+                switch (current_var.type_enum) {
+                    case IP_INT:
+                    {
+                        Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var.value);
+                        Item_Parameter<int> cast_input_ip((int)input_ip.value,
+                                                          pair<int,int>((int)input_ip.range.first,
+                                                                        (int)input_ip.range.second));
+                        current_ip->value = map_parameter<int>(*current_ip, cast_input_ip);;
+                        break;
+                    }
+                    case IP_FLOAT:
+                    {
+                        Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var.value);
+                        current_ip->value = map_parameter<float>(*current_ip, input_ip);;
+                        break;
+                    }
+                    case T_NULL:
+                        cout << "arg_t not defined for this type!" << endl;
+                        break;
+                    default:
+                        cout << "arg_t not defined for this type!" << endl;
+                        break;
+                }
+                break;
+            }
+            case T_NULL:
+                cout << "arg_t not defined for this type!" << endl;
+                break;
+            default:
+                cout << "arg_t not defined for this type!" << endl;
+                break;
+        }
+    }
 }
 
 void Item::add_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event){
@@ -397,9 +430,9 @@ void Item::remove_attached_buttons() {
     // Remove button from attached_buttons (vector<Button*>).
     vector<Button*>::iterator button_it;
     
-    for (button_it = attached_buttons.end()-1;
-         button_it >= attached_buttons.begin();
-         button_it--){
+    for (button_it = attached_buttons.begin();
+         button_it != attached_buttons.end();
+         button_it++){
         // Remove this item from the button listeners (vector<Items*>). 
         vector<Item*>::iterator listener_it = find((*button_it)->listeners.begin(),(*button_it)->listeners.end(),this);
         if(listener_it != (*button_it)->listeners.end())

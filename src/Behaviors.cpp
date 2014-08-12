@@ -17,6 +17,8 @@ string Behavior::get_type_name(){
 GravityGlue::GravityGlue() : Behavior(){
     set_name(get_type_name());
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
+    weight_fac = Item_Parameter<float>(0.1, pair<float,float> (0,1));
+    set_variable("weight",&weight_fac,IP_FLOAT);
 }
 
 const type_info& GravityGlue::get_typeid() {
@@ -46,11 +48,11 @@ void GravityGlue::free(){
 }
 
 void GravityGlue::free(Particle* _host_particle){
-    _host_particle->erase_item_parameter("loc",this);
+    _host_particle->erase_variable("loc",this);
 }
 
 void GravityGlue::run(Particle* _host_particle){
-    float dist,dx,dy,weight,weight_fact,acc;
+    float dist,dx,dy,weight,acc;//weight_fact,
     ofVec3f* glue_loc = &_host_particle->get_item_parameter<ofVec3f>("loc",this)->value;
     ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
     ofVec3f* _host_acc = &_host_particle->get_item_parameter<ofVec3f>("acc")->value;
@@ -58,10 +60,12 @@ void GravityGlue::run(Particle* _host_particle){
     //_host_particle->print_shared_var_names();
 
 
-    weight_fact = 0.1;
+    //weight_fact = get_item_parameter<float>("weigt")->value;
+    //weight_fact = 0.1;
     min_dist = 40;
 
-    weight = max_dist*weight_fact;
+    weight = 3 * max_dist * weight_fac.value;
+    //weight = max_dist*weight_fact;
 
     dist = glue_loc->distance(*_host_loc);
 

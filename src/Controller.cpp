@@ -40,6 +40,7 @@ void Controller::setup() {
     add_button("ctrl3");
     setup_button_parameter<int>("ctrl3",10,pair<int,int>(0,500));
     attach_button_parameter("ctrl3","rad");
+    attach_button_parameter("ctrl3","weight");
 }
 
 void Controller::notify_button_event(string button_name) {

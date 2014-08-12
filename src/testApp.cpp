@@ -27,7 +27,9 @@ void testApp::setup(){
     // e o comportamento "B_GravityGlue".
     Tag* t0 = world.create_tag();
     //t0->create_behavior("GravityGlue");
-    t0->create_behavior(typeid(GravityGlue*));
+    Behavior* b0 = t0->create_behavior(typeid(GravityGlue*));
+    b0->add_listener(cl, "ctrl3");
+
     t0->add_particles(world.particles.get_items_by_typeid(typeid(Circle*)));
     //t0->add_behavior("B_GravityGlue");
 

@@ -24,6 +24,7 @@ class GravityGlue : public Behavior{
         void free();
     private:
         string location_key;
+        Item_Parameter<float> weight_fac;
 };
 
 class MouseTracking : public Behavior{

@@ -149,7 +149,7 @@ class Item{
 
         /*
          *  Generic functions to manage with the shared 
-         *  variables container "var_ptr_map":
+         *  variables container "shared_variables_map":
          *  (set, get, erase)
          */
 
@@ -220,23 +220,12 @@ class Item{
             set_variable<Item_Parameter<T>>(var_name, var_ptr, host_item_ptr);
         }
 
-        template<typename T>
-        void set_event(string event_name, ofEvent<pair<shared_variable_key,Item_Parameter<T>>>* event_ptr=NULL, Item* host_item_ptr=NULL){
-            set_variable<ofEvent<pair<shared_variable_key,Item_Parameter<T>>>>(event_name, event_ptr, host_item_ptr);
-        }
-
-        template<typename T>
-        void set_ctrl(string event_name, pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<shared_variable_key,Item_Parameter<T>>>>>* ctrl_ptr=NULL, Item* host_item_ptr=NULL){
-            set_variable<pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<shared_variable_key,Item_Parameter<T>>>>>>(event_name, ctrl_ptr, host_item_ptr);
-        }
-
         template<typename U>
         U* get_variable(string var_name, Item* host_item_ptr=NULL,
              unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL){
             U* result = (U*)NULL;
 
             arg_t type_enum = type_info_2_arg_t(typeid(result));
-            shared_variable raw_value;
 
             if (host_item_ptr == NULL)
                 host_item_ptr = this;
@@ -245,24 +234,12 @@ class Item{
             
             unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it = shared_variables_map.find(key);
 
-            if(shvar_map_it == shared_variables_map.end()) {
-                // Element doesn't exists.
-                stringstream error_msg;
-                error_msg << "get undefined variable " << var_name;
-                cout << error_msg.str() << endl;
-                //throw runtime_error(error_msg.str());
-            } else {
+            if(shvar_map_it != shared_variables_map.end()) {
+                shared_variable& raw_value = shvar_map_it->second;
 
-                raw_value = shvar_map_it->second;
-
-                if( shvar_map_it->second.type_enum != type_enum) {// or type_enum == T_NULL) {
-                    // Element already exists with diferent arg_t.
-                    stringstream error_msg;
-                    error_msg << "arg_t(T_NULL):" << T_NULL << " invalid conversion from variable of arg_t: " <<
-                                 type_enum << " to arg_t: " << shvar_map_it->second.type_enum <<
-                                 "; variable name:" << var_name;
-                    cout << error_msg.str() << endl;
-                    //throw runtime_error(error_msg.str());
+                if( raw_value.type_enum == type_enum and type_enum != T_NULL) {
+                    result = static_cast<U*>(raw_value.value);
+                    //cout << result->value << endl;
                 } else if(type_enum == T_NULL) {
                     // Enumerator arg_t not defined for this type.
                     stringstream error_msg;
@@ -271,10 +248,21 @@ class Item{
                     //throw runtime_error(error_msg.str());
                     cout << error_msg.str() << endl;
                 }  else {
-                    result = static_cast<U*>(shvar_map_it->second.value);
-                    //cout << result->value << endl;
+                    // Element already exists with diferent arg_t.
+                    stringstream error_msg;
+                    error_msg << "Invalid conversion from variable of arg_t: " <<
+                                 type_enum << " to arg_t: " << raw_value.type_enum <<
+                                 "; variable name:" << var_name;
+                    cout << error_msg.str() << endl;
+                    //throw runtime_error(error_msg.str());
                 }
-            }
+            }// else {
+            //    // Element doesn't exists.
+            //    stringstream error_msg;
+            //    error_msg << "get undefined variable " << var_name;
+            //    cout << error_msg.str() << endl;
+            //    //throw runtime_error(error_msg.str());
+            //}
             return result;
         }
 
@@ -286,37 +274,16 @@ class Item{
             return get_variable<Item_Parameter<T>>(var_name, host_item_ptr);
         }
 
-        template<typename T>
-        ofEvent<pair<shared_variable_key,Item_Parameter<T>>>* get_event(string var_name, Item* host_item_ptr=NULL){
-            return get_variable<ofEvent<pair<shared_variable_key,Item_Parameter<T>>>>(var_name, host_item_ptr);
-        }
-
-        template<typename T>
-        pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<shared_variable_key,Item_Parameter<T>>>>>* get_ctrl(string event_name, Item* host_item_ptr=NULL){
-            return get_variable<pair<vector<string>, pair<Item_Parameter<T>,ofEvent<pair<shared_variable_key,Item_Parameter<T>>>>>>(event_name, host_item_ptr);
-        }
-
         void erase_variable(string var_name, Item* host_item_ptr=NULL,
              unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL);
 
         void clear_variables(unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL);
 
-        void erase_item_parameter(string var_name, Item* host_item_ptr=NULL);
-        
-        void erase_event(string var_name, Item* host_item_ptr=NULL);
-        
-        void erase_ctrl(string event_name, Item* host_item_ptr=NULL);
-
-        template<typename T>
-        void map_parameter(string var_name, Item_Parameter<T> param, Item* host_item_ptr=NULL){
-            if (typeid(T) == typeid(int) or typeid(T) == typeid(float) or typeid(T) == typeid(double)) {
-                Item_Parameter<T>* current_param = get_item_parameter<T>(var_name,host_item_ptr);
-                current_param->value = (param.value - param.range.first) *
-                                       (current_param->range.second - current_param->range.first) /
-                                       (param.range.second - param.range.first) + current_param->range.first;
-            } else {
-                set_item_parameter<T>(var_name,param,host_item_ptr);
-            }
+        template <typename T>
+        T map_parameter(Item_Parameter<T> current_var, Item_Parameter<T> input_var){
+            return (input_var.value - input_var.range.first) *
+                   (current_var.range.second - current_var.range.first) /
+                   (input_var.range.second - input_var.range.first) + current_var.range.first;
         }
 
         template<typename T>
@@ -351,12 +318,6 @@ class Item{
             return get_item_parameter<T>(var_key.first, var_key.second);
         }
 
-        //template<typename T>
-        void erase_item_parameter(pair<string,Item*>& var_key){
-            //erase_item_parameter<T>(var_key.first, var_key.second);
-            erase_item_parameter(var_key.first, var_key.second);
-        }
-
         template<typename T>
         void map_parameter(pair<shared_variable_key,Item_Parameter<T>>& name_value_pair){
             map_parameter<T>(name_value_pair.first.name, name_value_pair.second);
@@ -383,9 +344,9 @@ class Item{
 
     protected:
         /* 
-         * All the shared variables must be added to the "var_ptr_map" inside
+         * All the shared variables must be added to the "shared_variables_map" inside
          * the Item constructor or setup functions using the template function "add".
-         * The keys of the "var_ptr_map" are of type std::pair<string,Item*> with the name
+         * The keys of the "shared_variables_map" are of type shared_variable_key with the name
          * of the variable and a pointer to the Item object that has set the
          * variable. The Item* pointer allows the Items to add variables to each other 
          * with the same name without overwrite or delete them, preserving the unicity
@@ -393,7 +354,6 @@ class Item{
          * of the shared variables are added by the Item it self.
          */
 
-        //unordered_map<string,pair<void*,pair<arg_t,bool>>> var_ptr_map;
         unordered_map<shared_variable_key, shared_variable, shared_variable_hasher> shared_variables_map;
         vector<Button*> attached_buttons;
 

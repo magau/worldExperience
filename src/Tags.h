@@ -35,6 +35,9 @@ class Tag : public Item {
 
         void add_listener(Item* host_controller, string button_name);
         void remove_listener(string event_name, Item* host_ctrl_ptr);
+        void remove_attached_buttons();
+        void free_attached_buttons(Particle* particle);
+        void setup_attached_buttons(Particle* particle);
 };
 
 
