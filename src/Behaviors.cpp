@@ -17,7 +17,7 @@ string Behavior::get_type_name(){
 GravityGlue::GravityGlue() : Behavior(){
     set_name(get_type_name());
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
-    weight_fac = Item_Parameter<float>(0.1, pair<float,float> (0,1));
+    weight_fac = Item_Parameter<float>(0.1, pair<float,float> (0,5));
     set_variable("weight",&weight_fac,IP_FLOAT);
 }
 
@@ -64,7 +64,7 @@ void GravityGlue::run(Particle* _host_particle){
     //weight_fact = 0.1;
     min_dist = 40;
 
-    weight = 3 * max_dist * weight_fac.value;
+    weight = max_dist * weight_fac.value;
     //weight = max_dist*weight_fact;
 
     dist = glue_loc->distance(*_host_loc);

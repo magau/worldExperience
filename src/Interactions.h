@@ -29,8 +29,9 @@ class Electrical_Repulsion : public Interaction{
         Electrical_Repulsion();
         const type_info& get_typeid();
         string get_type_name();
-        void add_listener(string var_name);
         void interact(Particle* actuated_particle, Particle* _host_particle);
+    private:
+        Item_Parameter<float> weight_fac;
 };
 
 class Electrical_Attraction : public Interaction{

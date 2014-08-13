@@ -49,12 +49,13 @@ void testApp::setup(){
     // Adiciona à tag t1 uma interacção do tipo ElecticleRepulsion"
     //Interaction* i0 = t1->create_interaction("Electrical_Repulsion");
     Interaction* i0 = t1->create_interaction(typeid(Electrical_Repulsion*));
+    i0->add_listener(cl, "ctrl2");
     //Interaction* i0 = t1->add_interaction("I_WaveSource");
     // Adiciona a tag t0, que transporta consigo as particulas
     // da grelha, à interacção.
     i0->add_actuated_tag(t0);
 
-    t0->add_listener(cl, "ctrl3");
+    t0->add_listener(cl, "ctrl1");
  
 }
    

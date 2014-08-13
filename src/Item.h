@@ -86,7 +86,7 @@ struct shared_variable {
 static arg_t type_info_2_arg_t(const type_info& type_id){
     arg_t result = T_NULL;
 
-    if(type_id==typeid(ofEvent<pair<shared_variable_key,shared_variable>>*)){
+    if(type_id==typeid(ofEvent<pair<vector<shared_variable_key>,shared_variable>>*)){
         result = EVENT_SH_VAR;
     } else if(type_id==typeid(Item_Parameter<int>*)){
         result = IP_INT;
@@ -128,14 +128,21 @@ class Item{
 
         void iterate_attribute(string attr_name, bool forward);
 
-        void add_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event);
+        void add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event);
         void add_listener(Item* host_controller, string button_name);
 
-        void remove_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event);
+        void remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
         virtual void remove_listener(string event_name, Item* host_ctrl_ptr);
         virtual void remove_attached_buttons();
 
-        void map_event_parameter(pair<shared_variable_key, shared_variable>& received_var);
+        void map_event_contents(pair<vector<shared_variable_key>, shared_variable>& received_var);
+
+        template<typename IN_T, typename OUT_T>
+        Item_Parameter<OUT_T> cast_item_parameter(Item_Parameter<IN_T> input_ip){
+           return Item_Parameter<OUT_T> ((OUT_T)input_ip.value,
+                                         pair<OUT_T,OUT_T>((OUT_T)input_ip.range.first,
+                                                           (OUT_T)input_ip.range.second));
+        }
 
         /*
          *  The purpose of the "setup" function is to set and/or

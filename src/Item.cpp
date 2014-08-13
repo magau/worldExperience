@@ -57,7 +57,7 @@ void* Item::create_var_ptr(arg_t type_enum){
     void* var_ptr = NULL;
     switch (type_enum) {
         case EVENT_SH_VAR:
-            var_ptr = new ofEvent<pair<shared_variable_key,shared_variable>>;
+            var_ptr = new ofEvent<pair<vector<shared_variable_key>,shared_variable>>;
             break;
         case IP_INT:
             var_ptr = new Item_Parameter<int>;
@@ -90,7 +90,7 @@ void* Item::create_var_ptr(arg_t type_enum){
 void Item::erase_var_ptr(void* var_value, arg_t type_enum){
     switch (type_enum) {
         case EVENT_SH_VAR:
-            delete static_cast<ofEvent<pair<shared_variable_key,shared_variable>>*>(var_value); 
+            delete static_cast<ofEvent<pair<vector<shared_variable_key>,shared_variable>>*>(var_value); 
             break;
         case IP_INT:
             delete static_cast<Item_Parameter<int>*>(var_value); 
@@ -295,95 +295,101 @@ void Item::clear_variables(unordered_map <shared_variable_key, shared_variable, 
     shvar_map_ptr->clear();
 }
 
-void Item::map_event_parameter(pair<shared_variable_key, shared_variable>& received_var){
-    Item* host_item_ptr = received_var.first.host_item;
-    if (host_item_ptr == NULL)
-        host_item_ptr = this;
 
-    shared_variable current_var = get_variable(received_var.first.name,host_item_ptr);
-    shared_variable input_var = received_var.second;
+void Item::map_event_contents(pair<vector<shared_variable_key>, shared_variable>& received_var){
 
-    if(current_var.value != NULL) {
-        switch (input_var.type_enum) {
+    vector<shared_variable_key>::iterator key_it;
 
-            case IP_INT:
-            {
+    for(key_it = received_var.first.begin(); key_it != received_var.first.end(); key_it++){
 
-                Item_Parameter<int> input_ip = *static_cast<Item_Parameter<int>*>(input_var.value);
+        Item* host_item_ptr = key_it->host_item;
+        if (host_item_ptr == NULL)
+            host_item_ptr = this;
 
-                switch (current_var.type_enum) {
-                    case IP_INT:
-                    {
-                        Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var.value);
-                        current_ip->value = map_parameter<int>(*current_ip, input_ip);
-                        break;
+        shared_variable current_var = get_variable(key_it->name,host_item_ptr);
+
+        if(current_var.value != NULL) {
+
+            shared_variable input_var = received_var.second;
+
+            switch (input_var.type_enum) {
+
+                case IP_INT:
+                {
+
+                    Item_Parameter<int> input_ip = *static_cast<Item_Parameter<int>*>(input_var.value);
+
+                    switch (current_var.type_enum) {
+
+                        case IP_INT:
+                        {
+                            Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var.value);
+                            current_ip->value = map_parameter<int>(*current_ip, input_ip);
+                            break;
+                        }
+                        case IP_FLOAT:
+                        {
+                            Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var.value);
+                            Item_Parameter<float> cast_input_ip = cast_item_parameter<int,float>(input_ip);
+                            current_ip->value = map_parameter<float>(*current_ip, cast_input_ip);;
+                            break;
+                        }
+                        case T_NULL:
+                            cout << "arg_t not defined for this type!" << endl;
+                            break;
+                        default:
+                            cout << "arg_t not defined for this type!" << endl;
+                            break;
                     }
-                    case IP_FLOAT:
-                    {
-                        Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var.value);
-                        Item_Parameter<float> cast_input_ip((float)input_ip.value,
-                                                            pair<float,float>((float)input_ip.range.first,
-                                                                              (float)input_ip.range.second));
-                        current_ip->value = map_parameter<float>(*current_ip, cast_input_ip);;
-                        break;
-                    }
-                    case T_NULL:
-                        cout << "arg_t not defined for this type!" << endl;
-                        break;
-                    default:
-                        cout << "arg_t not defined for this type!" << endl;
-                        break;
+                    break;
                 }
-                break;
-            }
-            case IP_FLOAT:
-            {
+                case IP_FLOAT:
+                {
 
-                Item_Parameter<float> input_ip = *static_cast<Item_Parameter<float>*>(input_var.value);
+                    Item_Parameter<float> input_ip = *static_cast<Item_Parameter<float>*>(input_var.value);
 
-                switch (current_var.type_enum) {
-                    case IP_INT:
-                    {
-                        Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var.value);
-                        Item_Parameter<int> cast_input_ip((int)input_ip.value,
-                                                          pair<int,int>((int)input_ip.range.first,
-                                                                        (int)input_ip.range.second));
-                        current_ip->value = map_parameter<int>(*current_ip, cast_input_ip);;
-                        break;
+                    switch (current_var.type_enum) {
+                        case IP_INT:
+                        {
+                            Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var.value);
+                            Item_Parameter<int> cast_input_ip = cast_item_parameter<float,int>(input_ip);
+                            current_ip->value = map_parameter<int>(*current_ip, cast_input_ip);;
+                            break;
+                        }
+                        case IP_FLOAT:
+                        {
+                            Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var.value);
+                            current_ip->value = map_parameter<float>(*current_ip, input_ip);;
+                            break;
+                        }
+                        case T_NULL:
+                            cout << "arg_t not defined for this type!" << endl;
+                            break;
+                        default:
+                            cout << "arg_t not defined for this type!" << endl;
+                            break;
                     }
-                    case IP_FLOAT:
-                    {
-                        Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var.value);
-                        current_ip->value = map_parameter<float>(*current_ip, input_ip);;
-                        break;
-                    }
-                    case T_NULL:
-                        cout << "arg_t not defined for this type!" << endl;
-                        break;
-                    default:
-                        cout << "arg_t not defined for this type!" << endl;
-                        break;
+                    break;
                 }
-                break;
+                case T_NULL:
+                    cout << "arg_t not defined for this type!" << endl;
+                    break;
+                default:
+                    cout << "arg_t not defined for this type!" << endl;
+                    break;
             }
-            case T_NULL:
-                cout << "arg_t not defined for this type!" << endl;
-                break;
-            default:
-                cout << "arg_t not defined for this type!" << endl;
-                break;
         }
     }
 }
 
-void Item::add_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event){
-    ofAddListener( *event, this, & Item::map_event_parameter);
+void Item::add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event){
+    ofAddListener( *event, this, & Item::map_event_contents);
 }
 
 void Item::add_listener(Item* host_controller, string button_name) {
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
     if (button != NULL) {
-        ofEvent<pair<shared_variable_key, shared_variable>>* event = &(button->event);
+        ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event = &(button->event);
         if (event != NULL) {
             // Add button to attached_buttons (vector<Button*>).
             attached_buttons.push_back(button);
@@ -399,15 +405,16 @@ void Item::add_listener(Item* host_controller, string button_name) {
     }
 }
 
-void Item::remove_listener(ofEvent<pair<shared_variable_key, shared_variable>>* event){
-    ofRemoveListener( *event, this, & Item::map_event_parameter);
+void Item::remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event){
+    ofRemoveListener( *event, this, & Item::map_event_contents);
 }
 
 void Item::remove_listener(string button_name, Item* host_controller) {
     cout << "remove button from item..."<<endl;
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
     if (button != NULL) {
-        ofEvent<pair<shared_variable_key, shared_variable>>* event = &(button->event);
+        ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(button->event);
+
         if (event != NULL) {
             // Remove button from attached_buttons (vector<Button*>).
             vector<Button*>::iterator button_it = find(attached_buttons.begin(),attached_buttons.end(),button);
@@ -437,7 +444,7 @@ void Item::remove_attached_buttons() {
         vector<Item*>::iterator listener_it = find((*button_it)->listeners.begin(),(*button_it)->listeners.end(),this);
         if(listener_it != (*button_it)->listeners.end())
             (*button_it)->listeners.erase(listener_it);
-        ofEvent<pair<shared_variable_key, shared_variable>>* event = &((*button_it)->event);
+        ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &((*button_it)->event);
         if (event != NULL)
             remove_listener(event);
     }

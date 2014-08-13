@@ -215,7 +215,7 @@ void Tag::run(){
 void Tag::add_listener(Item* host_controller, string button_name) {
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
     if (button != NULL) {
-        ofEvent<pair<shared_variable_key, shared_variable>>* event = &(button->event);
+        ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event = &(button->event);
         if (event != NULL) {
             // Add button to attached_buttons (vector<Button*>).
             attached_buttons.push_back(button);
@@ -240,7 +240,7 @@ void Tag::remove_listener(string button_name, Item* host_controller) {
     cout << "remove button from tag..."<<endl;
     Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
     if (button != NULL) {
-        ofEvent<pair<shared_variable_key, shared_variable>>* event = &(button->event);
+        ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(button->event);
         if (event != NULL) {
             PointersVector<Particle*>::iterator iter_particle;
             for (iter_particle = particles.begin();
@@ -279,7 +279,7 @@ void Tag::remove_attached_buttons() {
         vector<Item*>::iterator listener_it = find((*button_it)->listeners.begin(),(*button_it)->listeners.end(),this);
         if(listener_it != (*button_it)->listeners.end())
             (*button_it)->listeners.erase(listener_it);
-        ofEvent<pair<shared_variable_key, shared_variable>>* event = &((*button_it)->event);
+        ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &((*button_it)->event);
         if (event != NULL) {
             PointersVector<Particle*>::iterator iter_particle;
             for (iter_particle = particles.begin();
@@ -298,7 +298,7 @@ void Tag::setup_attached_buttons(Particle* particle) {
     for (button_it = attached_buttons.begin();
          button_it != attached_buttons.end();
          button_it++){
-        ofEvent<pair<shared_variable_key, shared_variable>>* event = &((*button_it)->event);
+        ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &((*button_it)->event);
         if (event != NULL)
             particle->add_listener(event);
     }
@@ -309,7 +309,7 @@ void Tag::free_attached_buttons(Particle* particle) {
     for (button_it = attached_buttons.begin();
          button_it != attached_buttons.end();
          button_it++){
-        ofEvent<pair<shared_variable_key, shared_variable>>* event = &((*button_it)->event);
+        ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &((*button_it)->event);
         if (event != NULL)
             particle->remove_listener(event);
     }

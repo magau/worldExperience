@@ -37,34 +37,53 @@ void Controller::detach_button_parameter(string button_name, string parameter_na
 }
 
 void Controller::setup() {
+    add_button("ctrl1");
+    setup_button_parameter<int>("ctrl1",10,pair<int,int>(0,127));
+    attach_button_parameter("ctrl1","rad");
+
+    add_button("ctrl2");
+    setup_button_parameter<int>("ctrl2",10,pair<int,int>(0,127));
+    attach_button_parameter("ctrl2","weight");
+
     add_button("ctrl3");
-    setup_button_parameter<int>("ctrl3",10,pair<int,int>(0,500));
-    attach_button_parameter("ctrl3","rad");
+    setup_button_parameter<int>("ctrl3",10,pair<int,int>(0,127));
     attach_button_parameter("ctrl3","weight");
 }
 
 void Controller::notify_button_event(string button_name) {
     Button* button = static_cast<Button*>(get_variable(button_name).value);
-    for (typename vector<shared_variable_key>::iterator attached_var_it = button->attached_variables.begin();
-                                           attached_var_it != button->attached_variables.end();
-                                           attached_var_it++) {
-        shared_variable_key key = *attached_var_it;
-        shared_variable value = shared_variable(button->parameter,button->type_enum);
-        pair<shared_variable_key,shared_variable> sent_value(key, value);
-        ofNotifyEvent(button->event, sent_value);
-    }
+    shared_variable value = shared_variable(button->parameter,button->type_enum);
+    pair<vector<shared_variable_key>,shared_variable> sent_value(button->attached_variables, value);
+    ofNotifyEvent(button->event, sent_value);
 }
 
 
 void Controller::run() {
     if (get_variable("ctrl3").value != NULL){
-        if (ofGetKeyPressed('+')){
-            iterate_button_parameter<int>("ctrl3");
-            notify_button_event("ctrl3");
-        } else if (ofGetKeyPressed('-')){
-                
-            iterate_button_parameter<int>("ctrl3", true);
-            notify_button_event("ctrl3");
+        if (ofGetKeyPressed('1')) {
+            if (ofGetKeyPressed('+')){
+                iterate_button_parameter<int>("ctrl1");
+                notify_button_event("ctrl1");
+            } else if (ofGetKeyPressed('-')){
+                iterate_button_parameter<int>("ctrl1", true);
+                notify_button_event("ctrl1");
+            }
+        } else if (ofGetKeyPressed('2')){
+            if (ofGetKeyPressed('+')){
+                iterate_button_parameter<int>("ctrl2");
+                notify_button_event("ctrl2");
+            } else if (ofGetKeyPressed('-')){
+                iterate_button_parameter<int>("ctrl2", true);
+                notify_button_event("ctrl2");
+            }
+        } else if (ofGetKeyPressed('3')){
+            if (ofGetKeyPressed('+')){
+                iterate_button_parameter<int>("ctrl3");
+                notify_button_event("ctrl3");
+            } else if (ofGetKeyPressed('-')){
+                iterate_button_parameter<int>("ctrl3", true);
+                notify_button_event("ctrl3");
+            }
         }
     }
 }

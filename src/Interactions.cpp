@@ -40,6 +40,9 @@ void Interaction::remove_actuated_tag(Tag* tag){
 
 Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
+
+    weight_fac = Item_Parameter<float>(0.1, pair<float,float> (0,5));
+    set_variable("weight",&weight_fac,IP_FLOAT);
 }
 
 string Electrical_Repulsion::get_type_name(){
@@ -51,19 +54,14 @@ const type_info& Electrical_Repulsion::get_typeid() {
     return typeid(this);
 }
 
-void Electrical_Repulsion::add_listener(string attr_name) {
-    //ofEvent<bool>* new_event = new ofEvent<bool>;
-    //bool_events.add(new_event); 
-    //ofAddListener(_tag->bool_event,this,&iterate_attribute(attr_name,b));}
-}
-
 void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host_particle){
-    float dist,dx,dy,weight,weight_fact,acc;
+    float dist,dx,dy,weight,acc;//,weight_fact;
 
-    weight_fact = 0.2;
+    //weight_fact = 0.2;
     //weight_fact = 0.25;
 
-    weight = max_dist*weight_fact;
+    weight = max_dist * weight_fac.value;
+    //weight = max_dist*weight_fact;
 
     ofVec3f* actuated_loc = &actuated_particle->get_item_parameter<ofVec3f>("loc")->value;
     ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
