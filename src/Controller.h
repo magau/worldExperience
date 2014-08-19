@@ -43,6 +43,8 @@ class Controller : public Item {
             //button->type_enum = type_info_2_arg_t(typeid(Item_Parameter<T>*));
         }
 
+        void add_listener(string button_name, Item* listener);
+        void remove_listener(string button_name, Item* listener);
         void attach_button_parameter(string button_name, string parameter_name, Item* host_item = NULL);
         void detach_button_parameter(string button_name, string parameter_name, Item* host_item = NULL);
 

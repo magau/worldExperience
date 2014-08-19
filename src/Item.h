@@ -128,11 +128,10 @@ class Item{
 
         void iterate_attribute(string attr_name, bool forward);
 
+        virtual void set_listener(Button* button);
         void add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event);
-        void add_listener(Item* host_controller, string button_name);
-
+        virtual void remove_listener(Button* button);
         void remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
-        virtual void remove_listener(string event_name, Item* host_ctrl_ptr);
         virtual void remove_attached_buttons();
 
         void map_event_contents(pair<vector<shared_variable_key>, shared_variable>& received_var);

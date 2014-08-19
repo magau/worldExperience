@@ -14,7 +14,8 @@ void Controller::erase_button(string button_name){
              listener_it != button->listeners.begin();
              listener_it--){
              //cout << "Remove button:" << button_name << " from attaced listener:" << (*listener_it)->get_name() << endl;
-            (*listener_it)->remove_listener(button_name,this);
+            (*listener_it)->remove_listener(button);
+            //(*listener_it)->remove_listener(button_name,this);
         }
         //cout << "all attached items has be removed successfully." << endl;
     }
@@ -34,6 +35,37 @@ void Controller::detach_button_parameter(string button_name, string parameter_na
                                                                  button->attached_variables.end(),
                                                                  shared_variable_key(parameter_name,host_item)); 
     button->attached_variables.erase(attached_var_it);
+}
+
+void Controller::add_listener(string button_name, Item* listener){
+    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    if (button != NULL) {
+            // Add this to the button listeners vector<Items*>. 
+            button->listeners.push_back(listener);
+
+            // Add button to the listener attached_buttons (vector<Button*>)
+            // and add listener(s) to the button event.
+            listener->set_listener(button);
+    } else {
+        cout << "error: Invalid button name for Controller: " << get_name() << "." << endl;
+    }
+}
+
+void Controller::remove_listener(string button_name, Item* listener){
+    cout << "remove button from tag..."<<endl;
+    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    if (button != NULL) {
+        listener->remove_listener(button);
+        // Remove listener from the button listeners (vector<Items*>). 
+        //cout << "Remove tag:" << get_name() << " from the button listeners." << endl; 
+        vector<Item*>::iterator listener_it = find(button->listeners.begin(),button->listeners.end(),listener);
+        if(listener_it != button->listeners.end())
+            button->listeners.erase(listener_it);
+        //cout << "tag:" << get_name() << " removed sccessfully." << endl; 
+    } else {
+        cout << "error: Invalid button name for Controller: " << get_name() << "." << endl;
+    }
+
 }
 
 void Controller::setup() {

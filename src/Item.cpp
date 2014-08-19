@@ -386,51 +386,36 @@ void Item::add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variabl
     ofAddListener( *event, this, & Item::map_event_contents);
 }
 
-void Item::add_listener(Item* host_controller, string button_name) {
-    Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
-    if (button != NULL) {
-        ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event = &(button->event);
-        if (event != NULL) {
-            // Add button to attached_buttons (vector<Button*>).
-            attached_buttons.push_back(button);
-            // Add this to the button listeners (vector<Items*>). 
-            button->listeners.push_back(this);
-            add_listener(event);
-        } else {
-            cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
-        }
+void Item::set_listener(Button* button) {
 
+    ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event = &(button->event);
+    if (event != NULL) {
+        // Add button to attached_buttons (vector<Button*>).
+        attached_buttons.push_back(button);
+        add_listener(event);
     } else {
-        cout << "error: Invalid button name for Controller: " << host_controller->get_name() << "." << endl;
+        cout << "error: Missing button's event." << endl;
     }
 }
 
+void Item::remove_listener(Button* button) {
+    cout << "remove button from tag..."<<endl;
+    ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(button->event);
+    if (event != NULL) {
+        remove_listener(event);
+        // Remove button from attached_buttons (vector<Button*>).
+        //cout << "Remove button from the attached_buttons." << endl;
+        vector<Button*>::iterator button_it = find(attached_buttons.begin(),attached_buttons.end(),button);
+        if(button_it != attached_buttons.end())
+            attached_buttons.erase(button_it);
+        //cout << "tag:" << get_name() << " removed sccessfully." << endl; 
+    } else {
+        cout << "error: Missing button's event." << endl;
+    }
+    //cout << "exit tag.remove_listener..." << endl;
+}
 void Item::remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event){
     ofRemoveListener( *event, this, & Item::map_event_contents);
-}
-
-void Item::remove_listener(string button_name, Item* host_controller) {
-    cout << "remove button from item..."<<endl;
-    Button* button = static_cast<Button*>(host_controller->get_variable(button_name).value);
-    if (button != NULL) {
-        ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(button->event);
-
-        if (event != NULL) {
-            // Remove button from attached_buttons (vector<Button*>).
-            vector<Button*>::iterator button_it = find(attached_buttons.begin(),attached_buttons.end(),button);
-            if(button_it != attached_buttons.end())
-                attached_buttons.erase(button_it);
-            // Remove this from the button listeners (vector<Items*>). 
-            vector<Item*>::iterator listener_it = find(button->listeners.begin(),button->listeners.end(),this);
-            if(listener_it != button->listeners.end())
-                button->listeners.erase(listener_it);
-            remove_listener(event);
-        } else {
-            cout << "error: Invalid event name for Controller: " << host_controller->get_name() << "." << endl;
-        }
-    } else {
-        cout << "error: Invalid button name for Controller: " << host_controller->get_name() << "." << endl;
-    }
 }
 
 void Item::remove_attached_buttons() {
