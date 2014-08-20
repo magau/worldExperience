@@ -15,7 +15,6 @@ void Controller::erase_button(string button_name){
              listener_it--){
              //cout << "Remove button:" << button_name << " from attaced listener:" << (*listener_it)->get_name() << endl;
             (*listener_it)->remove_listener(button);
-            //(*listener_it)->remove_listener(button_name,this);
         }
         //cout << "all attached items has be removed successfully." << endl;
     }
