@@ -1,7 +1,7 @@
 #pragma once
 
-#include <typeinfo>
 #include "ofMain.h"
+#include <typeinfo>
 //#include <sstream>
 #include <algorithm>
 #include <boost/regex.hpp>

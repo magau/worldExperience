@@ -388,32 +388,46 @@ void Item::add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variabl
 
 void Item::set_listener(Button* button) {
 
-    ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event = &(button->event);
+    vector<Button::Button_Item>::iterator b_item_it;
+    for (b_item_it = button->attached_listeners.begin();
+         b_item_it != button->attached_listeners.end();
+         b_item_it++) { 
+        if (b_item_it->listener == this)
+            break;
+    }
+
+    if (b_item_it != button->attached_listeners.end()){
+
+        ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event = &(b_item_it->event);
+        if (event != NULL) {
+            // Add button to attached_buttons (vector<Button*>).
+            attached_buttons.push_back(button);
+            
+            add_listener(event);
+        } else {
+            cout << "error: Missing button's event." << endl;
+        }
+    }
+}
+
+void Item::remove_listener(Button* button, ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event) {
+    // Detache it self from the listeners of
+    // the respective event and remove the
+    // button of the attached buttons.
+
+    // Find the button on this item attached buttons:
+    vector<Button*>::iterator button_it = find(attached_buttons.begin(),attached_buttons.end(),button);
+    if(button_it != attached_buttons.end())
+        // Remove the button from this item attached buttons:
+        attached_buttons.erase(button_it);
+
     if (event != NULL) {
-        // Add button to attached_buttons (vector<Button*>).
-        attached_buttons.push_back(button);
-        add_listener(event);
+        remove_listener(event);
     } else {
         cout << "error: Missing button's event." << endl;
     }
 }
 
-void Item::remove_listener(Button* button) {
-    cout << "remove button from tag..."<<endl;
-    ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(button->event);
-    if (event != NULL) {
-        remove_listener(event);
-        // Remove button from attached_buttons (vector<Button*>).
-        //cout << "Remove button from the attached_buttons." << endl;
-        vector<Button*>::iterator button_it = find(attached_buttons.begin(),attached_buttons.end(),button);
-        if(button_it != attached_buttons.end())
-            attached_buttons.erase(button_it);
-        //cout << "tag:" << get_name() << " removed sccessfully." << endl; 
-    } else {
-        cout << "error: Missing button's event." << endl;
-    }
-    //cout << "exit tag.remove_listener..." << endl;
-}
 void Item::remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event){
     ofRemoveListener( *event, this, & Item::map_event_contents);
 }
@@ -426,12 +440,19 @@ void Item::remove_attached_buttons() {
          button_it != attached_buttons.end();
          button_it++){
         // Remove this item from the button listeners (vector<Items*>). 
-        vector<Item*>::iterator listener_it = find((*button_it)->listeners.begin(),(*button_it)->listeners.end(),this);
-        if(listener_it != (*button_it)->listeners.end())
-            (*button_it)->listeners.erase(listener_it);
-        ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &((*button_it)->event);
-        if (event != NULL)
-            remove_listener(event);
+        vector<Button::Button_Item>::iterator b_item_it;
+        for (b_item_it = (*button_it)->attached_listeners.begin();
+             b_item_it != (*button_it)->attached_listeners.end();
+             b_item_it++) { 
+            if (b_item_it->listener == this)
+                break;
+        }
+        if (b_item_it != (*button_it)->attached_listeners.end()){
+            ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(b_item_it->event);
+            if (event != NULL)
+                remove_listener(event);
+            (*button_it)->attached_listeners.erase(b_item_it);
+        }
     }
     attached_buttons.clear();
 }

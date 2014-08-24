@@ -28,7 +28,8 @@ void testApp::setup(){
     Tag* t0 = world.create_tag();
     //t0->create_behavior("GravityGlue");
     Behavior* b0 = t0->create_behavior(typeid(GravityGlue*));
-    cl->add_listener("ctrl3",b0);
+    //cl->add_listener("ctrl3",b0);
+    cl->attach_listener_parameter("ctrl3",b0,"weight");
 
     t0->add_particles(world.particles.get_items_by_typeid(typeid(Circle*)));
     //t0->add_behavior("B_GravityGlue");
@@ -49,13 +50,14 @@ void testApp::setup(){
     // Adiciona à tag t1 uma interacção do tipo ElecticleRepulsion"
     //Interaction* i0 = t1->create_interaction("Electrical_Repulsion");
     Interaction* i0 = t1->create_interaction(typeid(Electrical_Repulsion*));
-    cl->add_listener("ctrl2",i0);
+    //cl->add_listener("ctrl2",i0);
+    cl->attach_listener_parameter("ctrl2",i0,"weight");
     //Interaction* i0 = t1->add_interaction("I_WaveSource");
     // Adiciona a tag t0, que transporta consigo as particulas
     // da grelha, à interacção.
     i0->add_actuated_tag(t0);
 
-    cl->add_listener("ctrl1",t0);
+    cl->attach_listener_parameter("ctrl1",t0,"rad");
  
 }
    

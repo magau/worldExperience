@@ -1,5 +1,15 @@
+
+
 class Button : public Item{
     public:
+        class Button_Item{
+            public:
+                Button_Item(Item* new_listener){listener = new_listener;};
+                Item* listener;
+                vector<shared_variable_key> attached_variables;
+                ofEvent<pair<vector<shared_variable_key>,shared_variable>> event;
+        };
+
         Button() {
             type_enum = T_NULL;
             parameter = NULL;
@@ -20,10 +30,11 @@ class Button : public Item{
 
         void* parameter;
         arg_t type_enum;
-        //ofEvent<pair<shared_variable_key,shared_variable>> event;
         ofEvent<pair<vector<shared_variable_key>,shared_variable>> event;
         vector<shared_variable_key> attached_variables; 
         vector<Item*> listeners;
+        vector<Button_Item> attached_listeners;
+
 };
 
 class Controller : public Item {
@@ -43,6 +54,8 @@ class Controller : public Item {
             //button->type_enum = type_info_2_arg_t(typeid(Item_Parameter<T>*));
         }
 
+        void attach_listener_parameter(string button_name,Item* listener,string parameter_name,Item* host_item=NULL);
+        void detach_listener_parameter(string button_name,Item* listener,string parameter_name,Item* host_item=NULL);
         void add_listener(string button_name, Item* listener);
         void remove_listener(string button_name, Item* listener);
         void attach_button_parameter(string button_name, string parameter_name, Item* host_item = NULL);
@@ -58,6 +71,7 @@ class Controller : public Item {
                 parameter->value++;
         }
 
+        void notify_button_events(string button_name);
         void notify_button_event(string button_name);
         void erase_button(string button_name);
 

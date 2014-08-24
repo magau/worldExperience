@@ -5,22 +5,62 @@ void Controller::add_button(string button_name){
 }
 
 void Controller::erase_button(string button_name){
-    //cout << "remove button from controller..."<<endl;
     Button* button = static_cast<Button*>(get_variable(button_name).value);
     if (button->type_enum != T_NULL){
-        // Remove button event from attached tag.
-        vector<Item*>::iterator listener_it;
-        for (listener_it = button->listeners.end()-1;
-             listener_it != button->listeners.begin();
-             listener_it--){
-             //cout << "Remove button:" << button_name << " from attaced listener:" << (*listener_it)->get_name() << endl;
-            (*listener_it)->remove_listener(button);
+        vector<Button::Button_Item>::iterator b_item_it;
+        for (b_item_it = button->attached_listeners.end()-1;
+             b_item_it != button->attached_listeners.begin();
+             b_item_it--){
+            b_item_it->listener->remove_listener(button,&(b_item_it->event));
         }
-        //cout << "all attached items has be removed successfully." << endl;
     }
-    //cout << "delete button:" << button_name << endl;
     erase_variable(button_name);
-    //cout << "button deleted." << endl;
+}
+
+void Controller::attach_listener_parameter(string button_name,
+                                           Item* listener,
+                                           string parameter_name,
+                                           Item* host_item) {
+
+    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    vector<Button::Button_Item>::iterator b_item_it;
+    for (b_item_it = button->attached_listeners.begin();
+         b_item_it != button->attached_listeners.end();
+         b_item_it++) { 
+        if (b_item_it->listener == listener)
+            break;
+    }
+
+    if (b_item_it == button->attached_listeners.end()){
+        button->attached_listeners.push_back(Button::Button_Item(listener));
+        b_item_it = button->attached_listeners.end() - 1;
+    }
+
+    b_item_it->attached_variables.push_back(shared_variable_key(parameter_name,host_item));
+    listener->set_listener(button);
+}
+
+void Controller::detach_listener_parameter(string button_name,
+                                           Item* listener,
+                                           string parameter_name,
+                                           Item* host_item){
+
+    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    vector<Button::Button_Item>::iterator b_item_it;
+    for (b_item_it = button->attached_listeners.begin();
+         b_item_it != button->attached_listeners.end();
+         b_item_it++) { 
+        if (b_item_it->listener == listener)
+            break;
+    }
+
+    if (b_item_it != button->attached_listeners.end()){
+        vector<shared_variable_key>::iterator attached_var_it = find(button->attached_variables.begin(),
+                                                                     button->attached_variables.end(),
+                                                                     shared_variable_key(parameter_name,host_item)); 
+        b_item_it->attached_variables.erase(attached_var_it);
+    }
+
 }
 
 void Controller::attach_button_parameter(string button_name, string parameter_name, Item* host_item) {
@@ -54,13 +94,18 @@ void Controller::remove_listener(string button_name, Item* listener){
     cout << "remove button from tag..."<<endl;
     Button* button = static_cast<Button*>(get_variable(button_name).value);
     if (button != NULL) {
-        listener->remove_listener(button);
-        // Remove listener from the button listeners (vector<Items*>). 
-        //cout << "Remove tag:" << get_name() << " from the button listeners." << endl; 
-        vector<Item*>::iterator listener_it = find(button->listeners.begin(),button->listeners.end(),listener);
-        if(listener_it != button->listeners.end())
-            button->listeners.erase(listener_it);
-        //cout << "tag:" << get_name() << " removed sccessfully." << endl; 
+        vector<Button::Button_Item>::iterator b_item_it;
+        for (b_item_it = button->attached_listeners.begin();
+             b_item_it != button->attached_listeners.end();
+             b_item_it++) { 
+            if (b_item_it->listener == listener)
+                break;
+        }
+
+        if (b_item_it != button->attached_listeners.end()){
+            b_item_it->listener->remove_listener(button,&(b_item_it->event));
+            button->attached_listeners.erase(b_item_it);
+        }
     } else {
         cout << "error: Invalid button name for Controller: " << get_name() << "." << endl;
     }
@@ -81,6 +126,19 @@ void Controller::setup() {
     attach_button_parameter("ctrl3","weight");
 }
 
+void Controller::notify_button_events(string button_name) {
+    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    shared_variable value = shared_variable(button->parameter,button->type_enum);
+
+    vector<Button::Button_Item>::iterator b_item_it;
+    for (b_item_it = button->attached_listeners.begin();
+         b_item_it != button->attached_listeners.end();
+         b_item_it++) { 
+         pair<vector<shared_variable_key>,shared_variable> sent_value(b_item_it->attached_variables, value);
+         ofNotifyEvent(b_item_it->event, sent_value);
+    }
+}
+
 void Controller::notify_button_event(string button_name) {
     Button* button = static_cast<Button*>(get_variable(button_name).value);
     shared_variable value = shared_variable(button->parameter,button->type_enum);
@@ -94,26 +152,26 @@ void Controller::run() {
         if (ofGetKeyPressed('1')) {
             if (ofGetKeyPressed('+')){
                 iterate_button_parameter<int>("ctrl1");
-                notify_button_event("ctrl1");
+                notify_button_events("ctrl1");
             } else if (ofGetKeyPressed('-')){
                 iterate_button_parameter<int>("ctrl1", true);
-                notify_button_event("ctrl1");
+                notify_button_events("ctrl1");
             }
         } else if (ofGetKeyPressed('2')){
             if (ofGetKeyPressed('+')){
                 iterate_button_parameter<int>("ctrl2");
-                notify_button_event("ctrl2");
+                notify_button_events("ctrl2");
             } else if (ofGetKeyPressed('-')){
                 iterate_button_parameter<int>("ctrl2", true);
-                notify_button_event("ctrl2");
+                notify_button_events("ctrl2");
             }
         } else if (ofGetKeyPressed('3')){
             if (ofGetKeyPressed('+')){
                 iterate_button_parameter<int>("ctrl3");
-                notify_button_event("ctrl3");
+                notify_button_events("ctrl3");
             } else if (ofGetKeyPressed('-')){
                 iterate_button_parameter<int>("ctrl3", true);
-                notify_button_event("ctrl3");
+                notify_button_events("ctrl3");
             }
         }
     }
