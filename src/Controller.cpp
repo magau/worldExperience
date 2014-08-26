@@ -7,11 +7,11 @@ void Controller::add_button(string button_name){
 void Controller::erase_button(string button_name){
     Button* button = static_cast<Button*>(get_variable(button_name).value);
     if (button->type_enum != T_NULL){
-        vector<Button::Button_Item>::iterator b_item_it;
-        for (b_item_it = button->attached_listeners.end()-1;
-             b_item_it != button->attached_listeners.begin();
-             b_item_it--){
-            b_item_it->listener->remove_listener(button,&(b_item_it->event));
+        unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it;
+        for (b_item_map_it = button->listeners_map.begin();
+             b_item_map_it != button->listeners_map.end();
+             b_item_map_it++){
+             b_item_map_it->second.listener->remove_listener(button,&(b_item_map_it->second.event));
         }
     }
     erase_variable(button_name);
@@ -23,132 +23,68 @@ void Controller::attach_listener_parameter(string button_name,
                                            Item* host_item) {
 
     Button* button = static_cast<Button*>(get_variable(button_name).value);
-    vector<Button::Button_Item>::iterator b_item_it;
-    for (b_item_it = button->attached_listeners.begin();
-         b_item_it != button->attached_listeners.end();
-         b_item_it++) { 
-        if (b_item_it->listener == listener)
-            break;
+    unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it = button->listeners_map.find(listener);
+    if (b_item_map_it == button->listeners_map.end()){
+        Button::Button_Item new_button_item = Button::Button_Item(listener);
+        button->listeners_map[listener] = Button::Button_Item(listener);
+        listener->set_listener(button,&(button->listeners_map[listener].event));
     }
 
-    if (b_item_it == button->attached_listeners.end()){
-        button->attached_listeners.push_back(Button::Button_Item(listener));
-        b_item_it = button->attached_listeners.end() - 1;
-    }
-
-    b_item_it->attached_variables.push_back(shared_variable_key(parameter_name,host_item));
-    listener->set_listener(button);
+    button->listeners_map[listener].attached_variables.push_back(shared_variable_key(parameter_name,host_item));
 }
 
 void Controller::detach_listener_parameter(string button_name,
                                            Item* listener,
                                            string parameter_name,
-                                           Item* host_item){
+                                           Item* host_item) {
 
     Button* button = static_cast<Button*>(get_variable(button_name).value);
-    vector<Button::Button_Item>::iterator b_item_it;
-    for (b_item_it = button->attached_listeners.begin();
-         b_item_it != button->attached_listeners.end();
-         b_item_it++) { 
-        if (b_item_it->listener == listener)
-            break;
-    }
+    unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it = button->listeners_map.find(listener);
+    if (b_item_map_it != button->listeners_map.end()){
 
-    if (b_item_it != button->attached_listeners.end()){
-        vector<shared_variable_key>::iterator attached_var_it = find(button->attached_variables.begin(),
-                                                                     button->attached_variables.end(),
-                                                                     shared_variable_key(parameter_name,host_item)); 
-        b_item_it->attached_variables.erase(attached_var_it);
-    }
-
-}
-
-void Controller::attach_button_parameter(string button_name, string parameter_name, Item* host_item) {
-    Button* button = static_cast<Button*>(get_variable(button_name).value);
-    button->attached_variables.push_back(shared_variable_key(parameter_name,host_item));
-}
-
-void Controller::detach_button_parameter(string button_name, string parameter_name, Item* host_item) {
-    Button* button = static_cast<Button*>(get_variable(button_name).value);
-    vector<shared_variable_key>::iterator attached_var_it = find(button->attached_variables.begin(),
-                                                                 button->attached_variables.end(),
-                                                                 shared_variable_key(parameter_name,host_item)); 
-    button->attached_variables.erase(attached_var_it);
-}
-
-void Controller::add_listener(string button_name, Item* listener){
-    Button* button = static_cast<Button*>(get_variable(button_name).value);
-    if (button != NULL) {
-            // Add this to the button listeners vector<Items*>. 
-            button->listeners.push_back(listener);
-
-            // Add button to the listener attached_buttons (vector<Button*>)
-            // and add listener(s) to the button event.
-            listener->set_listener(button);
-    } else {
-        cout << "error: Invalid button name for Controller: " << get_name() << "." << endl;
-    }
-}
-
-void Controller::remove_listener(string button_name, Item* listener){
-    cout << "remove button from tag..."<<endl;
-    Button* button = static_cast<Button*>(get_variable(button_name).value);
-    if (button != NULL) {
-        vector<Button::Button_Item>::iterator b_item_it;
-        for (b_item_it = button->attached_listeners.begin();
-             b_item_it != button->attached_listeners.end();
-             b_item_it++) { 
-            if (b_item_it->listener == listener)
-                break;
+        vector<shared_variable_key>::iterator attached_var_it = find(b_item_map_it->second.attached_variables.begin(),
+                                                                     b_item_map_it->second.attached_variables.end(),
+                                                                     shared_variable_key(parameter_name,host_item));
+        if (attached_var_it != b_item_map_it->second.attached_variables.end()){
+            b_item_map_it->second.attached_variables.erase(attached_var_it);
+            if (b_item_map_it->second.attached_variables.size() == 0){
+                listener->remove_listener(button,&(b_item_map_it->second.event));
+                button->listeners_map.erase(b_item_map_it);
+            }
         }
-
-        if (b_item_it != button->attached_listeners.end()){
-            b_item_it->listener->remove_listener(button,&(b_item_it->event));
-            button->attached_listeners.erase(b_item_it);
-        }
-    } else {
-        cout << "error: Invalid button name for Controller: " << get_name() << "." << endl;
     }
-
 }
 
 void Controller::setup() {
     add_button("ctrl1");
     setup_button_parameter<int>("ctrl1",10,pair<int,int>(0,127));
-    attach_button_parameter("ctrl1","rad");
 
     add_button("ctrl2");
     setup_button_parameter<int>("ctrl2",10,pair<int,int>(0,127));
-    attach_button_parameter("ctrl2","weight");
 
     add_button("ctrl3");
     setup_button_parameter<int>("ctrl3",10,pair<int,int>(0,127));
-    attach_button_parameter("ctrl3","weight");
 }
 
 void Controller::notify_button_events(string button_name) {
     Button* button = static_cast<Button*>(get_variable(button_name).value);
     shared_variable value = shared_variable(button->parameter,button->type_enum);
 
-    vector<Button::Button_Item>::iterator b_item_it;
-    for (b_item_it = button->attached_listeners.begin();
-         b_item_it != button->attached_listeners.end();
-         b_item_it++) { 
-         pair<vector<shared_variable_key>,shared_variable> sent_value(b_item_it->attached_variables, value);
-         ofNotifyEvent(b_item_it->event, sent_value);
-    }
-}
+    unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it;
+    for (b_item_map_it = button->listeners_map.begin();
+         b_item_map_it != button->listeners_map.end();
+         b_item_map_it++){
 
-void Controller::notify_button_event(string button_name) {
-    Button* button = static_cast<Button*>(get_variable(button_name).value);
-    shared_variable value = shared_variable(button->parameter,button->type_enum);
-    pair<vector<shared_variable_key>,shared_variable> sent_value(button->attached_variables, value);
-    ofNotifyEvent(button->event, sent_value);
+         pair<vector<shared_variable_key>,shared_variable> sent_value(b_item_map_it->second.attached_variables, value);
+         ofNotifyEvent(b_item_map_it->second.event, sent_value);
+         //cout << ((b_item_map_it->second.attached_variables.end()-1)->name) << endl;
+    } 
 }
-
 
 void Controller::run() {
-    if (get_variable("ctrl3").value != NULL){
+    if (get_variable("ctrl1").value != NULL and
+        get_variable("ctrl2").value != NULL and
+        get_variable("ctrl3").value != NULL){
         if (ofGetKeyPressed('1')) {
             if (ofGetKeyPressed('+')){
                 iterate_button_parameter<int>("ctrl1");

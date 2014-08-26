@@ -39,6 +39,7 @@ void Interaction::remove_actuated_tag(Tag* tag){
 }
 
 Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
+    set_name(get_type_name());
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 
     weight_fac = Item_Parameter<float>(0.1, pair<float,float> (0,5));

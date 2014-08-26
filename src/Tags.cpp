@@ -212,38 +212,27 @@ void Tag::run(){
     }
 }
 
-void Tag::set_listener(Button* button) {
+void Tag::set_listener(Button* button, ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event) {
 
-    vector<Button::Button_Item>::iterator b_item_it;
-    for (b_item_it = button->attached_listeners.begin();
-         b_item_it != button->attached_listeners.end();
-         b_item_it++) { 
-        if (b_item_it->listener == this)
-            break;
-    }
+    if (event != NULL) {
+        // Add button to attached_buttons (vector<Button*>).
+        attached_buttons.push_back(button);
 
-    if (b_item_it != button->attached_listeners.end()){
-
-        ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event = &(b_item_it->event);
-        if (event != NULL) {
-            // Add button to attached_buttons (vector<Button*>).
-            attached_buttons.push_back(button);
-
-            PointersVector<Particle*>::iterator iter_particle;
-            for (iter_particle = particles.begin();
-                iter_particle != particles.end();
-                iter_particle++){
-                (*iter_particle)->add_listener(event);
-            }
-
-        } else {
-            cout << "error: Missing button's event." << endl;
+        PointersVector<Particle*>::iterator iter_particle;
+        for (iter_particle = particles.begin();
+            iter_particle != particles.end();
+            iter_particle++){
+            (*iter_particle)->add_listener(event);
         }
+
+    } else {
+        cout << "error: Missing button's event." << endl;
     }
+    
 }
 
 void Tag::remove_listener(Button* button, ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event) {
-    cout << "remove button from tag..."<<endl;
+    //cout << "remove button from tag..."<<endl;
     //ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(button->event);
     if (event != NULL) {
         PointersVector<Particle*>::iterator iter_particle;
@@ -267,17 +256,12 @@ void Tag::remove_attached_buttons() {
     for (button_it = attached_buttons.begin();
          button_it != attached_buttons.end();
          button_it++){
-        // Remove this tag from the button attached_listeners (vector<Button_Items>). 
-        vector<Button::Button_Item>::iterator b_item_it;
-        for (b_item_it = (*button_it)->attached_listeners.begin();
-             b_item_it != (*button_it)->attached_listeners.end();
-             b_item_it++) { 
-            if (b_item_it->listener == this)
-                break;
-        }
-        if (b_item_it != (*button_it)->attached_listeners.end()){
-            (*button_it)->attached_listeners.erase(b_item_it);
-            ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(b_item_it->event);
+
+        unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it = (*button_it)->listeners_map.find(this);
+        if (b_item_map_it != (*button_it)->listeners_map.end()){
+            ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(b_item_map_it->second.event);
+
+        // Remove this tag from the button attached listeners (unordered_map<Button_Items,Item*>). 
             if (event != NULL) {
                 PointersVector<Particle*>::iterator iter_particle;
                 for (iter_particle = particles.begin();
@@ -286,21 +270,8 @@ void Tag::remove_attached_buttons() {
                     (*iter_particle)->remove_listener(event);
                 }
             }
+            (*button_it)->listeners_map.erase(b_item_map_it);
         }
-
-        //vector<Item*>::iterator listener_it = find((*button_it)->listeners.begin(),(*button_it)->listeners.end(),this);
-        //if(listener_it != (*button_it)->listeners.end())
-        //    (*button_it)->listeners.erase(listener_it);
-        //ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &((*button_it)->event);
-        //if (event != NULL) {
-        //    PointersVector<Particle*>::iterator iter_particle;
-        //    for (iter_particle = particles.begin();
-        //        iter_particle != particles.end();
-        //        iter_particle++){
-        //        (*iter_particle)->remove_listener(event);
-        //        //cout<< "Remove listener from particle:" << (*iter_particle)->get_name() << endl;
-        //    }
-        //}
     }
     attached_buttons.clear();
 }
@@ -311,16 +282,9 @@ void Tag::setup_attached_buttons(Particle* particle) {
          button_it != attached_buttons.end();
          button_it++){
 
-        vector<Button::Button_Item>::iterator b_item_it;
-        for (b_item_it = (*button_it)->attached_listeners.begin();
-             b_item_it != (*button_it)->attached_listeners.end();
-             b_item_it++) { 
-            if (b_item_it->listener == this)
-                break;
-        }
-        if (b_item_it != (*button_it)->attached_listeners.end()){
- 
-            ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(b_item_it->event);
+        unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it = (*button_it)->listeners_map.find(this);
+        if (b_item_map_it != (*button_it)->listeners_map.end()){
+            ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(b_item_map_it->second.event);
             if (event != NULL)
                 particle->add_listener(event);
         }
@@ -332,8 +296,12 @@ void Tag::free_attached_buttons(Particle* particle) {
     for (button_it = attached_buttons.begin();
          button_it != attached_buttons.end();
          button_it++){
-        ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &((*button_it)->event);
-        if (event != NULL)
-            particle->remove_listener(event);
+
+        unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it = (*button_it)->listeners_map.find(this);
+        if (b_item_map_it != (*button_it)->listeners_map.end()){
+            ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event = &(b_item_map_it->second.event);
+            if (event != NULL)
+                particle->remove_listener(event);
+        }
     }
 }

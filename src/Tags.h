@@ -33,8 +33,8 @@ class Tag : public Item {
 
         void run();
 
-        void set_listener(Button* button);
-        //void remove_listener(Button* button);
+        //void set_listener(Button* button);
+        void set_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
         void remove_listener(Button* button, ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event);
         void remove_attached_buttons();
         void free_attached_buttons(Particle* particle);

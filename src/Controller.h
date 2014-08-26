@@ -4,15 +4,20 @@ class Button : public Item{
     public:
         class Button_Item{
             public:
+                Button_Item(){listener = NULL;};
                 Button_Item(Item* new_listener){listener = new_listener;};
                 Item* listener;
                 vector<shared_variable_key> attached_variables;
                 ofEvent<pair<vector<shared_variable_key>,shared_variable>> event;
         };
 
+
+
+
         Button() {
             type_enum = T_NULL;
             parameter = NULL;
+            
         }
 
         ~Button () {
@@ -30,10 +35,11 @@ class Button : public Item{
 
         void* parameter;
         arg_t type_enum;
-        ofEvent<pair<vector<shared_variable_key>,shared_variable>> event;
-        vector<shared_variable_key> attached_variables; 
-        vector<Item*> listeners;
-        vector<Button_Item> attached_listeners;
+        //ofEvent<pair<vector<shared_variable_key>,shared_variable>> event;
+        //vector<shared_variable_key> attached_variables; 
+        //vector<Item*> listeners;
+        //vector<Button_Item> attached_listeners;
+        unordered_map<Item*,Button::Button_Item> listeners_map;
 
 };
 
@@ -56,10 +62,6 @@ class Controller : public Item {
 
         void attach_listener_parameter(string button_name,Item* listener,string parameter_name,Item* host_item=NULL);
         void detach_listener_parameter(string button_name,Item* listener,string parameter_name,Item* host_item=NULL);
-        void add_listener(string button_name, Item* listener);
-        void remove_listener(string button_name, Item* listener);
-        void attach_button_parameter(string button_name, string parameter_name, Item* host_item = NULL);
-        void detach_button_parameter(string button_name, string parameter_name, Item* host_item = NULL);
 
         template<typename T>
         void iterate_button_parameter(string button_name, bool reverse=false) {
@@ -72,7 +74,6 @@ class Controller : public Item {
         }
 
         void notify_button_events(string button_name);
-        void notify_button_event(string button_name);
         void erase_button(string button_name);
 
 };

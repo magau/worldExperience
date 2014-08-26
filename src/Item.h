@@ -128,10 +128,10 @@ class Item{
 
         void iterate_attribute(string attr_name, bool forward);
 
-        virtual void set_listener(Button* button);
-        void add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event);
-        //virtual void remove_listener(Button* button);
+        //virtual void set_listener(Button* button);
+        virtual void set_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
         virtual void remove_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
+        void add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event);
         void remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
         virtual void remove_attached_buttons();
 
@@ -367,4 +367,10 @@ class Item{
 };
 
 
+struct item_hasher {
+    size_t operator()(const Item*& k) const {
+        using std::hash;
+        return hash<long unsigned int>()((long unsigned int)k);
+    }
+};
 

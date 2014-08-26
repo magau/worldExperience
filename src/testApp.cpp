@@ -29,7 +29,6 @@ void testApp::setup(){
     //t0->create_behavior("GravityGlue");
     Behavior* b0 = t0->create_behavior(typeid(GravityGlue*));
     //cl->add_listener("ctrl3",b0);
-    cl->attach_listener_parameter("ctrl3",b0,"weight");
 
     t0->add_particles(world.particles.get_items_by_typeid(typeid(Circle*)));
     //t0->add_behavior("B_GravityGlue");
@@ -58,6 +57,8 @@ void testApp::setup(){
     i0->add_actuated_tag(t0);
 
     cl->attach_listener_parameter("ctrl1",t0,"rad");
+    cl->attach_listener_parameter("ctrl1",b0,"weight");
+    cl->attach_listener_parameter("ctrl3",b0,"weight");
  
 }
    
