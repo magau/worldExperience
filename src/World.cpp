@@ -1,8 +1,11 @@
 #include "testApp.h"
 
-World :: World() {
+World :: World(){
     particles.set_main_container(true);
     tags.set_main_container(true);
+
+    camera.setPosition(ofVec3f(ofGetWindowWidth()/2, ofGetWindowHeight()/2, -700.f));
+    camera.lookAt(ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2 , 0), ofVec3f(0,-1,0));
 }
 
 Particle* World::create_particle(string iName, bool isActive){
@@ -16,10 +19,10 @@ Particle* World::create_particle(string iName, bool isActive){
     Particle* particle = nature.create_particle(iName);
     particle->set_world(this);
     if (isActive) {
-        particle->set_item_parameter<bool>("is_active",true);
+        particle->set_variable("is_active",Item_Parameter<bool>(true));
         particle->setup(); 
     } else {
-        particle->set_item_parameter<bool>("is_active",false);
+        particle->set_variable("is_active",Item_Parameter<bool>(false));
     }
     particles.push_back(particle);
 
@@ -37,10 +40,10 @@ Particle* World::create_particle(const type_info& particle_type, bool isActive){
     Particle* particle = nature.create_particle(particle_type);
     particle->set_world(this);
     if (isActive) {
-        particle->set_item_parameter<bool>("is_active",true);
+        particle->set_variable("is_active",Item_Parameter<bool>(true));
         particle->setup(); 
     } else {
-        particle->set_item_parameter<bool>("is_active",false);
+        particle->set_variable("is_active",Item_Parameter<bool>(false));
     }
     particles.push_back(particle);
 
@@ -51,10 +54,10 @@ Controller* World::create_controller(string iName, bool isActive) {
     Controller* controller = nature.create_controller(iName);
     controller->set_world(this);
     if (isActive) {
-        controller->set_item_parameter<bool>("is_active",true);
+        controller->set_variable("is_active",Item_Parameter<bool>(true));
         controller->setup(); 
     } else {
-        controller->set_item_parameter<bool>("is_active",false);
+        controller->set_variable("is_active",Item_Parameter<bool>(false));
     }
     controllers.push_back(controller);
 
@@ -65,10 +68,10 @@ Controller* World::create_controller(const type_info& controller_type, bool isAc
     Controller* controller = nature.create_controller(controller_type);
     controller->set_world(this);
     if (isActive) {
-        controller->set_item_parameter<bool>("is_active",true);
+        controller->set_variable("is_active",Item_Parameter<bool>(true));
         controller->setup(); 
     } else {
-        controller->set_item_parameter<bool>("is_active",false);
+        controller->set_variable("is_active",Item_Parameter<bool>(false));
     }
     controllers.push_back(controller);
 
@@ -150,6 +153,8 @@ PointersVector<Particle*>* World :: update(){
 }
 
 void World::draw(){
+    ofBackground(0);
+    camera.begin();
     for(PointersVector<Particle*>::iterator iter_particle = particles.begin();
                                     iter_particle != particles.end();
                                     iter_particle++){
@@ -157,4 +162,5 @@ void World::draw(){
         if ((*iter_particle)->visible.value)
             (*iter_particle)->display();
     }
+    camera.end();
 }

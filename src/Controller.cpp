@@ -25,7 +25,6 @@ void Controller::attach_listener_parameter(string button_name,
     Button* button = static_cast<Button*>(get_variable(button_name).value);
     unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it = button->listeners_map.find(listener);
     if (b_item_map_it == button->listeners_map.end()){
-        Button::Button_Item new_button_item = Button::Button_Item(listener);
         button->listeners_map[listener] = Button::Button_Item(listener);
         listener->set_listener(button,&(button->listeners_map[listener].event));
     }
@@ -57,13 +56,13 @@ void Controller::detach_listener_parameter(string button_name,
 
 void Controller::setup() {
     add_button("ctrl1");
-    setup_button_parameter<int>("ctrl1",10,pair<int,int>(0,127));
+    setup_button_parameter<int>("ctrl1",10,pair<int,int>(0,128));
 
     add_button("ctrl2");
-    setup_button_parameter<int>("ctrl2",10,pair<int,int>(0,127));
+    setup_button_parameter<int>("ctrl2",10,pair<int,int>(0,128));
 
     add_button("ctrl3");
-    setup_button_parameter<int>("ctrl3",10,pair<int,int>(0,127));
+    setup_button_parameter<int>("ctrl3",10,pair<int,int>(0,128));
 }
 
 void Controller::notify_button_events(string button_name) {

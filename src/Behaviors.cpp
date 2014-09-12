@@ -31,7 +31,8 @@ string GravityGlue::get_type_name(){
 };
 
 void GravityGlue::setup(Particle* _host_particle){
-    _host_particle->set_item_parameter<ofVec3f>("loc", *_host_particle->get_item_parameter<ofVec3f>("loc"), this);
+    //_host_particle->set_variable("loc",*_host_particle->get_item_parameter<ofVec3f>("loc"),this);
+    _host_particle->set_variable("loc",*(Item_Parameter<ofVec3f>*)(_host_particle->get_variable("loc").value),this);
 }
 
 //void GravityGlue::setup(){
@@ -88,8 +89,8 @@ void GravityGlue::run(Particle* _host_particle){
     //    _host_particle->locat.y > offset &&
     //    _host_particle->locat.y < ofGetWindowHeight() - offset ){
 
-    //_host_particle->set_float("relax_fact",0.7);
-    _host_particle->set_item_parameter<float>("relax",0.7);
+    //_host_particle->set_item_parameter<float>("relax",0.7);
+    _host_particle->set_variable("relax",Item_Parameter<float>(0.7));
     //}
 }
 

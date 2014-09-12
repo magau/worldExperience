@@ -56,9 +56,12 @@ void testApp::setup(){
     // da grelha, à interacção.
     i0->add_actuated_tag(t0);
 
+    World_Camera* c0 = &(world.camera);
+
     cl->attach_listener_parameter("ctrl1",t0,"rad");
     cl->attach_listener_parameter("ctrl1",b0,"weight");
     cl->attach_listener_parameter("ctrl3",b0,"weight");
+    cl->attach_listener_parameter("ctrl2",c0,"orbit_x");
  
 }
    
@@ -70,8 +73,6 @@ void testApp::update(){
    
 //--------------------------------------------------------------
 void testApp::draw(){
-
-    ofBackground(0);
     world.draw();
     //cl->run();
 

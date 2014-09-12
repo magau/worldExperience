@@ -179,7 +179,7 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
     wavePos.set(_host_loc->x + timer * dir.x, _host_loc->y + timer * dir.y);
     dist = actuated_loc->distance(wavePos);
     if (dist > max_dist) {
-        _host_particle->set_item_parameter<bool>("is_alive",Item_Parameter<bool>(false));
+        _host_particle->set_variable("is_alive",Item_Parameter<bool>(false));
     } else {
 
         if (dist < min_dist) dist = min_dist;

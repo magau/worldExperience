@@ -11,13 +11,13 @@ Particle :: Particle () : Item(){
     rad = Item_Parameter<int>(10, pair<int,int> (0,500));
     relax = Item_Parameter<float>(0);
     visible = Item_Parameter<bool>(true);
-    set_item_parameter<ofVec3f>("loc",&loc);
-    set_item_parameter<ofVec3f>("vel",&vel);
-    set_item_parameter<ofVec3f>("acc",&acc);
-    set_item_parameter<ofColor>("color",&color);
-    set_item_parameter<int>("rad",&rad);
-    set_item_parameter<float>("relax",&relax);
-    set_item_parameter<bool>("is_visible",&visible);
+    set_variable("loc",&loc,IP_VEC3F);
+    set_variable("vel",&vel,IP_VEC3F);
+    set_variable("acc",&acc,IP_VEC3F);
+    set_variable("color",&color,IP_COLOR);
+    set_variable("rad",&rad,IP_INT);
+    set_variable("relax",&relax,IP_FLOAT);
+    set_variable("is_visible",&visible,IP_BOOL);
 }
 
 Particle :: ~Particle (){

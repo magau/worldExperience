@@ -16,6 +16,8 @@ enum arg_t{
     IP_VEC3F,
     IP_COLOR,
 
+    CALLBACK,
+
     EVENT_SH_VAR,
 
     BUTTON
@@ -33,10 +35,17 @@ class Item_Parameter{
         Item_Parameter<T>(T val, pair<T,T> ran) {
            value = val;
            range = ran; 
+           delta = ran.second - ran.first;
+        }
+
+        void set_range(pair<T,T> ran) {
+           range = ran; 
+           delta = ran.second - ran.first;
         }
 
         T value;
         pair<T,T> range;
+        T delta;
 };
 
 struct shared_variable_key {
@@ -67,17 +76,27 @@ struct shared_variable_hasher {
 struct shared_variable {
 
     shared_variable(){
+        callback = NULL;
         value = NULL;
         type_enum = T_NULL;
         is_new = true;
     }
 
-    shared_variable(void* var_value, arg_t var_type_enum, bool var_is_new = true){
+    shared_variable(void* var_value, arg_t var_type_enum, bool var_is_new = false){
+        callback = NULL;
         value = var_value;
         type_enum = var_type_enum;
         is_new = var_is_new;
     }
 
+    shared_variable(void (Item::*item_callback)(shared_variable*)){
+        value = NULL;
+        callback = item_callback;
+        type_enum = CALLBACK;
+        is_new = false;
+    }
+
+    void (Item::*callback)(shared_variable*);
     void* value;
     arg_t type_enum;
     bool is_new;
@@ -129,10 +148,10 @@ class Item{
         void iterate_attribute(string attr_name, bool forward);
 
         //virtual void set_listener(Button* button);
-        virtual void set_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
-        virtual void remove_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
-        void add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event);
-        void remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
+        void set_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
+        void remove_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
+        virtual void add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event);
+        virtual void remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
         virtual void remove_attached_buttons();
 
         void map_event_contents(pair<vector<shared_variable_key>, shared_variable>& received_var);
@@ -175,7 +194,7 @@ class Item{
             if (shvar_map_it == shared_variables_map.end()) {
                 // Add new element.
                 U* new_var = new U(value);
-                shared_variables_map[key] = shared_variable(new_var,type_enum);
+                shared_variables_map[key] = shared_variable(new_var,type_enum,true);
                     
                 //cout << "add new variable:" << key.name << endl;
             } else if(shvar_map_it->second.type_enum != type_enum) {
@@ -219,9 +238,13 @@ class Item{
 
         void erase_var_ptr(void* var_value, arg_t type_enum);
 
-        void set_variable(string var_name, void* var_ptr=NULL, arg_t type_enum=T_NULL, Item* host_item_ptr=NULL,
+        void set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* host_item_ptr=NULL,
              unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL);
  
+        void set_callback(string var_name, void (Item::*item_callback)(shared_variable*),
+             Item* host_item_ptr=NULL,
+             unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL);
+
         template<typename T>
         void set_item_parameter(string var_name, Item_Parameter<T>* var_ptr, Item* host_item_ptr=NULL){
             set_variable<Item_Parameter<T>>(var_name, var_ptr, host_item_ptr);
@@ -286,11 +309,13 @@ class Item{
 
         void clear_variables(unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr=NULL);
 
+        void map_shv_parameter(shared_variable* current_var, shared_variable* input_var);
+
         template <typename T>
         T map_parameter(Item_Parameter<T> current_var, Item_Parameter<T> input_var){
             return (input_var.value - input_var.range.first) *
-                   (current_var.range.second - current_var.range.first) /
-                   (input_var.range.second - input_var.range.first) + current_var.range.first;
+                   (current_var.delta) /
+                   (input_var.delta) + current_var.range.first;
         }
 
         template<typename T>
@@ -334,6 +359,7 @@ class Item{
         void map_parameter(pair<string,Item_Parameter<T>>& name_value_pair){
             map_parameter<T>(name_value_pair.first, name_value_pair.second);
         }
+
 
         friend class Particle; 
         friend class World; 

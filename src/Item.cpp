@@ -78,9 +78,11 @@ void* Item::create_var_ptr(arg_t type_enum){
             var_ptr = new Button;
             break;
         case T_NULL:
+            var_ptr = NULL;
             cout << "Can't create new variable! arg_t not defined for this type!!" << endl;
             break;
         default:
+            var_ptr = NULL;
             cout << "Can't create new variable! arg_t not defined for this type!!" << endl;
             break;
     }
@@ -88,34 +90,36 @@ void* Item::create_var_ptr(arg_t type_enum){
 }
 
 void Item::erase_var_ptr(void* var_value, arg_t type_enum){
-    switch (type_enum) {
-        case EVENT_SH_VAR:
-            delete static_cast<ofEvent<pair<vector<shared_variable_key>,shared_variable>>*>(var_value); 
-            break;
-        case IP_INT:
-            delete static_cast<Item_Parameter<int>*>(var_value); 
-            break;
-        case IP_FLOAT:
-            delete static_cast<Item_Parameter<float>*>(var_value); 
-            break;
-        case IP_BOOL:
-            delete static_cast<Item_Parameter<bool>*>(var_value); 
-            break;
-        case IP_VEC3F:
-            delete static_cast<Item_Parameter<ofVec3f>*>(var_value); 
-            break;
-        case IP_COLOR:
-            delete static_cast<Item_Parameter<ofColor>*>(var_value); 
-            break;
-        case BUTTON:
-            delete static_cast<Button*>(var_value);
-            break;
-        case T_NULL:
-            cout << "arg_t not defined for this type!!" << endl;
-            break;
-        default:
-            cout << "arg_t not defined for this type!!" << endl;
-            break;
+    if (var_value != NULL) {
+        switch (type_enum) {
+            case EVENT_SH_VAR:
+                delete static_cast<ofEvent<pair<vector<shared_variable_key>,shared_variable>>*>(var_value); 
+                break;
+            case IP_INT:
+                delete static_cast<Item_Parameter<int>*>(var_value); 
+                break;
+            case IP_FLOAT:
+                delete static_cast<Item_Parameter<float>*>(var_value); 
+                break;
+            case IP_BOOL:
+                delete static_cast<Item_Parameter<bool>*>(var_value); 
+                break;
+            case IP_VEC3F:
+                delete static_cast<Item_Parameter<ofVec3f>*>(var_value); 
+                break;
+            case IP_COLOR:
+                delete static_cast<Item_Parameter<ofColor>*>(var_value); 
+                break;
+            case BUTTON:
+                delete static_cast<Button*>(var_value);
+                break;
+            case T_NULL:
+                cout << "arg_t not defined for this type!!" << endl;
+                break;
+            default:
+                cout << "arg_t not defined for this type!!" << endl;
+                break;
+        }
     }
 }
 
@@ -178,7 +182,59 @@ void Item::set_variable(string var_name, void* var_ptr, arg_t type_enum, Item* h
         } 
 
         shvar_map_it->second.value = var_ptr;
+        shvar_map_it->second.callback = NULL;
         shvar_map_it->second.is_new = is_new_var;
+    }
+
+}
+
+void Item::set_callback(string var_name, void (Item::*item_callback)(shared_variable*),
+           Item* host_item_ptr,
+           unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>* shvar_map_ptr){
+
+    arg_t type_enum = CALLBACK;
+
+    if (host_item_ptr == NULL)
+        host_item_ptr = this;
+    shared_variable_key key(var_name, host_item_ptr);
+
+    /*
+     * The input argument "shvar_map_ptr" can be used if
+     * independent containes are required for the base Item.
+     * The default container is the "shared_variables_map".
+     */ 
+    if (shvar_map_ptr == NULL)
+        shvar_map_ptr = &shared_variables_map;
+
+    unordered_map <shared_variable_key, shared_variable, shared_variable_hasher>::iterator shvar_map_it;
+    shvar_map_it = shvar_map_ptr->find(key);
+
+    if (shvar_map_it == shvar_map_ptr->end()) {
+        // Add element.
+        (*shvar_map_ptr)[key] = shared_variable(item_callback);
+
+        //cout << "add new variable:" << key.name << endl;
+    } else {
+        // Replace element.
+        //cout << "overwiting var:" << var_key << " value:" << old_var->value << endl;
+
+        if (shvar_map_it->second.is_new)
+            erase_var_ptr(shvar_map_it->second.value,shvar_map_it->second.type_enum);
+
+        if(shvar_map_it->second.type_enum != type_enum) {
+            // Element already exists with diferent arg_t.
+            stringstream error_msg;
+            error_msg << "Replacing variable of arg_t: " <<
+                         shvar_map_it->second.type_enum << " by other of arg_t: " << type_enum <<
+                         "; variable name: " << var_name;
+            //throw runtime_error(error_msg.str());
+            cout << error_msg.str() << endl;
+            shvar_map_it->second.type_enum = type_enum;
+        } 
+
+        shvar_map_it->second.value = NULL;
+        shvar_map_it->second.callback = item_callback;
+        shvar_map_it->second.is_new = false;
     }
 
 }
@@ -295,6 +351,74 @@ void Item::clear_variables(unordered_map <shared_variable_key, shared_variable, 
     shvar_map_ptr->clear();
 }
 
+void Item::map_shv_parameter(shared_variable* current_var, shared_variable* input_var) {
+    switch (input_var->type_enum) {
+
+        case IP_INT:
+        {
+
+            Item_Parameter<int> input_ip = *static_cast<Item_Parameter<int>*>(input_var->value);
+
+            switch (current_var->type_enum) {
+
+                case IP_INT:
+                {
+                    Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var->value);
+                    current_ip->value = map_parameter<int>(*current_ip, input_ip);
+                    break;
+                }
+                case IP_FLOAT:
+                {
+                    Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var->value);
+                    Item_Parameter<float> cast_input_ip = cast_item_parameter<int,float>(input_ip);
+                    current_ip->value = map_parameter<float>(*current_ip, cast_input_ip);;
+                    break;
+                }
+                case T_NULL:
+                    cout << "arg_t not defined for this type!" << endl;
+                    break;
+                default:
+                    cout << "arg_t not defined for this type!" << endl;
+                    break;
+            }
+            break;
+        }
+        case IP_FLOAT:
+        {
+
+            Item_Parameter<float> input_ip = *static_cast<Item_Parameter<float>*>(input_var->value);
+
+            switch (current_var->type_enum) {
+                case IP_INT:
+                {
+                    Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var->value);
+                    Item_Parameter<int> cast_input_ip = cast_item_parameter<float,int>(input_ip);
+                    current_ip->value = map_parameter<int>(*current_ip, cast_input_ip);;
+                    break;
+                }
+                case IP_FLOAT:
+                {
+                    Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var->value);
+                    current_ip->value = map_parameter<float>(*current_ip, input_ip);;
+                    break;
+                }
+                case T_NULL:
+                    cout << "arg_t not defined for this type!" << endl;
+                    break;
+                default:
+                    cout << "arg_t not defined for this type!" << endl;
+                    break;
+            }
+            break;
+        }
+        case T_NULL:
+            cout << "arg_t not defined for this type!" << endl;
+            break;
+        default:
+            cout << "arg_t not defined for this type!" << endl;
+            break;
+    }
+}
 
 void Item::map_event_contents(pair<vector<shared_variable_key>, shared_variable>& received_var){
 
@@ -309,78 +433,16 @@ void Item::map_event_contents(pair<vector<shared_variable_key>, shared_variable>
         shared_variable current_var = get_variable(key_it->name,host_item_ptr);
 
         if(current_var.value != NULL) {
-
             shared_variable input_var = received_var.second;
-
-            switch (input_var.type_enum) {
-
-                case IP_INT:
-                {
-
-                    Item_Parameter<int> input_ip = *static_cast<Item_Parameter<int>*>(input_var.value);
-
-                    switch (current_var.type_enum) {
-
-                        case IP_INT:
-                        {
-                            Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var.value);
-                            current_ip->value = map_parameter<int>(*current_ip, input_ip);
-                            break;
-                        }
-                        case IP_FLOAT:
-                        {
-                            Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var.value);
-                            Item_Parameter<float> cast_input_ip = cast_item_parameter<int,float>(input_ip);
-                            current_ip->value = map_parameter<float>(*current_ip, cast_input_ip);;
-                            break;
-                        }
-                        case T_NULL:
-                            cout << "arg_t not defined for this type!" << endl;
-                            break;
-                        default:
-                            cout << "arg_t not defined for this type!" << endl;
-                            break;
-                    }
-                    break;
-                }
-                case IP_FLOAT:
-                {
-
-                    Item_Parameter<float> input_ip = *static_cast<Item_Parameter<float>*>(input_var.value);
-
-                    switch (current_var.type_enum) {
-                        case IP_INT:
-                        {
-                            Item_Parameter<int>* current_ip = static_cast<Item_Parameter<int>*>(current_var.value);
-                            Item_Parameter<int> cast_input_ip = cast_item_parameter<float,int>(input_ip);
-                            current_ip->value = map_parameter<int>(*current_ip, cast_input_ip);;
-                            break;
-                        }
-                        case IP_FLOAT:
-                        {
-                            Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var.value);
-                            current_ip->value = map_parameter<float>(*current_ip, input_ip);;
-                            break;
-                        }
-                        case T_NULL:
-                            cout << "arg_t not defined for this type!" << endl;
-                            break;
-                        default:
-                            cout << "arg_t not defined for this type!" << endl;
-                            break;
-                    }
-                    break;
-                }
-                case T_NULL:
-                    cout << "arg_t not defined for this type!" << endl;
-                    break;
-                default:
-                    cout << "arg_t not defined for this type!" << endl;
-                    break;
-            }
+            map_shv_parameter(&current_var, &input_var);
+        } else if (current_var.callback != NULL) {
+            shared_variable input_var = received_var.second;
+            void (Item::*item_callback)(shared_variable*) = current_var.callback;
+            (this->*item_callback)(&input_var);
         }
     }
 }
+
 
 void Item::add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event){
     ofAddListener( *event, this, & Item::map_event_contents);
