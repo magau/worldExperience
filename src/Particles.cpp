@@ -8,7 +8,7 @@ Particle :: Particle () : Item(){
     vel = Item_Parameter<ofVec3f>(ofVec3f(0), pair<ofVec3f,ofVec3f> (ofVec3f(0),ofVec3f(0)));
     acc = Item_Parameter<ofVec3f>(ofVec3f(0), pair<ofVec3f,ofVec3f> (ofVec3f(0),ofVec3f(0)));
     color = Item_Parameter<ofColor>(ofColor(0), pair<ofColor,ofColor> (ofColor(0),ofColor(0)));
-    rad = Item_Parameter<int>(10, pair<int,int> (0,500));
+    rad = Item_Parameter<int>(10, pair<int,int>(0,100));
     relax = Item_Parameter<float>(0);
     visible = Item_Parameter<bool>(true);
     set_variable("loc",&loc,IP_VEC3F);
@@ -137,4 +137,23 @@ void Circle :: display() {
     int* rad_val = &rad.value;
     ofVec3f* loc_val = &loc.value;
     ofEllipse(loc_val->x,loc_val->y,*rad_val,*rad_val);
+}
+
+Line :: Line() : Particle(){
+    set_name(get_type_name());
+    color.value = ofColor(100,255,255);
+}
+
+const type_info& Line::get_typeid() {
+    return typeid(this);
+}
+
+string Line::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
+void Line :: display() {
+    ofSetColor(color.value);
+    points.draw();
 }

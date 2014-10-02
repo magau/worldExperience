@@ -56,13 +56,17 @@ void Controller::detach_listener_parameter(string button_name,
 
 void Controller::setup() {
     add_button("ctrl1");
-    setup_button_parameter<int>("ctrl1",10,pair<int,int>(0,128));
+    setup_button_parameter<int>("ctrl1",64,pair<int,int>(0,128));
 
     add_button("ctrl2");
-    setup_button_parameter<int>("ctrl2",10,pair<int,int>(0,128));
+    setup_button_parameter<int>("ctrl2",64,pair<int,int>(0,128));
 
     add_button("ctrl3");
     setup_button_parameter<int>("ctrl3",10,pair<int,int>(0,128));
+
+    add_button("switch4");
+    setup_button_parameter<bool>("switch4",True,pair<bool,bool>(True,False));
+
 }
 
 void Controller::notify_button_events(string button_name) {
@@ -81,34 +85,45 @@ void Controller::notify_button_events(string button_name) {
 }
 
 void Controller::run() {
-    if (get_variable("ctrl1").value != NULL and
-        get_variable("ctrl2").value != NULL and
-        get_variable("ctrl3").value != NULL){
-        if (ofGetKeyPressed('1')) {
-            if (ofGetKeyPressed('+')){
-                iterate_button_parameter<int>("ctrl1");
-                notify_button_events("ctrl1");
-            } else if (ofGetKeyPressed('-')){
-                iterate_button_parameter<int>("ctrl1", true);
-                notify_button_events("ctrl1");
-            }
-        } else if (ofGetKeyPressed('2')){
-            if (ofGetKeyPressed('+')){
-                iterate_button_parameter<int>("ctrl2");
-                notify_button_events("ctrl2");
-            } else if (ofGetKeyPressed('-')){
-                iterate_button_parameter<int>("ctrl2", true);
-                notify_button_events("ctrl2");
-            }
-        } else if (ofGetKeyPressed('3')){
-            if (ofGetKeyPressed('+')){
-                iterate_button_parameter<int>("ctrl3");
-                notify_button_events("ctrl3");
-            } else if (ofGetKeyPressed('-')){
-                iterate_button_parameter<int>("ctrl3", true);
-                notify_button_events("ctrl3");
-            }
+    if (ofGetKeyPressed('1')) {
+        if (ofGetKeyPressed('+')){
+            iterate_button_parameter<int>("ctrl1");
+            notify_button_events("ctrl1");
+        } if (ofGetKeyPressed('-')){
+            iterate_button_parameter<int>("ctrl1", true);
+            notify_button_events("ctrl1");
         }
+    }
+    if (ofGetKeyPressed('2')){
+        if (ofGetKeyPressed('+')){
+            iterate_button_parameter<int>("ctrl2");
+            notify_button_events("ctrl2");
+        } else if (ofGetKeyPressed('-')){
+            iterate_button_parameter<int>("ctrl2", true);
+            notify_button_events("ctrl2");
+        }
+    }
+    if (ofGetKeyPressed('3')){
+        if (ofGetKeyPressed('+')){
+            iterate_button_parameter<int>("ctrl3");
+            notify_button_events("ctrl3");
+        } else if (ofGetKeyPressed('-')){
+            iterate_button_parameter<int>("ctrl3", true);
+            notify_button_events("ctrl3");
+        }
+    }
+    if (ofGetKeyPressed('4')){
+        if (ofGetKeyPressed('+')){
+            iterate_button_parameter<bool>("switch4");
+            notify_button_events("switch4");
+        } else if (ofGetKeyPressed('-')){
+            iterate_button_parameter<bool>("switch4", true);
+            notify_button_events("switch4");
+        }
+
+        //Button* button = static_cast<Button*>(get_variable("switch4").value);
+        //Item_Parameter<bool>* parameter = static_cast<Item_Parameter<bool>*>(button->parameter);
+        //cout << "switch4 value:" << parameter->value << endl;
     }
 }
 

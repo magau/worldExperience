@@ -8,6 +8,8 @@ Particle* Items_Factory::create_particle(const type_info& item_typeid){
         newItem = new Particle();
     } else if (item_typeid == typeid(Circle*)){
         newItem = new Circle();
+    } else if (item_typeid == typeid(Line*)){
+        newItem = new Line();
     } else if (item_typeid == typeid(RegularGrid_MP*)){
         newItem = new RegularGrid_MP();
     }
@@ -30,6 +32,8 @@ Particle* Items_Factory::create_particle(string item_name){
         newItem = new Particle();
     } else if (item_name.compare("Circle") == 0){
         newItem = new Circle();
+    } else if (item_name.compare("Line") == 0){
+        newItem = new Line();
     } else if (item_name.compare("RegularGrid_MP") == 0){
         newItem = new RegularGrid_MP();
     }
@@ -94,6 +98,8 @@ Interaction* Items_Factory::create_interaction(const type_info& item_typeid){
         newItem = new Electrical_Attraction();
     } else if (item_typeid == typeid(Wave_Source*)){
         newItem = new Wave_Source();
+    } else if (item_typeid == typeid(DrawLine*)){
+        newItem = new DrawLine();
     }
     /*
      .
@@ -116,6 +122,8 @@ Interaction* Items_Factory::create_interaction(string item_name){
         newItem = new Electrical_Attraction();
     } else if (item_name.compare("WaveSource") == 0){
         newItem = new Wave_Source();
+    } else if (item_name.compare("DrawLine") == 0){
+        newItem = new DrawLine();
     }
     /*
      .

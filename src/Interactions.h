@@ -54,6 +54,21 @@ class Wave_Source : public Interaction{
         void run(Particle* _host_particle);
 };
 
+
+class DrawLine : public Interaction {
+    public:
+        DrawLine();
+        const type_info& get_typeid();
+        string get_type_name();
+        void interact(Particle* actuated_particle, Particle* _host_particle);
+        //void run(Particle* _host_particle);
+        //void setup();
+        //void setup(Particle* _host_particle);
+        //PointersVector<Particle*> lines;
+        //PointersVector<Tag*> lines_vertices;
+};
+
+
 /*
 class Interaction_IV : public Interaction{
     public:

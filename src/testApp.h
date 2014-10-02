@@ -20,6 +20,7 @@ using namespace tr1;
 #include "Particles_System.h"
 //#include "Particles_Manager.h"
 #include "Items_Factory.h"
+#include "World_Camera.h"
 #include "World.h"
 #include "Tags.h"
 

@@ -32,5 +32,12 @@ class Circle : public Particle{
         void display();
 };
 
-
+class Line : public Particle{
+    public:
+        Line();
+        const type_info& get_typeid();
+        string get_type_name();
+        void display();
+        ofPolyline points;
+};
 

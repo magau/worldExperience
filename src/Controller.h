@@ -67,10 +67,17 @@ class Controller : public Item {
         void iterate_button_parameter(string button_name, bool reverse=false) {
             Button* button = static_cast<Button*>(get_variable(button_name).value);
             Item_Parameter<T>* parameter = static_cast<Item_Parameter<T>*>(button->parameter);
-            if(reverse)
-                parameter->value = (((parameter->value - parameter->range.first - 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
-            else
-                parameter->value = (((parameter->value - parameter->range.first + 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
+            if(reverse){
+                if (typeid(T) == typeid(bool))
+                    parameter->value = False;
+                else
+                    parameter->value = (((parameter->value - parameter->range.first - 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
+            } else {
+                if (typeid(T) == typeid(bool))
+                    parameter->value = True;
+                else
+                    parameter->value = (((parameter->value - parameter->range.first + 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
+            }
         }
 
         void notify_button_events(string button_name);

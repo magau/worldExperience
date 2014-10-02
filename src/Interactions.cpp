@@ -206,3 +206,73 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
         //}
     } 
 }
+
+
+DrawLine::DrawLine() : Interaction(){
+    min_dist = 5;
+}
+
+string DrawLine::get_type_name(){
+    regex pattern ("^P?[0-9]*(.*)"); 
+    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
+};
+
+const type_info& DrawLine::get_typeid() {
+    return typeid(this);
+}
+
+void DrawLine :: interact(Particle* _actuated_particle, Particle*_host_particle){
+    //float dist,acc,size_ds;
+    //ofPoint ds, dir, wavePos;
+    Line* actuated_particle = (Line*)_actuated_particle;
+    ofVec3f _host_loc = _host_particle->get_item_parameter<ofVec3f>("loc")->value;
+    //ofVec3f* actuated_loc = &actuated_particle->get_item_parameter<ofVec3f>("loc")->value;
+    int npoints = actuated_particle->points.size();
+    if (npoints > 0){
+        ofVec3f end_point_loc = actuated_particle->points[npoints - 1];
+        if(_host_loc.distance(end_point_loc) > min_dist)
+            actuated_particle->points.addVertex(_host_loc);
+            //actuated_particle->points.simplify(1);
+    } else {
+        actuated_particle->points.addVertex(_host_loc);
+    }
+
+}
+//void DrawLine::setup(Particle* _host_particle){
+//     Item_Parameter<ofVec3f> _host_loc = *(Item_Parameter<ofVec3f>*)(_host_particle->get_variable("loc").value)
+//     //cout << "DrawLine: setup Particle" << endl;
+//     _host_particle->set_variable("loc", _host_loc, this);
+//}
+//
+//void DrawLine::setup(){
+//     //cout << "setup DrawLine" << endl;
+//     Tag* vertices = get_world()->create_tag();
+//     lines_vertices.push_back(vertices);
+//     //cout << "DrawLine: vertices tag created." << endl;
+//     //cout << vertices->get_name() << endl;
+//     Particle* vertex = get_world()->create_particle(typeid(Particle*));
+//     //cout << "DrawLine: first vertice particle created." << endl;
+//     vertices->add_particle(vertex);
+//     Line* line = (Line*)get_world()->create_particle(typeid(Line*));
+//     lines.push_back(line);
+//     //cout << "DrawLine: vertice added to vertices." << endl;
+//     line->points.addVertex(vertex->get_item_parameter<ofPoint>("loc")->value);
+//     //cout << "DrawLine: vertice added to line." << endl;
+//     Action::setup();
+//}
+
+
+//void DrawLine::run(Particle* _host_particle){
+//    //float dist;
+//    //ofVec3f* last_loc = &_host_particle->get_item_parameter<ofVec3f>("loc",this)->value;
+//    //ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
+//    //dist = last_loc->distance(*_host_loc);
+//    //if (dist > min_dist) { 
+//    //    Particle* p = get_world()->create_particle(typeid(Particle*));
+//    //    vertices->add_particle(p);
+//    //    line.addVertex(p->get_item_parameter<ofVec3f>("loc")->value);
+//    //    _host_particle->set_variable("loc",Item_Parameter<ofVec3f>(*_host_loc),this);
+//    //    //cout << "addVertex" << endl;
+//    //}
+//    //line.draw();
+//}

@@ -16,6 +16,9 @@ enum arg_t{
     IP_VEC3F,
     IP_COLOR,
 
+    INT,
+    FLOAT,
+
     CALLBACK,
 
     EVENT_SH_VAR,
@@ -37,6 +40,12 @@ class Item_Parameter{
            range = ran; 
            delta = ran.second - ran.first;
         }
+
+        Item_Parameter<T>(pair<T,T> ran) {
+           range = ran; 
+           delta = ran.second - ran.first;
+        }
+
 
         void set_range(pair<T,T> ran) {
            range = ran; 
@@ -119,7 +128,13 @@ static arg_t type_info_2_arg_t(const type_info& type_id){
         result = IP_COLOR;
     } else if(type_id==typeid(Button*)){
         result = BUTTON;
+    } else if(type_id==typeid(int*)){
+        result = INT;
+    } else if(type_id==typeid(float*)){
+        result = FLOAT;
     }
+
+
 
     //...
     return result;
@@ -147,10 +162,9 @@ class Item{
 
         void iterate_attribute(string attr_name, bool forward);
 
-        //virtual void set_listener(Button* button);
-        void set_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
+        virtual void set_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
         void remove_listener(Button* button, ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
-        virtual void add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event);
+        void add_listener(ofEvent<pair<vector<shared_variable_key>, shared_variable>>* event);
         virtual void remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_variable>>* event);
         virtual void remove_attached_buttons();
 
@@ -219,6 +233,15 @@ class Item{
                 //cout << "new value:" << value.value << endl;
             }
         }
+
+        //template<typename T>
+        //void iterate_item_parameter(string var_name, bool reverse=false) {
+        //    Item_Parameter<T>* parameter = get_item_parameter<T>(var_name);
+        //    if(reverse)
+        //        parameter->value = (((parameter->value - parameter->range.first - 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
+        //    else
+        //        parameter->value = (((parameter->value - parameter->range.first + 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
+        //}
 
         template<typename T>
         void set_item_parameter(string var_name, Item_Parameter<T> value, Item* host_item_ptr=NULL){

@@ -45,12 +45,19 @@ void testApp::setup(){
     t1->add_particle(p);
     //t1->create_behavior("MouseTracking");
     t1->create_behavior(typeid(MouseTracking*));
+    Particle* l = world.create_particle("Line");
+    Tag* t2 = world.create_tag();
+    t2->add_particle(l);
+    Interaction* i1 = t1->create_interaction("DrawLine");
+    i1->add_actuated_tag(t2);
+    //t1->create_behavior(typeid(DrawLine*));
 
     // Adiciona à tag t1 uma interacção do tipo ElecticleRepulsion"
     //Interaction* i0 = t1->create_interaction("Electrical_Repulsion");
     Interaction* i0 = t1->create_interaction(typeid(Electrical_Repulsion*));
+//cout << "Electrical_Repulsion interaction created." << endl;
     //cl->add_listener("ctrl2",i0);
-    cl->attach_listener_parameter("ctrl2",i0,"weight");
+//    cl->attach_listener_parameter("ctrl2",i0,"weight");
     //Interaction* i0 = t1->add_interaction("I_WaveSource");
     // Adiciona a tag t0, que transporta consigo as particulas
     // da grelha, à interacção.
@@ -58,11 +65,13 @@ void testApp::setup(){
 
     World_Camera* c0 = &(world.camera);
 
-    cl->attach_listener_parameter("ctrl1",t0,"rad");
-    cl->attach_listener_parameter("ctrl1",b0,"weight");
-    cl->attach_listener_parameter("ctrl3",b0,"weight");
-    cl->attach_listener_parameter("ctrl2",c0,"orbit_x");
- 
+    //cl->attach_listener_parameter("ctrl1",i0,"weight");
+    //cl->attach_listener_parameter("ctrl1",t0,"rad");
+    //cl->attach_listener_parameter("ctrl3",b0,"weight");
+    cl->attach_listener_parameter("ctrl1",c0,"pan");
+    cl->attach_listener_parameter("ctrl2",c0,"tilt");
+    cl->attach_listener_parameter("switch4",c0,"travel");
+//cout << "setup done." << endl; 
 }
    
 //--------------------------------------------------------------

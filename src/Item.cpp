@@ -77,6 +77,12 @@ void* Item::create_var_ptr(arg_t type_enum){
         case BUTTON:
             var_ptr = new Button;
             break;
+        case INT:
+            var_ptr = new int;
+            break;
+        case FLOAT:
+            var_ptr = new float;
+            break;
         case T_NULL:
             var_ptr = NULL;
             cout << "Can't create new variable! arg_t not defined for this type!!" << endl;
@@ -112,6 +118,12 @@ void Item::erase_var_ptr(void* var_value, arg_t type_enum){
                 break;
             case BUTTON:
                 delete static_cast<Button*>(var_value);
+                break;
+            case INT:
+                delete static_cast<int*>(var_value);
+                break;
+            case FLOAT:
+                delete static_cast<float*>(var_value);
                 break;
             case T_NULL:
                 cout << "arg_t not defined for this type!!" << endl;
@@ -263,7 +275,8 @@ shared_variable Item::get_variable(string var_name, Item* host_item_ptr,
 
     if(shvar_map_it != shvar_map_ptr->end()) {
         raw_value = shvar_map_it->second;
-    } //else {
+         
+    }//else {
     //    // Element doesn't exists.
     //    stringstream error_msg;
     //    error_msg << "get undefined variable: " << var_name;
