@@ -155,5 +155,6 @@ string Line::get_type_name(){
 
 void Line :: display() {
     ofSetColor(color.value);
+    ofSetLineWidth(3);
     points.draw();
 }

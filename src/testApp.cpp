@@ -42,14 +42,15 @@ void testApp::setup(){
     // Cria uma nova tag t1 à qual adiciona a particula vermelha
     // e o comportamento "B_MouseTracking".
     Tag* t1 = world.create_tag();
+    cout << t1->get_id() << endl;
     t1->add_particle(p);
     //t1->create_behavior("MouseTracking");
     t1->create_behavior(typeid(MouseTracking*));
-    Particle* l = world.create_particle("Line");
-    Tag* t2 = world.create_tag();
-    t2->add_particle(l);
-    Interaction* i1 = t1->create_interaction("DrawLine");
-    i1->add_actuated_tag(t2);
+    //Particle* l = world.create_particle("Line");
+    //Tag* t2 = world.create_tag();
+    //t2->add_particle(l);
+//    t1->create_interaction("DrawLine");
+    //i1->add_actuated_tag(t2);
     //t1->create_behavior(typeid(DrawLine*));
 
     // Adiciona à tag t1 uma interacção do tipo ElecticleRepulsion"
@@ -99,16 +100,14 @@ void testApp::keyPressed(int key){
 
      //managerInterface.listen(key);
      switch (key){
-    //     case 'd':{
-    //         Tag* t0 = world.tags.get_item_by_id(0);
-    //         pair<string,bool> attr("is_alive", false);
-    //         ofNotifyEvent(*(t0->get_event<pair<string,bool>>("e1")), attr);
-    //         break;}
-    //     case 'b':{
-    //         Tag* t0 = world.tags.get_item_by_id(0);
-    //         pair<string,ofColor> attr("color", ofColor(0,0,255));
-    //         ofNotifyEvent(*(t0->get_event<pair<string,ofColor>>("e2")), attr);
-    //         break;}
+         case 'r':{
+             Tag* t1 = world.tags.get_item_by_id(1);
+             t1->interactions.erase_items_by_typeid(typeid(DrawLine*));
+             break;}
+         case 'd':{
+             Tag* t1 = world.tags.get_item_by_id(1);
+             t1->create_interaction(typeid(DrawLine*));
+             break;}
     //     case 'g':{
     //         Tag* t0 = world.tags.get_item_by_id(0);
     //         pair<string,ofColor> attr("color", ofColor(0,255,0));

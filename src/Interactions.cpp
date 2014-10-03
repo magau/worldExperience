@@ -210,6 +210,18 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
 
 DrawLine::DrawLine() : Interaction(){
     min_dist = 5;
+    actuated_tags.push_back(get_world()->create_tag());
+}
+
+DrawLine::~DrawLine() {
+    PointersVector<Particle*>::iterator iter_particle;
+    for (iter_particle = (*actuated_tags.begin())->particles.begin();
+         iter_particle != (*actuated_tags.begin())->particles.end();
+         iter_particle++){
+
+        get_world()->remove_particle(*iter_particle);
+    }
+    get_world()->remove_tag(*(actuated_tags.begin()));
 }
 
 string DrawLine::get_type_name(){
@@ -238,11 +250,29 @@ void DrawLine :: interact(Particle* _actuated_particle, Particle*_host_particle)
     }
 
 }
-//void DrawLine::setup(Particle* _host_particle){
-//     Item_Parameter<ofVec3f> _host_loc = *(Item_Parameter<ofVec3f>*)(_host_particle->get_variable("loc").value)
-//     //cout << "DrawLine: setup Particle" << endl;
-//     _host_particle->set_variable("loc", _host_loc, this);
-//}
+
+void DrawLine::run(Particle* _host_particle){
+    PointersVector<Tag*>::iterator iter_tag;
+    PointersVector<Particle*>::iterator iter_particle;
+    Particle* actuated_particle = (Particle*)(_host_particle->get_variable("actuated_particle",this).value);
+    interact(actuated_particle, _host_particle);
+}
+
+void DrawLine::setup(Particle* _host_particle){
+     //Item_Parameter<ofVec3f> _host_loc = *(Item_Parameter<ofVec3f>*)(_host_particle->get_variable("loc").value)
+     Line* actuated_particle = (Line*)(get_world()->create_particle("Line"));
+     ofVec3f _host_loc = _host_particle->get_item_parameter<ofVec3f>("loc")->value;
+     actuated_particle->points.addVertex(_host_loc);
+     _host_particle->set_variable("actuated_particle",actuated_particle,PARTICLE,this);
+     (*actuated_tags.begin())->add_particle(actuated_particle);
+     //cout << "DrawLine: setup Particle" << endl;
+     //_host_particle->set_variable("loc", _host_loc, this);
+}
+
+void DrawLine::free(Particle* _host_particle){
+    _host_particle->erase_variable("actuated_particle",this);
+}
+
 //
 //void DrawLine::setup(){
 //     //cout << "setup DrawLine" << endl;

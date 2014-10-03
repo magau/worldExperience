@@ -83,6 +83,9 @@ void* Item::create_var_ptr(arg_t type_enum){
         case FLOAT:
             var_ptr = new float;
             break;
+        case PARTICLE:
+            var_ptr = new Particle;
+            break;
         case T_NULL:
             var_ptr = NULL;
             cout << "Can't create new variable! arg_t not defined for this type!!" << endl;
@@ -124,6 +127,9 @@ void Item::erase_var_ptr(void* var_value, arg_t type_enum){
                 break;
             case FLOAT:
                 delete static_cast<float*>(var_value);
+                break;
+            case PARTICLE:
+                delete static_cast<Particle*>(var_value);
                 break;
             case T_NULL:
                 cout << "arg_t not defined for this type!!" << endl;

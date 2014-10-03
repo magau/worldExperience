@@ -16,6 +16,8 @@ enum arg_t{
     IP_VEC3F,
     IP_COLOR,
 
+    PARTICLE,
+
     INT,
     FLOAT,
 
@@ -132,6 +134,8 @@ static arg_t type_info_2_arg_t(const type_info& type_id){
         result = INT;
     } else if(type_id==typeid(float*)){
         result = FLOAT;
+    } else if(type_id==typeid(Particle*)){
+        result = PARTICLE;
     }
 
 
