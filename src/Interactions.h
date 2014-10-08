@@ -58,12 +58,11 @@ class Wave_Source : public Interaction{
 class DrawLine : public Interaction {
     public:
         DrawLine();
-        ~DrawLine();
         const type_info& get_typeid();
         string get_type_name();
         void interact(Particle* actuated_particle, Particle* _host_particle);
         void run(Particle* _host_particle);
-        //void setup();
+        void setup();
         void setup(Particle* _host_particle);
         void free(Particle* host_particle);
         //PointersVector<Particle*> lines;

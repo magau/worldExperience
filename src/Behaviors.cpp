@@ -49,7 +49,9 @@ void GravityGlue::free(){
 }
 
 void GravityGlue::free(Particle* _host_particle){
+    cout << "call GravityGlue::free(Particle)" << endl;
     _host_particle->erase_variable("loc",this);
+    cout << "Particle free." << endl;
 }
 
 void GravityGlue::run(Particle* _host_particle){

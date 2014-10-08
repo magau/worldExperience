@@ -55,6 +55,11 @@ class testApp : public ofBaseApp{
            //Controller* cl;
   
            World world;
+
+           Particle* buffer_particle;
+           Tag* buffer_tag;
+           Interaction* buffer_interaction;
+           Behavior* buffer_behavior;
            //Manager_KeyboardInterface managerInterface;
             
 #ifdef SYPHON
