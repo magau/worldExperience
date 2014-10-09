@@ -237,11 +237,10 @@ void DrawLine :: interact(Particle* _actuated_particle, Particle*_host_particle)
 
 }
 
-void DrawLine::run(Particle* _host_particle){
-    PointersVector<Tag*>::iterator iter_tag;
-    PointersVector<Particle*>::iterator iter_particle;
-    Particle* actuated_particle = (Particle*)(_host_particle->get_variable("actuated_particle",this).value);
-    interact(actuated_particle, _host_particle);
+void DrawLine::setup(){
+    Tag* lines_tag = get_world()->create_tag();
+    actuated_tags.push_back(lines_tag);
+    Action::setup();
 }
 
 void DrawLine::setup(Particle* _host_particle){
@@ -253,22 +252,42 @@ void DrawLine::setup(Particle* _host_particle){
      //_host_particle->set_variable("loc", _host_loc, this);
 }
 
-void DrawLine::free(Particle* _host_particle){
-    _host_particle->erase_variable("actuated_particle",this);
-
+void DrawLine::run(Particle* _host_particle){
+    PointersVector<Tag*>::iterator iter_tag;
     PointersVector<Particle*>::iterator iter_particle;
-    for (iter_particle = actuated_tags[0]->particles.begin();
-         iter_particle != actuated_tags[0]->particles.end();
-         iter_particle++){
+    Particle* actuated_particle = (Particle*)(_host_particle->get_variable("actuated_particle",this).value);
+    interact(actuated_particle, _host_particle);
+}
+
+void DrawLine::free(){
+    //cout << "actuated_tags size:" << actuated_tags.size() << endl; 
+    //cout << "actuated_particle size:" << (*actuated_tags.begin())->particles.size() << endl; 
+    cout << "Call Action::free()." << endl;
+    Action::free();
+    cout << "Action::free() done." << endl;
+
+    cout << "Call DrawLine::free()." << endl;
+    PointersVector<Particle*>::iterator iter_particle;
+    //for (iter_particle = (*actuated_tags.begin())->particles.begin();
+    //     iter_particle != (*actuated_tags.begin())->particles.end();
+    //     iter_particle++){
+    for (iter_particle = (*actuated_tags.begin())->particles.end() - 1;
+         (*actuated_tags.begin())->particles.size() > 0;
+         iter_particle--){
 
         get_world()->remove_particle(*iter_particle);
     }
-    get_world()->remove_tag(actuated_tags[0]);
+    //get_world()->remove_tag(*actuated_tags.begin());
+    cout << "DrawLine::free() done." << endl;
+
 
 }
 
-void DrawLine::setup(){
-    Tag* lines_tag = get_world()->create_tag();
-    actuated_tags.push_back(lines_tag);
-    Action::setup();
+void DrawLine::free(Particle* _host_particle){
+
+    //cout << "free particle:" << _host_particle->get_name() << endl; 
+    _host_particle->erase_variable("actuated_particle",this);
+
 }
+
+

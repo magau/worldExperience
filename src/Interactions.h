@@ -64,6 +64,7 @@ class DrawLine : public Interaction {
         void run(Particle* _host_particle);
         void setup();
         void setup(Particle* _host_particle);
+        void free();
         void free(Particle* host_particle);
         //PointersVector<Particle*> lines;
         //PointersVector<Tag*> lines_vertices;

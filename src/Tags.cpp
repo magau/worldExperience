@@ -62,14 +62,16 @@ PointersVector<Particle*> Tag::get_particles_by_typeid(const type_info& particle
 }
 
 void Tag::remove_particle(Particle* particle){
-    // Free the particle variables seted by this tag's behaviors and interactions:
-    free_particle(particle);
-    // Remove the particle from this tag's particles container:
-    particles.erase_item_by_id(particle->get_id()); 
-    // Remove this tag from particle's tags container:
-    particle->tags.erase_item_by_id(id);
-    // Remove particle from this tag's attaced buttons event listeners:
-    free_attached_buttons(particle);
+    if (get_particle_by_id(particle->get_id()) != (Particle*)NULL) {
+        // Free the particle variables seted by this tag's behaviors and interactions:
+        free_particle(particle);
+        // Remove the particle from this tag's particles container:
+        particles.erase_item_by_id(particle->get_id()); 
+        // Remove this tag from particle's tags container:
+        particle->tags.erase_item_by_id(id);
+        // Remove particle from this tag's attaced buttons event listeners:
+        free_attached_buttons(particle);
+    }
 }
 
 void Tag::free_particle(Particle* particle){
