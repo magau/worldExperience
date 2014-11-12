@@ -8,12 +8,6 @@ const type_info& Behavior::get_typeid() {
     return typeid(this);
 }
 
-string Behavior::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
-
-
 GravityGlue::GravityGlue() : Behavior(){
     set_name(get_type_name());
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
@@ -24,11 +18,6 @@ GravityGlue::GravityGlue() : Behavior(){
 const type_info& GravityGlue::get_typeid() {
     return typeid(this);
 }
-
-string GravityGlue::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
 
 void GravityGlue::setup(Particle* _host_particle){
     //_host_particle->set_variable("loc",*_host_particle->get_item_parameter<ofVec3f>("loc"),this);
@@ -42,7 +31,7 @@ void GravityGlue::setup(Particle* _host_particle){
 void GravityGlue::free(){
     PointersVector<Particle*>::iterator iter_particle;
     for ( iter_particle = get_tag()->particles.begin();
-          iter_particle < get_tag()->particles.end();
+          iter_particle != get_tag()->particles.end();
           iter_particle++){
         free(*iter_particle);
     }
@@ -99,11 +88,6 @@ void GravityGlue::run(Particle* _host_particle){
 MouseTracking::MouseTracking() : Behavior(){
     set_name(get_type_name());
 }
-
-string MouseTracking::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
 
 const type_info& MouseTracking::get_typeid() {
     return typeid(this);

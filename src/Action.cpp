@@ -11,7 +11,7 @@ void Action::setup(){
         PointersVector<Particle*>* particles = &(get_tag()->particles);
         PointersVector<Particle*>::iterator iter_particle;
         for ( iter_particle = particles->begin();
-              iter_particle < particles->end();
+              iter_particle != particles->end();
               iter_particle++){
             setup(*iter_particle);
         }
@@ -23,7 +23,7 @@ void Action::free(){
         PointersVector<Particle*>* particles = &(get_tag()->particles);
         PointersVector<Particle*>::iterator iter_particle;
         for ( iter_particle = particles->begin();
-              iter_particle < particles->end();
+              iter_particle != particles->end();
               iter_particle++){
             free(*iter_particle);
         }

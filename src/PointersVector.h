@@ -119,7 +119,7 @@ typename vector<BaseTypePtr>::iterator PointersVector<BaseTypePtr>::erase(typena
 template <typename BaseTypePtr>
 void PointersVector<BaseTypePtr>::pop_back() {
     if (isMainContainer) {
-        if ( vector<BaseTypePtr>::back()->get_id() < vector<BaseTypePtr>::size() - 1 ) {
+        if ( vector<BaseTypePtr>::back()->get_id() < (int)vector<BaseTypePtr>::size() - 1 ) {
             freeIdBuff.push_back(vector<BaseTypePtr>::back()->get_id());
         }
         delete vector<BaseTypePtr>::back();
@@ -155,9 +155,9 @@ template <typename BaseTypePtr>
 void PointersVector<BaseTypePtr>::clear(){
     if (isMainContainer){
         typename vector<BaseTypePtr>::iterator item_it; 
-        for (item_it = vector<BaseTypePtr>::end() - 1;
-             item_it >= vector<BaseTypePtr>::begin();
-             item_it--){
+        for (item_it = vector<BaseTypePtr>::begin();
+             item_it < vector<BaseTypePtr>::end();
+             item_it++){
             delete *item_it;
         }
         freeIdBuff.clear();

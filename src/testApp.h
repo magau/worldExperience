@@ -8,6 +8,7 @@
 using namespace boost;
 #include <tr1/unordered_map> 
 using namespace tr1;
+using namespace std;
 #include "math.h"
 #include "PointersVector.h"
 #include "ofxMidi.h"

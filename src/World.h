@@ -15,6 +15,7 @@ class World {
         PointersVector<Particle*> get_particle_by_typeid(const type_info& particle_typeid);
         Particle* get_particle_by_id(int particle_id);
         void remove_particle(Particle* particle_ptr);
+        void remove_particles(PointersVector<Particle*>* particles);
         PointersVector<Particle*>* update();
         void draw();
 };

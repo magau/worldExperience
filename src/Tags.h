@@ -6,6 +6,8 @@ class Tag : public Item {
         PointersVector<Behavior*> behaviors;
         Tag (World* _world);
         ~Tag();
+
+        const type_info& get_typeid();
         void add_particle(Particle* particle);
         void add_particles(PointersVector<Particle*> added_particles);
         Particle* get_particle_by_id(int particle_id);

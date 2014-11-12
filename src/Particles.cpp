@@ -23,7 +23,7 @@ Particle :: Particle () : Item(){
 Particle :: ~Particle (){
     PointersVector<Tag*>::iterator iter_tag;
     for (iter_tag = tags.begin();
-         iter_tag < tags.end();
+         iter_tag != tags.end();
          iter_tag++){
         (*iter_tag)->remove_particle(this);
     }
@@ -47,11 +47,6 @@ void Particle::display() {}
 const type_info& Particle::get_typeid() {
     return typeid(this);
 }
-
-string Particle::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
 
 void Particle :: update() {
     vel.value += acc.value;
@@ -124,11 +119,6 @@ const type_info& Circle::get_typeid() {
     return typeid(this);
 }
 
-string Circle::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
-
 void Circle :: display() {
     //ofColor(...);
     //ofFill();
@@ -147,11 +137,6 @@ Line :: Line() : Particle(){
 const type_info& Line::get_typeid() {
     return typeid(this);
 }
-
-string Line::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
 
 void Line :: display() {
     ofSetColor(color.value);

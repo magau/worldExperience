@@ -11,7 +11,6 @@ class Particle : public Item {
         Particle ();
         ~Particle();
 
-        virtual string get_type_name();
         virtual void setup();
         virtual void run();
         virtual void update();
@@ -28,7 +27,6 @@ class Circle : public Particle{
     public:
         Circle ();
         const type_info& get_typeid();
-        string get_type_name();
         void display();
 };
 
@@ -36,7 +34,6 @@ class Line : public Particle{
     public:
         Line();
         const type_info& get_typeid();
-        string get_type_name();
         void display();
         ofPolyline points;
 };

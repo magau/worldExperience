@@ -1,6 +1,7 @@
 #include "testApp.h"
 
 Tag::Tag (World* _world){
+    set_name(get_type_name());
     particles.set_main_container(false);
     behaviors.set_main_container(true);
     interactions.set_main_container(true);
@@ -8,12 +9,17 @@ Tag::Tag (World* _world){
 }
 
 Tag::~Tag (){
-    remove_particles();    
     remove_behaviors();
     remove_interactions();
+    remove_particles();    
     clear_variables();
     remove_attached_buttons();
 }
+
+const type_info& Tag::get_typeid() {
+    return typeid(this);
+}
+
 
 void Tag::add_particle(Particle* particle){
     // Add this tag to particle's tags container:
@@ -96,10 +102,19 @@ void Tag::remove_particles(PointersVector<Particle*>* particles_selection){
     if (particles_selection == NULL)
         particles_selection = &particles;
     PointersVector<Particle*>::iterator iter_particle;
-    for (iter_particle = particles_selection->begin();
-         iter_particle < particles_selection->end();
-         iter_particle++){
-        remove_particle(*iter_particle);
+    for (iter_particle = particles_selection->end() - 1;
+         iter_particle >= particles_selection->begin();
+         iter_particle--){
+        // Free the particle variables seted by this tag's behaviors and interactions:
+        free_particle(*iter_particle);
+        // Remove the particle from this tag's particles container:
+        particles_selection->pop_back();
+        if (particles_selection != &particles)
+            particles.erase_item_by_id((*iter_particle)->get_id()); 
+        // Remove this tag from particle's tags container:
+        (*iter_particle)->tags.erase_item_by_id(id);
+        // Remove particle from this tag's attaced buttons event listeners:
+        free_attached_buttons(*iter_particle);
     }
 }
 

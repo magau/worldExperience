@@ -58,6 +58,9 @@ void testApp::setup(){
     //Particle* l = world.create_particle("Line");
     //Tag* t2 = world.create_tag();
     //t2->add_particle(l);
+
+    buffer_tag = world.create_tag();
+    buffer_tag->add_particle(buffer_particle);
     buffer_interaction = buffer_tag->create_interaction("DrawLine");
     //buffer_tag->create_interaction(typeid(DrawLine*));
     //i1->add_actuated_tag(t2);
@@ -100,18 +103,28 @@ void testApp::keyPressed(int key){
 
      //managerInterface.listen(key);
      switch (key){
+         case 's':{
+             buffer_tag->interactions.show_items_name_and_id();
+             break;}
          case 'r':{
-             //buffer_tag->interactions.erase_items_by_typeid(typeid(DrawLine*));
-             //buffer_tag->interactions.erase_item_by_id(1);
 
-             if(buffer_tag->interactions.size() > 0)
-                 buffer_tag->remove_interaction(buffer_interaction);
-
-             if(buffer_tag->interactions.size() > 0)
-                 buffer_interaction = *(buffer_tag->interactions.end()-1);
+             if(buffer_tag->particles.size() > 0)
+                 buffer_tag->remove_particle(buffer_particle);
 
              break;}
          case 'd':{
+
+             buffer_tag->add_particle(buffer_particle);
+              break;}
+         case 'c':{
+
+             if(buffer_tag->interactions.size() > 0) {
+                 buffer_tag->remove_interaction(buffer_interaction);
+                 if(buffer_tag->interactions.size() > 0)
+                     buffer_interaction = *(buffer_tag->interactions.end()-1);
+             }
+             break;}
+         case 'a':{
 
              buffer_interaction = buffer_tag->create_interaction("DrawLine");
 

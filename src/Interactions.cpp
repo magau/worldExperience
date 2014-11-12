@@ -3,11 +3,6 @@
 Interaction::Interaction() : Action() {
 }
 
-string Interaction::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
-
 const type_info& Interaction::get_typeid() {
     return typeid(this);
 }
@@ -18,7 +13,7 @@ void Interaction::run(Particle* _host_particle){
     PointersVector<Tag*>::iterator iter_tag;
     PointersVector<Particle*>::iterator iter_particle;
     for (iter_tag = actuated_tags.begin();
-         iter_tag < actuated_tags.end();
+         iter_tag != actuated_tags.end();
          iter_tag++ ){
 
         for (iter_particle = (*iter_tag)->particles.begin();
@@ -45,11 +40,6 @@ Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
     weight_fac = Item_Parameter<float>(0.1, pair<float,float> (0,5));
     set_variable("weight",&weight_fac,IP_FLOAT);
 }
-
-string Electrical_Repulsion::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
 
 const type_info& Electrical_Repulsion::get_typeid() {
     return typeid(this);
@@ -104,11 +94,6 @@ Electrical_Attraction::Electrical_Attraction() : Interaction(){
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
 }
 
-string Electrical_Attraction::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
-
 const type_info& Electrical_Attraction::get_typeid() {
     return typeid(this);
 }
@@ -149,11 +134,6 @@ Wave_Source::Wave_Source() : Interaction(){
     timer = 0;
     wave_speed = 5;
 }
-
-string Wave_Source::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
 
 const type_info& Wave_Source::get_typeid() {
     return typeid(this);
@@ -213,11 +193,6 @@ DrawLine::DrawLine() : Interaction(){
     min_dist = 5;
 }
 
-string DrawLine::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
-
 const type_info& DrawLine::get_typeid() {
     return typeid(this);
 }
@@ -247,46 +222,46 @@ void DrawLine::setup(Particle* _host_particle){
      Line* actuated_particle = (Line*)(get_world()->create_particle("Line"));
      ofVec3f _host_loc = _host_particle->get_item_parameter<ofVec3f>("loc")->value;
      actuated_particle->points.addVertex(_host_loc);
-     _host_particle->set_variable("actuated_particle",actuated_particle,PARTICLE,this);
+     _host_particle->set_variable("act_part",actuated_particle,PARTICLE,this);
      (*actuated_tags.begin())->add_particle(actuated_particle);
      //_host_particle->set_variable("loc", _host_loc, this);
 }
 
 void DrawLine::run(Particle* _host_particle){
-    PointersVector<Tag*>::iterator iter_tag;
-    PointersVector<Particle*>::iterator iter_particle;
-    Particle* actuated_particle = (Particle*)(_host_particle->get_variable("actuated_particle",this).value);
-    interact(actuated_particle, _host_particle);
+    //PointersVector<Tag*>::iterator iter_tag;
+    //PointersVector<Particle*>::iterator iter_particle;
+    Particle* actuated_particle = (Particle*)(_host_particle->get_variable("act_part",this).value);
+    if (actuated_particle != (Particle*)NULL){
+        interact(actuated_particle, _host_particle);
+    //}else{
+    //    setup(_host_particle);
+    //    actuated_particle = (Particle*)(_host_particle->get_variable("act_part",this).value);
+    //    interact(actuated_particle, _host_particle);
+    }
 }
 
 void DrawLine::free(){
     //cout << "actuated_tags size:" << actuated_tags.size() << endl; 
     //cout << "actuated_particle size:" << (*actuated_tags.begin())->particles.size() << endl; 
-    cout << "Call Action::free()." << endl;
     Action::free();
-    cout << "Action::free() done." << endl;
 
-    cout << "Call DrawLine::free()." << endl;
-    PointersVector<Particle*>::iterator iter_particle;
-    //for (iter_particle = (*actuated_tags.begin())->particles.begin();
-    //     iter_particle != (*actuated_tags.begin())->particles.end();
-    //     iter_particle++){
-    for (iter_particle = (*actuated_tags.begin())->particles.end() - 1;
-         (*actuated_tags.begin())->particles.size() > 0;
-         iter_particle--){
+    PointersVector<Tag*>::iterator iter_tag = actuated_tags.begin();
+    // The actuated tag is created inside the setup() member function,
+    // thus it has to be removed and the contained particles as well.
 
-        get_world()->remove_particle(*iter_particle);
-    }
-    //get_world()->remove_tag(*actuated_tags.begin());
-    cout << "DrawLine::free() done." << endl;
-
-
+    //for (iter_tag = actuated_tags.begin();
+    //     iter_tag != actuated_tags.end();
+    //     iter_tag++){
+    //(*iter_tag)->remove_particles();
+    get_world()->remove_particles(&(*iter_tag)->particles);
+    get_world()->remove_tag(*actuated_tags.begin());
+    //}
 }
 
 void DrawLine::free(Particle* _host_particle){
 
     //cout << "free particle:" << _host_particle->get_name() << endl; 
-    _host_particle->erase_variable("actuated_particle",this);
+    _host_particle->erase_variable("act_part",this);
 
 }
 
