@@ -503,8 +503,7 @@ void Item::remove_listener(ofEvent<pair<vector<shared_variable_key>,shared_varia
 
 void Item::remove_attached_buttons() {
     // Remove button from attached_buttons (vector<Button*>).
-    vector<Button*>::iterator button_it;
-    
+    vector<Button*>::iterator button_it=attached_buttons.end()-1;
     for (button_it = attached_buttons.begin();
          button_it != attached_buttons.end();
          button_it++){

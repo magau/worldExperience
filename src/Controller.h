@@ -11,13 +11,9 @@ class Button : public Item{
                 ofEvent<pair<vector<shared_variable_key>,shared_variable>> event;
         };
 
-
-
-
         Button() {
             type_enum = T_NULL;
             parameter = NULL;
-            
         }
 
         ~Button () {

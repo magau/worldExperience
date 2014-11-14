@@ -241,28 +241,21 @@ void DrawLine::run(Particle* _host_particle){
 }
 
 void DrawLine::free(){
-    //cout << "actuated_tags size:" << actuated_tags.size() << endl; 
-    //cout << "actuated_particle size:" << (*actuated_tags.begin())->particles.size() << endl; 
-    Action::free();
-
-    PointersVector<Tag*>::iterator iter_tag = actuated_tags.begin();
     // The actuated tag is created inside the setup() member function,
     // thus it has to be removed and the contained particles as well.
 
+    PointersVector<Tag*>::iterator iter_tag = actuated_tags.begin();
     //for (iter_tag = actuated_tags.begin();
     //     iter_tag != actuated_tags.end();
     //     iter_tag++){
-    //(*iter_tag)->remove_particles();
     get_world()->remove_particles(&(*iter_tag)->particles);
-    get_world()->remove_tag(*actuated_tags.begin());
+    get_world()->remove_tag(*iter_tag);
     //}
 }
 
 void DrawLine::free(Particle* _host_particle){
-
     //cout << "free particle:" << _host_particle->get_name() << endl; 
     _host_particle->erase_variable("act_part",this);
-
 }
 
 
