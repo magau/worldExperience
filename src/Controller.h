@@ -60,19 +60,39 @@ class Controller : public Item {
         void detach_listener_parameter(string button_name,Item* listener,string parameter_name,Item* host_item=NULL);
 
         template<typename T>
-        void iterate_button_parameter(string button_name, bool reverse=false) {
+        void iterate_button_parameter(string button_name, bool reverse=false, bool closed_range=false) {
             Button* button = static_cast<Button*>(get_variable(button_name).value);
             Item_Parameter<T>* parameter = static_cast<Item_Parameter<T>*>(button->parameter);
             if(reverse){
-                if (typeid(T) == typeid(bool))
+                if (typeid(T) == typeid(bool)){
                     parameter->value = False;
-                else
-                    parameter->value = (((parameter->value - parameter->range.first - 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
+                } else {
+                    if (closed_range){
+                        parameter->value = (((parameter->value - parameter->range.first - 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
+                    } else {
+                        parameter->value -= 1;
+                        if (parameter->value < parameter->range.first){
+                            parameter->value = parameter->range.first;
+                        } else if (parameter->value > parameter->range.second){
+                            parameter->value = parameter->range.second;
+                        }
+                    }
+                }
             } else {
-                if (typeid(T) == typeid(bool))
+                if (typeid(T) == typeid(bool)){
                     parameter->value = True;
-                else
-                    parameter->value = (((parameter->value - parameter->range.first + 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
+                } else {
+                    if (closed_range){
+                        parameter->value = (((parameter->value - parameter->range.first + 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
+                    } else {
+                        parameter->value += 1;
+                        if (parameter->value < parameter->range.first){
+                            parameter->value = parameter->range.first;
+                        } else if (parameter->value > parameter->range.second){
+                            parameter->value = parameter->range.second;
+                        }
+                    }
+                }
             }
         }
 
@@ -81,16 +101,15 @@ class Controller : public Item {
 
 };
 
-class MidiController : public Controller, ofxMidiListener{
-    public:
-        MidiController();
-        const type_info& get_typeid();
-        string get_type_name();
-        ofxMidiIn midiIn;
-        ofxMidiMessage midiMessage;
-	stringstream text;
-
-        void setup();
-        void run();
-        void newMidiMessage(ofxMidiMessage& eventArgs);
-};
+//class MidiController : public Controller, ofxMidiListener{
+//    public:
+//        MidiController();
+//        const type_info& get_typeid();
+//        ofxMidiIn midiIn;
+//        ofxMidiMessage midiMessage;
+//	stringstream text;
+//
+//        void setup();
+//        void run();
+//        void newMidiMessage(ofxMidiMessage& eventArgs);
+//};

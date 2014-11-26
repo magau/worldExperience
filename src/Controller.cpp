@@ -64,6 +64,9 @@ void Controller::setup() {
     add_button("ctrl3");
     setup_button_parameter<int>("ctrl3",10,pair<int,int>(0,128));
 
+    add_button("ctrl4");
+    setup_button_parameter<int>("ctrl4",10,pair<int,int>(0,1024));
+
     add_button("switch4");
     setup_button_parameter<bool>("switch4",True,pair<bool,bool>(True,False));
 
@@ -87,19 +90,19 @@ void Controller::notify_button_events(string button_name) {
 void Controller::run() {
     if (ofGetKeyPressed('1')) {
         if (ofGetKeyPressed('+')){
-            iterate_button_parameter<int>("ctrl1");
+            iterate_button_parameter<int>("ctrl1", false, true);
             notify_button_events("ctrl1");
         } if (ofGetKeyPressed('-')){
-            iterate_button_parameter<int>("ctrl1", true);
+            iterate_button_parameter<int>("ctrl1", true, true);
             notify_button_events("ctrl1");
         }
     }
     if (ofGetKeyPressed('2')){
         if (ofGetKeyPressed('+')){
-            iterate_button_parameter<int>("ctrl2");
+            iterate_button_parameter<int>("ctrl2", false, true);
             notify_button_events("ctrl2");
         } else if (ofGetKeyPressed('-')){
-            iterate_button_parameter<int>("ctrl2", true);
+            iterate_button_parameter<int>("ctrl2", true, true);
             notify_button_events("ctrl2");
         }
     }
@@ -114,6 +117,15 @@ void Controller::run() {
     }
     if (ofGetKeyPressed('4')){
         if (ofGetKeyPressed('+')){
+            iterate_button_parameter<int>("ctrl4");
+            notify_button_events("ctrl4");
+        } else if (ofGetKeyPressed('-')){
+            iterate_button_parameter<int>("ctrl4", true);
+            notify_button_events("ctrl4");
+        }
+    }
+    if (ofGetKeyPressed('0')){
+        if (ofGetKeyPressed('+')){
             iterate_button_parameter<bool>("switch4");
             notify_button_events("switch4");
         } else if (ofGetKeyPressed('-')){
@@ -127,42 +139,37 @@ void Controller::run() {
     }
 }
 
-MidiController::MidiController(){
-    set_name(get_type_name());
-}
-
-const type_info& MidiController::get_typeid(){
-    return typeid(this);
-}
-
-string MidiController::get_type_name(){
-    regex pattern ("^P?[0-9]*(.*)"); 
-    return regex_replace(string(get_typeid().name()), pattern, string("$1"));
-};
-
-void MidiController::setup() {
-//      set_event<bool>("ctrl1", NULL, this);
-//      set_event<int>("ctrl2", NULL, this);
-//    //midiIn.listPorts();
-//    midiIn.openPort(1);
-//    // don't ignore sysex, timing, & active sense messages,
-//    // these are ignored by default
-//    midiIn.ignoreTypes(false, true, false);
-//    midiIn.addListener(this);
-//    midiIn.setVerbose(true);
-}
-
-void MidiController::run() {
-
-//    if (midiMessage.control != 0){
-//        text.str(""); // clear
-//        text << "Received control: " << midiMessage.control << "; value: "<< midiMessage.value;
-//    }
-//    //draw the last recieved message contents to the screen
-//    ofDrawBitmapString(text.str(), 20, 20);
-}
-
-void MidiController::newMidiMessage(ofxMidiMessage& eventArgs) {
-    // make a copy of the latest message
-    midiMessage = eventArgs;
-}
+//MidiController::MidiController(){
+//    set_name(get_type_name());
+//}
+//
+//const type_info& MidiController::get_typeid(){
+//    return typeid(this);
+//}
+//
+//void MidiController::setup() {
+////      set_event<bool>("ctrl1", NULL, this);
+////      set_event<int>("ctrl2", NULL, this);
+////    //midiIn.listPorts();
+////    midiIn.openPort(1);
+////    // don't ignore sysex, timing, & active sense messages,
+////    // these are ignored by default
+////    midiIn.ignoreTypes(false, true, false);
+////    midiIn.addListener(this);
+////    midiIn.setVerbose(true);
+//}
+//
+//void MidiController::run() {
+//
+////    if (midiMessage.control != 0){
+////        text.str(""); // clear
+////        text << "Received control: " << midiMessage.control << "; value: "<< midiMessage.value;
+////    }
+////    //draw the last recieved message contents to the screen
+////    ofDrawBitmapString(text.str(), 20, 20);
+//}
+//
+//void MidiController::newMidiMessage(ofxMidiMessage& eventArgs) {
+//    // make a copy of the latest message
+//    midiMessage = eventArgs;
+//}

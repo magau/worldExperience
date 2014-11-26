@@ -19,8 +19,9 @@ Particle* Master_Particle::create_slaveParticle(){
 RegularGrid_MP::RegularGrid_MP() : Master_Particle(){
     default_Particle = "Circle";
     //particles_distance = 15;
-    particles_distance = 30;
-    windowRatio = 4.0/5;
+    particles_distance = 60;
+    windowRatio = 1.0/2;
+    //windowRatio = 4.0/5;
 }
 
 void RegularGrid_MP::setup(){
@@ -42,8 +43,8 @@ void RegularGrid_MP::setup(){
 
     grid_offset.x = (win_w - grd_w)/2;
     grid_offset.y = (win_h - grd_h)/2;
-    //grid_num.set(grd_w/grid_ds , grd_h/grid_ds);
-    grid_num.set(2 , 2);
+    grid_num.set(grd_w/grid_ds , grd_h/grid_ds);
+    //grid_num.set(2 , 2);
 
 
     for (i=0; i<grid_num.y; i++){

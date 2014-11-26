@@ -27,7 +27,7 @@ void testApp::setup(){
     // e o comportamento "B_GravityGlue".
     Tag* t0 = world.create_tag();
     //t0->create_behavior("GravityGlue");
-    t0->create_behavior(typeid(GravityGlue*));
+    buffer_behavior = t0->create_behavior(typeid(GravityGlue*));
 
     t0->add_particles(world.particles.get_items_by_typeid(typeid(Circle*)));
     //t0->add_behavior("B_GravityGlue");
@@ -69,12 +69,16 @@ void testApp::setup(){
 
     World_Camera* c0 = &(world.camera);
 
-    //cl->attach_listener_parameter("ctrl1",i0,"weight");
-    //cl->attach_listener_parameter("ctrl1",t0,"rad");
-    //cl->attach_listener_parameter("ctrl3",b0,"weight");
+    //cl->attach_listener_parameter("ctrl3",buffer_behavior,"weight");
+    cl->attach_listener_parameter("ctrl3",t0,"rad");
+    //cl->attach_listener_parameter("ctrl3",i0,"weight");
     cl->attach_listener_parameter("ctrl1",c0,"pan");
     cl->attach_listener_parameter("ctrl2",c0,"tilt");
     cl->attach_listener_parameter("switch4",c0,"travel");
+
+
+    cl->attach_listener_parameter("ctrl4",i0,"weight");
+
 //cout << "setup done." << endl; 
 }
    

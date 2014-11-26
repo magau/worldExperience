@@ -11,7 +11,7 @@ using namespace tr1;
 using namespace std;
 #include "math.h"
 #include "PointersVector.h"
-#include "ofxMidi.h"
+//#include "ofxMidi.h"
 #include "Item.h"
 #include "Controller.h"
 #include "Action.h"

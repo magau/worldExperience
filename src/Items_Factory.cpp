@@ -142,8 +142,8 @@ Controller* Items_Factory::create_controller(const type_info& item_typeid){
 
     if (item_typeid == typeid(Controller*)){
         newItem = new Controller();
-    } else if (item_typeid == typeid(MidiController*)){
-        newItem = new MidiController();
+    //} else if (item_typeid == typeid(MidiController*)){
+    //    newItem = new MidiController();
     } 
     /*
      .
@@ -162,8 +162,8 @@ Controller* Items_Factory::create_controller(string item_name){
 
     if (item_name.compare("Controller") == 0){
         newItem = new Controller();
-    } else if (item_name.compare("MidiController") == 0){
-        newItem = new MidiController();
+    //} else if (item_name.compare("MidiController") == 0){
+    //    newItem = new MidiController();
     }
     /*
      .
