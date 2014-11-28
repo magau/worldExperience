@@ -29,12 +29,12 @@ void testApp::setup(){
     //t0->create_behavior("GravityGlue");
     buffer_behavior = t0->create_behavior(typeid(GravityGlue*));
 
-    t0->add_particles(world.particles.get_items_by_typeid(typeid(Circle*)));
+    t0->add_particles(world.particles.get_items_by_typeid(typeid(Sphere*)));
     //t0->add_behavior("B_GravityGlue");
 
     // Cria uma nova particula vermelha.
     //p = world.create_particle("Circle");
-    buffer_particle = world.create_particle(typeid(Circle*));
+    buffer_particle = world.create_particle(typeid(Sphere*));
     buffer_particle->set_item_parameter<ofColor>("color",ofColor(255,0,0));
     //p->set_ofColor("color",ofColor(255,0,0));
 

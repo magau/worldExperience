@@ -30,6 +30,16 @@ class Circle : public Particle{
         void display();
 };
 
+class Sphere : public Particle{
+    public:
+        Sphere ();
+        ofSpherePrimitive sphere;
+        int tmp_rad;
+        float spin_fac;
+        const type_info& get_typeid();
+        void display();
+};
+
 class Line : public Particle{
     public:
         Line();

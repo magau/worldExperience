@@ -10,6 +10,8 @@ Particle* Items_Factory::create_particle(const type_info& item_typeid){
         newItem = new Circle();
     } else if (item_typeid == typeid(Line*)){
         newItem = new Line();
+    } else if (item_typeid == typeid(Sphere*)){
+        newItem = new Sphere();
     } else if (item_typeid == typeid(RegularGrid_MP*)){
         newItem = new RegularGrid_MP();
     }
@@ -34,6 +36,8 @@ Particle* Items_Factory::create_particle(string item_name){
         newItem = new Circle();
     } else if (item_name.compare("Line") == 0){
         newItem = new Line();
+    } else if (item_name.compare("Sphere") == 0){
+        newItem = new Sphere();
     } else if (item_name.compare("RegularGrid_MP") == 0){
         newItem = new RegularGrid_MP();
     }

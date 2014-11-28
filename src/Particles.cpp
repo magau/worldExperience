@@ -123,10 +123,31 @@ void Circle :: display() {
     //ofColor(...);
     //ofFill();
     ofSetColor(color.value);
-    //ofEllipse(locat.x,locat.y,rad,rad);
-    int* rad_val = &rad.value;
     ofVec3f* loc_val = &loc.value;
+    int* rad_val = &rad.value;
     ofEllipse(loc_val->x,loc_val->y,*rad_val,*rad_val);
+}
+
+Sphere::Sphere() : Particle(){
+    set_name(get_type_name());
+}
+
+const type_info& Sphere::get_typeid() {
+    return typeid(this);
+}
+
+void Sphere :: display() {
+    if (rad.value != tmp_rad){
+        sphere.setRadius( rad.value );
+        tmp_rad = rad.value;
+        spin_fac = 1.5708/tmp_rad; // pi/(2*r)
+    }
+    ofSetColor(color.value);
+    ofVec3f* loc_val = &loc.value;
+    sphere.setPosition(loc_val->x, loc_val->y, 0);
+    sphere.rotate(vel.value.y*spin_fac, 1.0, 0.0, 0.0);
+    sphere.rotate(vel.value.x*spin_fac, 0, 1.0, 0.0);
+    sphere.draw();
 }
 
 Line :: Line() : Particle(){
