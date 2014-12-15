@@ -44,6 +44,7 @@ class Line : public Particle{
     public:
         Line();
         const type_info& get_typeid();
+        void update();
         void display();
         ofPolyline points;
 };

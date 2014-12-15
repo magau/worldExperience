@@ -3,17 +3,20 @@
 #ifdef USE_MOUSE_THREAD
 getMouseLocation mouse;
 #endif
+
 void testApp::setup(){
+    ofEnableSmoothing();
+#ifdef USE_MOUSE_THREAD
+    mouse.startThread(true);
+#endif
+    Controller* osc_cl = world.create_controller("OscParticlesTrackerController");
+
     //cl = world.create_controller("Controller");
     Controller* cl = world.create_controller("Controller");
     //cl = world.create_controller("MidiController");
     //Particle* p;
     //ofSetFrameRate(1);
     ofSetVerticalSync(true);
-    ofEnableSmoothing();
-#ifdef USE_MOUSE_THREAD
-    mouse.startThread(true);
-#endif
     //managerInterface.start(&world);
     
     // Cria a particula "MP_RegGrid" que por sua vez cria uma
@@ -40,28 +43,33 @@ void testApp::setup(){
 
     // Cria uma nova tag t1 à qual adiciona a particula vermelha
     // e o comportamento "B_MouseTracking".
-    buffer_tag = world.create_tag();
-    buffer_tag->add_particle(buffer_particle);
+    buffer_tags.push_back(world.create_tag());
+    buffer_tags[0]->add_particle(buffer_particle);
     //buffer_tag->create_behavior("MouseTracking");
-    buffer_tag->create_behavior(typeid(MouseTracking*));
+    buffer_tags[0]->create_behavior(typeid(MouseTracking*));
         // Adiciona à tag buffer_tag uma interacção do tipo ElecticleRepulsion"
     //Interaction* i0 = buffer_tag->create_interaction("Electrical_Repulsion");
-    Interaction* i0 = buffer_tag->create_interaction(typeid(Electrical_Repulsion*));
+    Interaction* i0 = buffer_tags[0]->create_interaction(typeid(Electrical_Repulsion*));
 //cout << "Electrical_Repulsion interaction created." << endl;
     //cl->add_listener("ctrl2",i0);
 //    cl->attach_listener_parameter("ctrl2",i0,"weight");
     //Interaction* i0 = buffer_tag->add_interaction("I_WaveSource");
     // Adiciona a tag t0, que transporta consigo as particulas
     // da grelha, à interacção.
+
     i0->add_actuated_tag(t0);
 
     //Particle* l = world.create_particle("Line");
     //Tag* t2 = world.create_tag();
     //t2->add_particle(l);
 
-    buffer_tag = world.create_tag();
-    buffer_tag->add_particle(buffer_particle);
-    buffer_interaction = buffer_tag->create_interaction("DrawLine");
+    buffer_tags.push_back(world.create_tag());
+    //buffer_tag->add_particle(buffer_particle);
+    buffer_interaction = buffer_tags[1]->create_interaction("DrawLine");
+    
+    buffer_interaction->actuated_tags.back()->create_behavior(typeid(GravityGlue*));
+    i0->add_actuated_tag(buffer_interaction->actuated_tags.back());
+
     //buffer_tag->create_interaction(typeid(DrawLine*));
     //i1->add_actuated_tag(t2);
     //buffer_tag->create_behavior(typeid(DrawLine*));
@@ -108,29 +116,29 @@ void testApp::keyPressed(int key){
      //managerInterface.listen(key);
      switch (key){
          case 's':{
-             buffer_tag->interactions.show_items_name_and_id();
+             buffer_tags[1]->interactions.show_items_name_and_id();
              break;}
          case 'r':{
 
-             if(buffer_tag->particles.size() > 0)
-                 buffer_tag->remove_particle(buffer_particle);
+             if(buffer_tags[1]->particles.size() > 0)
+                 buffer_tags[1]->remove_particle(buffer_particle);
 
              break;}
          case 'd':{
 
-             buffer_tag->add_particle(buffer_particle);
+             buffer_tags[1]->add_particle(buffer_particle);
               break;}
          case 'c':{
 
-             if(buffer_tag->interactions.size() > 0) {
-                 buffer_tag->remove_interaction(buffer_interaction);
-                 if(buffer_tag->interactions.size() > 0)
-                     buffer_interaction = *(buffer_tag->interactions.end()-1);
+             if(buffer_tags[1]->interactions.size() > 0) {
+                 buffer_tags[1]->remove_interaction(buffer_interaction);
+                 if(buffer_tags[1]->interactions.size() > 0)
+                     buffer_interaction = *(buffer_tags[1]->interactions.end()-1);
              }
              break;}
          case 'a':{
 
-             buffer_interaction = buffer_tag->create_interaction("DrawLine");
+             buffer_interaction = buffer_tags[1]->create_interaction("DrawLine");
 
              break;}
     //     case 'g':{
@@ -166,12 +174,12 @@ void testApp::keyPressed(int key){
     //             cl->erase_button("ctrl3");
     //       break;}
          case 'f':{
-             Tag* t1 = world.tags.get_item_by_id(1);
-             t1->behaviors.erase_items_by_typeid(typeid(MouseTracking*));
+             //Tag* t1 = world.tags.get_item_by_id(1);
+             buffer_tags[0]->behaviors.erase_items_by_typeid(typeid(MouseTracking*));
              break;}
          case 'm':{
-             Tag* t1 = world.tags.get_item_by_id(1);
-             t1->create_behavior("MouseTracking");
+             //Tag* t1 = world.tags.get_item_by_id(1);
+             buffer_tags[0]->create_behavior("MouseTracking");
              break;}
       }
 /*

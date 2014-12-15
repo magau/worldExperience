@@ -6,6 +6,11 @@ World :: World(){
 
     camera.setPosition(ofVec3f(ofGetWindowWidth()/2, ofGetWindowHeight()/2, -700.f));
     camera.lookAt(ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2 , 0), ofVec3f(0,-1,0));
+
+    //light.setPointLight();
+    light.setDirectional();
+    light.setPosition(ofVec3f(ofGetWindowWidth()/2, -ofGetWindowHeight(), -500.f));
+    light.setOrientation(ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2 , 0));
 }
 
 Particle* World::create_particle(string iName, bool isActive){
@@ -55,7 +60,7 @@ Controller* World::create_controller(string iName, bool isActive) {
     controller->set_world(this);
     if (isActive) {
         controller->set_variable("is_active",Item_Parameter<bool>(true));
-        controller->setup(); 
+        controller->setup_ctrl(); 
     } else {
         controller->set_variable("is_active",Item_Parameter<bool>(false));
     }
@@ -69,7 +74,20 @@ Controller* World::create_controller(const type_info& controller_type, bool isAc
     controller->set_world(this);
     if (isActive) {
         controller->set_variable("is_active",Item_Parameter<bool>(true));
-        controller->setup(); 
+        controller->setup_ctrl(); 
+    } else {
+        controller->set_variable("is_active",Item_Parameter<bool>(false));
+    }
+    controllers.push_back(controller);
+
+    return controller;
+}
+
+Controller* World::add_controller(Controller* controller, bool isActive) {
+    controller->set_world(this);
+    if (isActive) {
+        controller->set_variable("is_active",Item_Parameter<bool>(true));
+        controller->setup_ctrl(); 
     } else {
         controller->set_variable("is_active",Item_Parameter<bool>(false));
     }
@@ -164,6 +182,7 @@ PointersVector<Particle*>* World :: update(){
 
 void World::draw(){
     ofBackground(0);
+    //(light.enable();
     camera.begin();
     for(PointersVector<Particle*>::iterator iter_particle = particles.begin();
                                             iter_particle != particles.end();
@@ -173,4 +192,5 @@ void World::draw(){
             (*iter_particle)->display();
     }
     camera.end();
+    //light.disable();
 }

@@ -12,6 +12,7 @@ using namespace std;
 #include "math.h"
 #include "PointersVector.h"
 //#include "ofxMidi.h"
+#include "ofxOsc.h"
 #include "Item.h"
 #include "Controller.h"
 #include "Action.h"
@@ -38,18 +39,6 @@ using namespace std;
 #include "ofxOsc.h"
 #endif	
 
-
-class getMouseLocation : public ofThread {
-    public:
-        int x,y;
-        void threadedFunction(){
-            while(true){
-                x = ofGetMouseX();
-                y = ofGetMouseY();
-            }
-        }
-};
-
 class testApp : public ofBaseApp{
 	public:
            
@@ -58,7 +47,7 @@ class testApp : public ofBaseApp{
            World world;
 
            Particle* buffer_particle;
-           Tag* buffer_tag;
+           PointersVector<Tag*> buffer_tags;
            Interaction* buffer_interaction;
            Behavior* buffer_behavior;
            //Manager_KeyboardInterface managerInterface;

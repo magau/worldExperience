@@ -137,7 +137,7 @@ const type_info& Sphere::get_typeid() {
 }
 
 void Sphere :: display() {
-    if (rad.value != tmp_rad){
+    if (rad.value != tmp_rad and rad.value > 0){
         sphere.setRadius( rad.value );
         tmp_rad = rad.value;
         spin_fac = 1.5708/tmp_rad; // pi/(2*r)
@@ -159,8 +159,26 @@ const type_info& Line::get_typeid() {
     return typeid(this);
 }
 
+void Line :: update() {
+    Particle::update();
+    ofVec3f centroid2D = points.getCentroid2D();
+    if (!(isnan(centroid2D.x) or isnan(centroid2D.y) or isnan(centroid2D.z)))
+        loc.value = centroid2D;
+    
+    ofVec3f disp = vel.value;
+    for(vector<ofPoint>::iterator p_it = points.getVertices().begin();
+                                  p_it != points.getVertices().end();
+                                  p_it++)
+        *p_it += disp;
+    
+}
 void Line :: display() {
     ofSetColor(color.value);
     ofSetLineWidth(3);
+    //ofPushMatrix();
+    //ofVec3f disp = vel.value;
+    //ofTranslate(disp);
+    //ofTranslate(ofVec3f(0));
     points.draw();
+    //ofPopMatrix();
 }

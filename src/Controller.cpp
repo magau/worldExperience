@@ -1,17 +1,23 @@
 #include "testApp.h"
 
-void Controller::add_button(string button_name){
+Button* Controller::add_button(string button_name){
     set_variable(button_name, NULL, BUTTON, this);
+    return static_cast<Button*>(get_variable(button_name).value);
+}
+
+Button* Controller::get_button(string button_name){
+    return static_cast<Button*>(get_variable(button_name).value);
 }
 
 void Controller::erase_button(string button_name){
-    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    Button* button = get_button(button_name);
     if (button->type_enum != T_NULL){
         unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it;
         for (b_item_map_it = button->listeners_map.begin();
              b_item_map_it != button->listeners_map.end();
              b_item_map_it++){
-             b_item_map_it->second.listener->remove_listener(button,&(b_item_map_it->second.event));
+             //b_item_map_it->second.listener->remove_listener(button,&(b_item_map_it->second.event));
+             b_item_map_it->first->remove_listener(button,&(b_item_map_it->second.event));
         }
     }
     erase_variable(button_name);
@@ -22,10 +28,11 @@ void Controller::attach_listener_parameter(string button_name,
                                            string parameter_name,
                                            Item* host_item) {
 
-    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    Button* button = get_button(button_name);
     unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it = button->listeners_map.find(listener);
     if (b_item_map_it == button->listeners_map.end()){
-        button->listeners_map[listener] = Button::Button_Item(listener);
+        button->listeners_map[listener] = Button::Button_Item();
+        //button->listeners_map[listener] = Button::Button_Item(listener);
         listener->set_listener(button,&(button->listeners_map[listener].event));
     }
 
@@ -37,7 +44,7 @@ void Controller::detach_listener_parameter(string button_name,
                                            string parameter_name,
                                            Item* host_item) {
 
-    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    Button* button = get_button(button_name);
     unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it = button->listeners_map.find(listener);
     if (b_item_map_it != button->listeners_map.end()){
 
@@ -54,26 +61,26 @@ void Controller::detach_listener_parameter(string button_name,
     }
 }
 
-void Controller::setup() {
+void Controller::setup_ctrl() {
     add_button("ctrl1");
-    setup_button_parameter<int>("ctrl1",64,pair<int,int>(0,128));
+    setup_button_parameter("ctrl1",IP_INT,64,pair<int,int>(0,128));
 
     add_button("ctrl2");
-    setup_button_parameter<int>("ctrl2",64,pair<int,int>(0,128));
+    setup_button_parameter("ctrl2",IP_INT,64,pair<int,int>(0,128));
 
     add_button("ctrl3");
-    setup_button_parameter<int>("ctrl3",10,pair<int,int>(0,128));
-
+    setup_button_parameter("ctrl3",IP_INT,10,pair<int,int>(0,128));
+    
     add_button("ctrl4");
-    setup_button_parameter<int>("ctrl4",10,pair<int,int>(0,1024));
+    setup_button_parameter("ctrl4",IP_INT,10,pair<int,int>(0,1024));
 
     add_button("switch4");
-    setup_button_parameter<bool>("switch4",True,pair<bool,bool>(True,False));
+    setup_button_parameter("switch4",IP_BOOL,True);
 
 }
 
 void Controller::notify_button_events(string button_name) {
-    Button* button = static_cast<Button*>(get_variable(button_name).value);
+    Button* button = get_button(button_name);
     shared_variable value = shared_variable(button->parameter,button->type_enum);
 
     unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it;
@@ -137,6 +144,18 @@ void Controller::run() {
         //Item_Parameter<bool>* parameter = static_cast<Item_Parameter<bool>*>(button->parameter);
         //cout << "switch4 value:" << parameter->value << endl;
     }
+}
+
+const type_info& OscParticlesTrackerController::get_typeid(){
+    return typeid(this);
+}
+
+void OscParticlesTrackerController::setup_ctrl(){
+    receiver.setup(PORT);
+    string button_name = "multi-touch";
+    add_button(button_name);
+    setup_button_parameter(button_name,IP_VECTOR_OF_VEC3F,ofVec3f(0));
+    startThread(true);
 }
 
 //MidiController::MidiController(){

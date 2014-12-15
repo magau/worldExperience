@@ -74,6 +74,9 @@ void* Item::create_var_ptr(arg_t type_enum){
         case IP_COLOR:
             var_ptr = new Item_Parameter<ofColor>;
             break;
+        case IP_VECTOR_OF_VEC3F:
+            var_ptr = new Item_Parameter_VectorOfofVect3f;
+            break;
         case BUTTON:
             var_ptr = new Button;
             break;
@@ -118,6 +121,9 @@ void Item::erase_var_ptr(void* var_value, arg_t type_enum){
                 break;
             case IP_COLOR:
                 delete static_cast<Item_Parameter<ofColor>*>(var_value); 
+                break;
+            case IP_VECTOR_OF_VEC3F:
+                delete static_cast<Item_Parameter_VectorOfofVect3f*>(var_value); 
                 break;
             case BUTTON:
                 delete static_cast<Button*>(var_value);
@@ -398,6 +404,25 @@ void Item::map_shv_parameter(shared_variable* current_var, shared_variable* inpu
                     break;
                 default:
                     cout << "arg_t not defined for this type!" << endl;
+                    break;
+            }
+            break;
+        }
+        case IP_VECTOR_OF_VEC3F:
+        {
+
+            Item_Parameter_VectorOfofVect3f input_ip = *static_cast<Item_Parameter_VectorOfofVect3f*>(input_var->value);
+
+            switch (current_var->type_enum) {
+
+                case IP_VECTOR_OF_VEC3F:
+                {
+                    Item_Parameter_VectorOfofVect3f* current_ip = static_cast<Item_Parameter_VectorOfofVect3f*>(current_var->value);
+                    //current_ip->value = map_parameter<vector<ofVec3f>>(*current_ip, input_ip);
+                    break;
+                }
+                default:
+                    cout << "IP_VECTOR_OF_VEC3F can't be maped for different types!" << endl;
                     break;
             }
             break;

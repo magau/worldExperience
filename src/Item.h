@@ -9,32 +9,52 @@ class Item;
 enum arg_t{
 
     T_NULL,
-
     IP_INT,
     IP_FLOAT,
     IP_BOOL,
     IP_VEC3F,
     IP_COLOR,
-
+    IP_VECTOR_OF_VEC3F,
     PARTICLE,
-
     INT,
     FLOAT,
-
     CALLBACK,
-
     EVENT_SH_VAR,
-
     BUTTON
 };
 
+class Parameter{
+    public:
+        virtual void set_value(int val){}
+        virtual void set_value(float val){}
+        virtual void set_value(bool val){}
+        virtual void set_value(ofVec3f val){}
+
+        virtual void set_range(pair<int,int> ran){}
+        virtual void set_range(pair<float,float> ran){}
+        virtual void set_range(pair<bool,bool> ran){}
+        virtual void set_range(pair<ofVec3f,ofVec3f> ran){}
+
+        //virtual int     get_int_val(){}
+        //virtual float   get_float_val(){}
+        //virtual bool    get_bool_val(){}
+        //virtual ofVec3f get_ofVec3f_val(){}
+
+        //virtual pair<int,int>         get_int_range(){}
+        //virtual pair<float,float>     get_float_range(){}
+        //virtual pair<bool,bool>       get_bool_range(){}
+        //virtual pair<ofVec3f,ofVec3f> get_ofVec3f_range(){}
+
+};
+
+
 template<typename T>
-class Item_Parameter{
+class Item_Parameter :public Parameter{
     public:
         Item_Parameter<T>() {}
 
-        Item_Parameter<T>(T var) {
-            value = var;
+        Item_Parameter<T>(T val) {
+            value = val;
         }
 
         Item_Parameter<T>(T val, pair<T,T> ran) {
@@ -48,6 +68,9 @@ class Item_Parameter{
            delta = ran.second - ran.first;
         }
 
+        void set_value(T val) {
+            value = val;
+        }
 
         void set_range(pair<T,T> ran) {
            range = ran; 
@@ -57,6 +80,47 @@ class Item_Parameter{
         T value;
         pair<T,T> range;
         T delta;
+};
+
+class Item_Parameter_VectorOfofVect3f : public Parameter{
+    public:
+        Item_Parameter_VectorOfofVect3f() {}
+
+        Item_Parameter_VectorOfofVect3f(ofVec3f val) {
+            for(vector<ofVec3f>::iterator it = value.begin();it!=value.end();it++)
+                *it = val;
+        }
+
+        Item_Parameter_VectorOfofVect3f(ofVec3f val, pair<ofVec3f,ofVec3f> ran) {
+            for(vector<ofVec3f>::iterator it = value.begin();it!=value.end();it++)
+                *it = val;
+            range = ran; 
+            //delta = ran.second - ran.first;
+        }
+
+        Item_Parameter_VectorOfofVect3f(pair<ofVec3f,ofVec3f> ran) {
+           range = ran; 
+           //delta = ran.second - ran.first;
+        }
+
+
+        void set_value(ofVec3f val) {
+            for(vector<ofVec3f>::iterator it = value.begin();it!=value.end();it++)
+                *it = val;
+        }
+
+        void set_value(vector<ofVec3f> val) {
+            value = val;
+        }
+
+        void set_range(pair<ofVec3f,ofVec3f> ran) {
+           range = ran; 
+           //delta = ran.second - ran.first;
+        }
+
+        vector<ofVec3f> value;
+        pair<ofVec3f,ofVec3f> range;
+        ofVec3f delta;
 };
 
 struct shared_variable_key {
@@ -130,6 +194,8 @@ static arg_t type_info_2_arg_t(const type_info& type_id){
         result = IP_COLOR;
     } else if(type_id==typeid(Button*)){
         result = BUTTON;
+    } else if(type_id==typeid(Item_Parameter_VectorOfofVect3f*)){
+        result = IP_VECTOR_OF_VEC3F;
     } else if(type_id==typeid(int*)){
         result = INT;
     } else if(type_id==typeid(float*)){

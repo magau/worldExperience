@@ -25,6 +25,17 @@ class GravityGlue : public Behavior{
         Item_Parameter<float> weight_fac;
 };
 
+class getMouseLocation : public ofThread {
+    public:
+        int x,y;
+        void threadedFunction(){
+            while(true){
+                x = ofGetMouseX();
+                y = ofGetMouseY();
+            }
+        }
+};
+
 class MouseTracking : public Behavior{
     public:
         MouseTracking();

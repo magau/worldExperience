@@ -36,6 +36,7 @@ void Interaction::remove_actuated_tag(Tag* tag){
 Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
     set_name(get_type_name());
     max_dist = ofDist(0,0,ofGetWindowWidth(),ofGetWindowHeight());
+    min_dist = 6;
 
     weight_fac = Item_Parameter<float>(0.1, pair<float,float> (0,5));
     set_variable("weight",&weight_fac,IP_FLOAT);
@@ -46,7 +47,7 @@ const type_info& Electrical_Repulsion::get_typeid() {
 }
 
 void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host_particle){
-    float dist,dx,dy,weight,acc;//,weight_fact;
+    float dist,dx,dy,dz,weight,acc;//,weight_fact;
 
     //weight_fact = 0.2;
     //weight_fact = 0.25;
@@ -56,28 +57,34 @@ void Electrical_Repulsion::interact(Particle* actuated_particle, Particle* _host
 
     ofVec3f* actuated_loc = &actuated_particle->get_item_parameter<ofVec3f>("loc")->value;
     ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
+
+    dx = actuated_loc->x - _host_loc->x;
+    dy = actuated_loc->y - _host_loc->y;
+    dz = actuated_loc->z - _host_loc->z;
+
     dist = _host_loc->distance(*actuated_loc);
 
-#ifdef USE_UNORDERED_MAP
-    dx = actuated_loc->x - _host_loc->x;
-    dy = actuated_loc->y - _host_loc->y;
-#else
-    dx = actuated_loc->x - _host_loc->x;
-    dy = actuated_loc->y - _host_loc->y;
-#endif
-
+    if (abs(dist) < min_dist) {
+        dx = min_dist * (dx >= 0 ? 1 : -1);
+        dy = min_dist * (dy >= 0 ? 1 : -1);
+        dz = min_dist * (dz >= 0 ? 1 : -1);
+        dist = ofVec3f(dx,dy,dz).length();
+    }
     acc = weight / pow(dist,2);
 
-#ifdef USE_UNORDERED_MAP
+//#ifdef USE_UNORDERED_MAP
     //actuated_particle->get_ofVec3f("acc")->x += dx * acc;
     //actuated_particle->get_ofVec3f("acc")->y += dy * acc;
-    ofVec3f* actuated_acc = &actuated_particle->get_item_parameter<ofVec3f>("acc")->value;
+    ofVec3f* actuated_acc = &actuated_particle->acc.value;//get_item_parameter<ofVec3f>("acc")->value;
+    //ofVec3f* actuated_acc = &actuated_particle->get_item_parameter<ofVec3f>("acc")->value;
+
     actuated_acc->x += dx * acc;
     actuated_acc->y += dy * acc;
-#else
-    actuated_particle->accel.x += dx * acc;
-    actuated_particle->accel.y += dy * acc;
-#endif
+    actuated_acc->z += dz * acc;
+//#else
+//    actuated_particle->accel.x += dx * acc;
+//    actuated_particle->accel.y += dy * acc;
+//#endif
 
     ////Do not aplly relaxation at the bounthery wall  
     //int offset = actuated_particle->rad;
@@ -201,14 +208,15 @@ void DrawLine :: interact(Particle* _actuated_particle, Particle*_host_particle)
     Line* actuated_particle = (Line*)_actuated_particle;
     ofVec3f _host_loc = _host_particle->get_item_parameter<ofVec3f>("loc")->value;
     int npoints = actuated_particle->points.size();
-    if (npoints > 0){
+    //if (npoints > 0){
         ofVec3f end_point_loc = actuated_particle->points[npoints - 1];
         if(_host_loc.distance(end_point_loc) > min_dist)
             actuated_particle->points.addVertex(_host_loc);
             //actuated_particle->points.simplify(1);
-    } else {
-        actuated_particle->points.addVertex(_host_loc);
-    }
+    //} else {
+    //    actuated_particle->points.addVertex(_host_loc);
+    //    actuated_particle->loc.value = _host_loc;
+    //}
 
 }
 
@@ -220,7 +228,8 @@ void DrawLine::setup(){
 
 void DrawLine::setup(Particle* _host_particle){
      Line* actuated_particle = (Line*)(get_world()->create_particle("Line"));
-     ofVec3f _host_loc = _host_particle->get_item_parameter<ofVec3f>("loc")->value;
+     ofVec3f _host_loc = _host_particle->loc.value;//get_item_parameter<ofVec3f>("loc")->value;
+     actuated_particle->loc.value = _host_loc;
      actuated_particle->points.addVertex(_host_loc);
      _host_particle->set_variable("act_part",actuated_particle,PARTICLE,this);
      (*actuated_tags.begin())->add_particle(actuated_particle);
