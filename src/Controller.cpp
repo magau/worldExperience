@@ -61,7 +61,7 @@ void Controller::detach_listener_parameter(string button_name,
     }
 }
 
-void Controller::setup_ctrl() {
+void Controller::setup() {
     add_button("ctrl1");
     setup_button_parameter("ctrl1",IP_INT,64,pair<int,int>(0,128));
 
@@ -94,7 +94,7 @@ void Controller::notify_button_events(string button_name) {
     } 
 }
 
-void Controller::run() {
+void Controller::update() {
     if (ofGetKeyPressed('1')) {
         if (ofGetKeyPressed('+')){
             iterate_button_parameter<int>("ctrl1", false, true);
@@ -150,8 +150,9 @@ const type_info& OscParticlesTrackerController::get_typeid(){
     return typeid(this);
 }
 
-void OscParticlesTrackerController::setup_ctrl(){
-    receiver.setup(PORT);
+void OscParticlesTrackerController::setup(){
+    port = 44444;
+    receiver.setup(port);
     string button_name = "multi-touch";
     add_button(button_name);
     setup_button_parameter(button_name,IP_VECTOR_OF_VEC3F,ofVec3f(0));
@@ -178,7 +179,7 @@ void OscParticlesTrackerController::setup_ctrl(){
 ////    midiIn.setVerbose(true);
 //}
 //
-//void MidiController::run() {
+//void MidiController::update() {
 //
 ////    if (midiMessage.control != 0){
 ////        text.str(""); // clear

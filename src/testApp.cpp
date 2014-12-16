@@ -4,7 +4,9 @@
 getMouseLocation mouse;
 #endif
 
+
 void testApp::setup(){
+
     ofEnableSmoothing();
 #ifdef USE_MOUSE_THREAD
     mouse.startThread(true);

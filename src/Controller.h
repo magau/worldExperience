@@ -46,11 +46,10 @@ class Button : public Item{
 
 };
 
-class Controller :  public Item{
+class Controller : public ofThread, public Item {
     public:
-        virtual void setup_ctrl();
-        virtual void run();
-
+        virtual void setup();
+        virtual void update();
         Button* add_button(string button_name);
         Button* get_button(string button_name);
 
@@ -113,18 +112,20 @@ class Controller :  public Item{
 
 };
 
-class OscParticlesTrackerController : public ofThread, public Controller{
+class OscParticlesTrackerController :  public Controller{
     // listen on port 12345
     //#define PORT 12345
-    #define PORT 44444
+    //#define PORT 44444
     public:
         //OscParticlesTrackerController();
         const type_info& get_typeid();
-        void setup_ctrl();
-        void run(){};
+        void setup();
+        void update(){};
         void threadedFunction(){
             ofxOscMessage m;
-            vector<ofVec3f>* param_ptr =
+            float last_t = ofGetElapsedTimef(),
+            max_time = 5E-1;
+            vector<ofVec3f>* osc_tracker =
             &static_cast<Item_Parameter_VectorOfofVect3f*>(get_button("multi-touch")->parameter)->value;
             while(true){
                 // check for waiting messages
@@ -135,20 +136,42 @@ class OscParticlesTrackerController : public ofThread, public Controller{
                     // check for Touch app message
                     int n_args = m.getNumArgs()/4;
                     if(m.getAddress() == "/touches" and n_args > 0) {
-                        param_ptr->clear();
+                        lock();
+                        osc_tracker->clear();
                         for (int i=0; i<n_args; i++){
-                            param_ptr->push_back(ofVec3f());
+                            osc_tracker->push_back(ofVec3f());
                             // z coord is used to store the id
-                            param_ptr->back().z = m.getArgAsInt32(i*4);
-                            param_ptr->back().x = m.getArgAsFloat(i*4+1);
-                            param_ptr->back().y = m.getArgAsFloat(i*4+2);
+                            osc_tracker->back().z = m.getArgAsInt32(i*4);
+                            osc_tracker->back().x = m.getArgAsFloat(i*4+1);
+                            osc_tracker->back().y = m.getArgAsFloat(i*4+2);
            
                         }
+                        unlock();
+                    cout << "locations:" << endl;
+                    for( vector<ofVec3f>::iterator loc_it = osc_tracker->begin();
+                         loc_it != osc_tracker->end(); loc_it++ )
+                        cout << *loc_it << endl;
                     } 
-                } 
+
+                    last_t = ofGetElapsedTimef();
+
+                } else if (osc_tracker->size() > 0 and ofGetElapsedTimef() - last_t > max_time) {
+                    cout << "revove locations:" << endl;
+                    for( vector<ofVec3f>::iterator loc_it = osc_tracker->begin();
+                         loc_it != osc_tracker->end(); loc_it++ )
+                        cout << *loc_it << endl;
+
+                    lock();
+                    osc_tracker->clear();
+                    unlock();
+                    last_t = ofGetElapsedTimef();
+                } else {
+                    ofSleepMillis(100);
+                }
             }
         }
     private:
+        int port;
         ofxOscReceiver receiver;
 };
 
@@ -161,6 +184,6 @@ class OscParticlesTrackerController : public ofThread, public Controller{
 //	stringstream text;
 //
 //        void setup();
-//        void run();
+//        void update();
 //        void newMidiMessage(ofxMidiMessage& eventArgs);
 //};
