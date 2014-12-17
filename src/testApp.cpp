@@ -1,16 +1,16 @@
 #include "testApp.h"
 
-#ifdef USE_MOUSE_THREAD
-getMouseLocation mouse;
-#endif
+//#ifdef USE_MOUSE_THREAD
+//getMouseLocation mouse;
+//#endif
 
 
 void testApp::setup(){
 
     ofEnableSmoothing();
-#ifdef USE_MOUSE_THREAD
-    mouse.startThread(true);
-#endif
+//#ifdef USE_MOUSE_THREAD
+//    mouse.startThread(true);
+//#endif
     Controller* osc_cl = world.create_controller("OscParticlesTrackerController");
 
     //cl = world.create_controller("Controller");
@@ -238,8 +238,8 @@ void testApp::dragEvent(ofDragInfo dragInfo){
 
 //--------------------------------------------------------------
 void testApp::exit() {
-#ifdef USE_MOUSE_THREAD
- // stop the thread
- mouse.stopThread();
-#endif
+//#ifdef USE_MOUSE_THREAD
+// // stop the thread
+// mouse.stopThread();
+//#endif
 }

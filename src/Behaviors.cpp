@@ -19,7 +19,7 @@ const type_info& GravityGlue::get_typeid() {
     return typeid(this);
 }
 
-void GravityGlue::setup(Particle* _host_particle){
+void GravityGlue::setup_particle(Particle* _host_particle){
     //_host_particle->set_variable("loc",*_host_particle->get_item_parameter<ofVec3f>("loc"),this);
     _host_particle->set_variable("loc",*(Item_Parameter<ofVec3f>*)(_host_particle->get_variable("loc").value),this);
 }
@@ -43,7 +43,7 @@ void GravityGlue::free(Particle* _host_particle){
     cout << "Particle free." << endl;
 }
 
-void GravityGlue::run(Particle* _host_particle){
+void GravityGlue::update_particle(Particle* _host_particle){
     float dist,dx,dy,weight,acc;//weight_fact,
     ofVec3f* glue_loc = &_host_particle->get_item_parameter<ofVec3f>("loc",this)->value;
     ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
@@ -87,22 +87,40 @@ void GravityGlue::run(Particle* _host_particle){
 
 MouseTracking::MouseTracking() : Behavior(){
     set_name(get_type_name());
+
+    #ifdef USE_MOUSE_THREAD
+    startThread(true);
+    #endif
+}
+
+MouseTracking::~MouseTracking() {
+    #ifdef USE_MOUSE_THREAD
+    stopThread();
+    #endif
 }
 
 const type_info& MouseTracking::get_typeid() {
     return typeid(this);
 }
 
-void MouseTracking::run(Particle* _host_particle){
+void MouseTracking::update_particle(Particle* _host_particle){
     ofVec3f* _host_vel = &_host_particle->get_item_parameter<ofVec3f>("vel")->value;
     ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
 #ifdef USE_MOUSE_THREAD
-    extern getMouseLocation mouse;
-    _host_vel->x = mouse.x - _host_loc->x;
-    _host_vel->y = mouse.y - _host_loc->y;
+    //extern getMouseLocation mouse;
+    _host_vel->x = x - _host_loc->x;
+    _host_vel->y = y - _host_loc->y;
 #else
     _host_vel->x = ofGetMouseX() - _host_loc->x;
     _host_vel->y = ofGetMouseY() - _host_loc->y;
 #endif
 }
 
+
+const type_info& ParticlesManager::get_typeid() {
+    return typeid(this);
+}
+
+void ParticlesManager::update_particle(Particle* _host_particle){};
+void ParticlesManager::setup_particle(Particle* _host_particle){};
+void ParticlesManager::free(Particle* _host_particle){};

@@ -3,7 +3,7 @@
 Action::Action() : Item(){}
 void Action::add_tag(Tag* tag){_tag = tag;}
 Tag* Action::get_tag(){return _tag;}
-void Action::setup(Particle* particle){}
+void Action::setup_particle(Particle* particle){}
 void Action::free(Particle* particle){}
 
 void Action::setup(){
@@ -13,7 +13,7 @@ void Action::setup(){
         for ( iter_particle = particles->begin();
               iter_particle != particles->end();
               iter_particle++){
-            setup(*iter_particle);
+            setup_particle(*iter_particle);
         }
     }
 }
@@ -30,14 +30,14 @@ void Action::free(){
     }
 }
 
-void Action::run(Particle* _host_particle){}
+void Action::update_particle(Particle* _host_particle){}
 
-void Action::run(){
+void Action::update(){
     PointersVector<Particle*>::iterator iter_particle;
     PointersVector<Action*>::iterator iter_action;
     for (iter_particle = get_tag()->particles.begin();
 	 iter_particle != get_tag()->particles.end();
          iter_particle++){
-         run(*iter_particle);
+         update_particle(*iter_particle);
     }
 }

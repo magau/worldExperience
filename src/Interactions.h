@@ -13,8 +13,8 @@ class Interaction : public Action {
 
         Interaction();
         const type_info& get_typeid();
-        virtual void run(){Action::run();};
-        virtual void run(Particle* _host_particle);
+        virtual void update(){Action::update();};
+        virtual void update_particle(Particle* _host_particle);
         virtual void interact(Particle* actuated_particle, Particle* _host_particle);
         void add_actuated_tag(Tag* tag);
         void remove_actuated_tag(Tag* tag);
@@ -47,7 +47,7 @@ class Wave_Source : public Interaction{
         Wave_Source();
         const type_info& get_typeid();
         void interact(Particle* actuated_particle, Particle* _host_particle);
-        void run(Particle* _host_particle);
+        void update_particle(Particle* _host_particle);
 };
 
 
@@ -56,9 +56,9 @@ class DrawLine : public Interaction {
         DrawLine();
         const type_info& get_typeid();
         void interact(Particle* actuated_particle, Particle* _host_particle);
-        void run(Particle* _host_particle);
+        void update_particle(Particle* _host_particle);
         void setup();
-        void setup(Particle* _host_particle);
+        void setup_particle(Particle* _host_particle);
         void free();
         void free(Particle* host_particle);
         //PointersVector<Particle*> lines;

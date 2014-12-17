@@ -10,7 +10,7 @@ class Action : public Item{
          * The purpose of the "setup" function is to add and/or
          * set sepecific variables required by the action to 
          * the particles taged with the tag host of this action.
-         * This variables are used inside the "run" function of 
+         * This variables are used inside the "update" function of 
          * the action.
          * The "Particle" class have a set of unordered_maps
          * that can be used for this purpose. The name and id of
@@ -19,7 +19,7 @@ class Action : public Item{
          * by other actions.
          */ 
         virtual void setup();
-        virtual void setup(Particle* host_particle);
+        virtual void setup_particle(Particle* host_particle);
         /*
          * The purpose of the "free" function is to delete
          * the variables added to the particles taged with 
@@ -29,8 +29,8 @@ class Action : public Item{
          */
         virtual void free();
         virtual void free(Particle* host_particle);
-        virtual void run();
-        virtual void run(Particle* _host_particle);
+        virtual void update();
+        virtual void update_particle(Particle* _host_particle);
     private:
         Tag* _tag;
 

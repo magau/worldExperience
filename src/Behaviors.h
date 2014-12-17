@@ -15,33 +15,39 @@ class GravityGlue : public Behavior{
     public:
         GravityGlue();
         const type_info& get_typeid();
-        void run(Particle* _host_particle);
-        void setup(Particle* _host_particle);
+        void update_particle(Particle* _host_particle);
+        void setup_particle(Particle* _host_particle);
         void free(Particle* _host_particle);
-        //void setup();
         void free();
     private:
         string location_key;
         Item_Parameter<float> weight_fac;
 };
 
-class getMouseLocation : public ofThread {
+class MouseTracking : public ofThread, public Behavior {
     public:
         int x,y;
+        MouseTracking();
+        ~MouseTracking();
+        const type_info& get_typeid();
+        void update_particle(Particle* _host_particle);
         void threadedFunction(){
             while(true){
+                lock();
                 x = ofGetMouseX();
                 y = ofGetMouseY();
+                unlock();
             }
         }
+
 };
 
-class MouseTracking : public Behavior{
+class ParticlesManager : Behavior{
     public:
-        MouseTracking();
+        Item_Parameter_VectorOfofVect3f particles_tracker;
         const type_info& get_typeid();
-        void run(Particle* _host_particle);
-        void setup(){};
+        void update_particle(Particle* _host_particle);
+        void setup_particle(Particle* _host_particle);
+        void free(Particle* _host_particle);
 };
-
 

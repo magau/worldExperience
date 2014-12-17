@@ -39,14 +39,14 @@ void Tag::setup_particle(Particle* particle){
     for (iter_interaction = interactions.begin();
          iter_interaction != interactions.end();
          iter_interaction++){
-         (*iter_interaction)->setup(particle);
+         (*iter_interaction)->setup_particle(particle);
     }
 
     PointersVector<Behavior*>::iterator iter_behavior;
     for (iter_behavior = behaviors.begin();
          iter_behavior != behaviors.end();
          iter_behavior++){
-         (*iter_behavior)->setup(particle);
+         (*iter_behavior)->setup_particle(particle);
     }
 }
 
@@ -217,7 +217,7 @@ void Tag::run(){
          iter_interaction != interactions.end();
          iter_interaction++){
          //cout << (*iter_interaction)->get_type_name() << endl;
-         (*iter_interaction)->run();
+         (*iter_interaction)->update();
     }
 
     PointersVector<Behavior*>::iterator iter_behavior;
@@ -225,7 +225,7 @@ void Tag::run(){
          iter_behavior != behaviors.end();
          iter_behavior++){
          //cout << (*iter_behavior)->get_type_name() << endl;
-         (*iter_behavior)->run();
+         (*iter_behavior)->update();
     }
 }
 
