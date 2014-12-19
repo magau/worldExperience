@@ -49,5 +49,7 @@ class ParticlesManager : Behavior{
         void update_particle(Particle* _host_particle);
         void setup_particle(Particle* _host_particle);
         void free(Particle* _host_particle);
+        void create_particle();
+        void erase_particle();
 };
 

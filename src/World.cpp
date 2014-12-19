@@ -9,10 +9,14 @@ World :: World(){
 
     //light.setPointLight();
     light.setDirectional();
-    light.setPosition(ofVec3f(ofGetWindowWidth()/2, -ofGetWindowHeight()/2, -700.f));
+    light.setPosition(ofVec3f(0, 0, 0));
+    //light.setPosition(ofVec3f(ofGetWindowWidth()/2, -ofGetWindowHeight()/2, -700.f));
     //light.setOrientation(ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2 , 700.f));
     //light.setOrientation(ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2 , 700.f));
-    light.setOrientation(ofVec3f(0,0, 700.f));
+    ofVec3f eulerAngles = camera.getOrientationEuler();
+    cout << "euler angles:" << eulerAngles << endl;
+    ofQuaternion q(0,ofVec3f(1,0,0),0,ofVec3f(0,0,1),180,ofVec3f(0,1,0));
+    light.setOrientation(q);
 }
 
 Particle* World::create_particle(string iName, bool isActive){

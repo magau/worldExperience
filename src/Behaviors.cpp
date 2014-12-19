@@ -122,5 +122,11 @@ const type_info& ParticlesManager::get_typeid() {
 }
 
 void ParticlesManager::update_particle(Particle* _host_particle){};
-void ParticlesManager::setup_particle(Particle* _host_particle){};
+void ParticlesManager::setup_particle(Particle* _host_particle){
+    for( vector<ofVec3f>::iterator loc_it = particles_tracker.value.begin();
+         loc_it != particles_tracker.value.end(); loc_it++ )
+                cout << *loc_it << endl;
+};
 void ParticlesManager::free(Particle* _host_particle){};
+void ParticlesManager::create_particle(){};
+void ParticlesManager::erase_particle(){};

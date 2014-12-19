@@ -151,6 +151,7 @@ const type_info& OscParticlesTrackerController::get_typeid(){
 }
 
 void OscParticlesTrackerController::setup(){
+    //#define PORT 44444
     port = 44444;
     receiver.setup(port);
     string button_name = "multi-touch";

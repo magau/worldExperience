@@ -41,6 +41,7 @@ void World_Camera::pan_shv(shared_variable* shv_imput_param){
 
     ofVec3f eulerAngles = getOrientationEuler();
     ofQuaternion q(eulerAngles.x,ofVec3f(1,0,0),eulerAngles.z,ofVec3f(0,0,1),view_angle.value,ofVec3f(0,1,0));
+    //ofQuaternion q(eulerAngles.x,ofVec3f(1,0,0),view_angle.value,ofVec3f(0,1,0),eulerAngles.z,ofVec3f(0,0,1));
     setOrientation(q);
     //ofQuaternion q = getOrientationQuat();
     //q.makeRotate(view_angle.value,ofVec3f(0,1,0));

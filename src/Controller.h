@@ -115,27 +115,31 @@ class Controller : public ofThread, public Item {
 class OscParticlesTrackerController :  public Controller{
     // listen on port 12345
     //#define PORT 12345
-    //#define PORT 44444
     public:
         //OscParticlesTrackerController();
         const type_info& get_typeid();
         void setup();
         void update(){};
         void threadedFunction(){
+            cout << "start osc thread..." << endl;
             ofxOscMessage m;
+            int n_args;
             float last_t = ofGetElapsedTimef(),
-            max_time = 5E-1;
+            max_time = 2E-1;
             vector<ofVec3f>* osc_tracker =
             &static_cast<Item_Parameter_VectorOfofVect3f*>(get_button("multi-touch")->parameter)->value;
             while(true){
                 // check for waiting messages
-                if(receiver.hasWaitingMessages() and m.getAddress() == "/touches"){
+                if (receiver.hasWaitingMessages()){
                     // get the next message
                     receiver.getNextMessage(&m);
-            
                     // check for Touch app message
-                    int n_args = m.getNumArgs()/4;
-                    if(m.getAddress() == "/touches" and n_args > 0) {
+                    n_args = m.getNumArgs()/4;
+                } else {
+                    n_args = 0;
+                }
+            
+                if(n_args > 0 and m.getAddress() == "/touches") {
                         lock();
                         osc_tracker->clear();
                         for (int i=0; i<n_args; i++){
@@ -144,14 +148,12 @@ class OscParticlesTrackerController :  public Controller{
                             osc_tracker->back().z = m.getArgAsInt32(i*4);
                             osc_tracker->back().x = m.getArgAsFloat(i*4+1);
                             osc_tracker->back().y = m.getArgAsFloat(i*4+2);
-           
                         }
                         unlock();
                     cout << "locations:" << endl;
                     for( vector<ofVec3f>::iterator loc_it = osc_tracker->begin();
                          loc_it != osc_tracker->end(); loc_it++ )
                         cout << *loc_it << endl;
-                    } 
 
                     last_t = ofGetElapsedTimef();
 
