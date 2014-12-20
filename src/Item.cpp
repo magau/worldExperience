@@ -86,6 +86,9 @@ void* Item::create_var_ptr(arg_t type_enum){
         case FLOAT:
             var_ptr = new float;
             break;
+        case STRING:
+            var_ptr = new string;
+            break;
         case PARTICLE:
             var_ptr = new Particle;
             break;
@@ -133,6 +136,9 @@ void Item::erase_var_ptr(void* var_value, arg_t type_enum){
                 break;
             case FLOAT:
                 delete static_cast<float*>(var_value);
+                break;
+            case STRING:
+                delete static_cast<string*>(var_value); 
                 break;
             case PARTICLE:
                 delete static_cast<Particle*>(var_value);

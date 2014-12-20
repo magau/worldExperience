@@ -34,10 +34,19 @@ void Action::update_particle(Particle* _host_particle){}
 
 void Action::update(){
     PointersVector<Particle*>::iterator iter_particle;
-    PointersVector<Action*>::iterator iter_action;
     for (iter_particle = get_tag()->particles.begin();
 	 iter_particle != get_tag()->particles.end();
          iter_particle++){
          update_particle(*iter_particle);
     }
 }
+
+Particle* Action::create_particle(string p_name){
+    Particle* particle = get_world()->create_particle(p_name);
+    get_tag()->add_particle(particle);
+    return particle;
+};
+
+void Action::erase_particle(Particle* particle){
+    get_world()->remove_particle(particle);
+};

@@ -18,6 +18,7 @@ enum arg_t{
     PARTICLE,
     INT,
     FLOAT,
+    STRING,
     CALLBACK,
     EVENT_SH_VAR,
     BUTTON
@@ -200,6 +201,8 @@ static arg_t type_info_2_arg_t(const type_info& type_id){
         result = INT;
     } else if(type_id==typeid(float*)){
         result = FLOAT;
+    } else if(type_id==typeid(string*)){
+        result = STRING;
     } else if(type_id==typeid(Particle*)){
         result = PARTICLE;
     }

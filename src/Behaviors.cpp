@@ -116,17 +116,66 @@ void MouseTracking::update_particle(Particle* _host_particle){
 #endif
 }
 
+OscTracker::OscTracker() : Behavior(){
+    set_name(get_type_name());
+    default_particle = "Circle";
+    set_variable("default",&default_particle,STRING);
+}
 
-const type_info& ParticlesManager::get_typeid() {
+const type_info& OscTracker::get_typeid() {
     return typeid(this);
 }
 
-void ParticlesManager::update_particle(Particle* _host_particle){};
-void ParticlesManager::setup_particle(Particle* _host_particle){
-    for( vector<ofVec3f>::iterator loc_it = particles_tracker.value.begin();
-         loc_it != particles_tracker.value.end(); loc_it++ )
-                cout << *loc_it << endl;
+void OscTracker::update(){
+    Action::update();
+
+    vector<ofVec3f>::iterator track_it;
+    for(track_it = particles_tracker.value.begin();
+        track_it != particles_tracker.value.end();
+        track_it++){
+        bool is_present = false;
+        PointersVector<Particle*>::iterator iter_particle;
+        for (iter_particle = get_tag()->particles.begin();
+             iter_particle != get_tag()->particles.end();
+             iter_particle++){
+            if((int)(track_it->z) == *(int*)((*iter_particle)->get_variable("id",this).value)){
+                is_present = true;
+                break;
+            }
+        }
+
+        if (!is_present) {
+            Particle* particle = create_particle(default_particle);
+            particle->set_variable("id",(int)(track_it->z),this);
+        }
+    }
+
 };
-void ParticlesManager::free(Particle* _host_particle){};
-void ParticlesManager::create_particle(){};
-void ParticlesManager::erase_particle(){};
+
+void OscTracker::update_particle(Particle* _host_particle){
+    bool is_present = false;
+    vector<ofVec3f>::iterator track_it;
+
+    for(track_it = particles_tracker.value.begin();
+        track_it != particles_tracker.value.end();
+        track_it++){
+
+        if((int)(track_it->z) == *(int*)(_host_particle->get_variable("id",this).value)){
+            is_present = true;
+            _host_particle->loc.value.x = track_it->x;
+            _host_particle->loc.value.y = track_it->y;
+            break;
+        }
+
+    }
+
+    if(!is_present)
+        erase_particle(_host_particle);
+};
+
+void OscTracker::setup_particle(Particle* _host_particle){
+};
+
+void OscTracker::free(Particle* _host_particle){
+    _host_particle->erase_variable("id",this);
+};

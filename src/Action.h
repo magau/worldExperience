@@ -31,6 +31,8 @@ class Action : public Item{
         virtual void free(Particle* host_particle);
         virtual void update();
         virtual void update_particle(Particle* _host_particle);
+        Particle* create_particle(string p_name);
+        void erase_particle(Particle* particle);
     private:
         Tag* _tag;
 

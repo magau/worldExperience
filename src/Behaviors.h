@@ -42,14 +42,15 @@ class MouseTracking : public ofThread, public Behavior {
 
 };
 
-class ParticlesManager : Behavior{
+class OscTracker : Behavior{
     public:
         Item_Parameter_VectorOfofVect3f particles_tracker;
+        string default_particle;
+        OscTracker();
         const type_info& get_typeid();
+        void update();
         void update_particle(Particle* _host_particle);
         void setup_particle(Particle* _host_particle);
         void free(Particle* _host_particle);
-        void create_particle();
-        void erase_particle();
 };
 
