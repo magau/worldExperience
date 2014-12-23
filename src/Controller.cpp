@@ -154,7 +154,7 @@ void OscParticlesTrackerController::setup(){
     //#define PORT 44444
     port = 44444;
     receiver.setup(port);
-    string button_name = "multi-touch";
+    string button_name = "touch";
     add_button(button_name);
     setup_button_parameter(button_name,IP_VECTOR_OF_VEC3F,ofVec3f(0));
     startThread(true);

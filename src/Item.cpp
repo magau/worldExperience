@@ -402,7 +402,7 @@ void Item::map_shv_parameter(shared_variable* current_var, shared_variable* inpu
                 {
                     Item_Parameter<float>* current_ip = static_cast<Item_Parameter<float>*>(current_var->value);
                     Item_Parameter<float> cast_input_ip = cast_item_parameter<int,float>(input_ip);
-                    current_ip->value = map_parameter<float>(*current_ip, cast_input_ip);;
+                    current_ip->value = map_parameter<float>(*current_ip, cast_input_ip);
                     break;
                 }
                 case T_NULL:
@@ -424,6 +424,15 @@ void Item::map_shv_parameter(shared_variable* current_var, shared_variable* inpu
                 case IP_VECTOR_OF_VEC3F:
                 {
                     Item_Parameter_VectorOfofVect3f* current_ip = static_cast<Item_Parameter_VectorOfofVect3f*>(current_var->value);
+                    current_ip->set_value(input_ip.value); 
+                    //vector<ofVec3f>::iterator track_it;
+                    //for(track_it = particles_tracker.value.begin();
+                    //    track_it != particles_tracker.value.end();
+                    //    track_it++){
+                    //    cout << *track_it << endl;
+                    //    
+                    //}
+ 
                     //current_ip->value = map_parameter<vector<ofVec3f>>(*current_ip, input_ip);
                     break;
                 }

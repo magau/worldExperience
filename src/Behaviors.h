@@ -42,7 +42,7 @@ class MouseTracking : public ofThread, public Behavior {
 
 };
 
-class OscTracker : Behavior{
+class OscTracker : public Behavior{
     public:
         Item_Parameter_VectorOfofVect3f particles_tracker;
         string default_particle;

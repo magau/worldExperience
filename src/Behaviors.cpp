@@ -120,6 +120,7 @@ OscTracker::OscTracker() : Behavior(){
     set_name(get_type_name());
     default_particle = "Circle";
     set_variable("default",&default_particle,STRING);
+    set_variable("osc_msg",&particles_tracker,IP_VECTOR_OF_VEC3F);
 }
 
 const type_info& OscTracker::get_typeid() {
@@ -127,11 +128,11 @@ const type_info& OscTracker::get_typeid() {
 }
 
 void OscTracker::update(){
-    Action::update();
 
+    Item_Parameter_VectorOfofVect3f p_tracker = particles_tracker;
     vector<ofVec3f>::iterator track_it;
-    for(track_it = particles_tracker.value.begin();
-        track_it != particles_tracker.value.end();
+    for(track_it = p_tracker.value.begin();
+        track_it != p_tracker.value.end();
         track_it++){
         bool is_present = false;
         PointersVector<Particle*>::iterator iter_particle;
@@ -142,35 +143,40 @@ void OscTracker::update(){
                 is_present = true;
                 break;
             }
-        }
 
+        }
         if (!is_present) {
             Particle* particle = create_particle(default_particle);
             particle->set_variable("id",(int)(track_it->z),this);
+            particle->set_item_parameter<ofColor>("color",ofColor(255,0,0));
         }
     }
 
+    Action::update();
 };
 
 void OscTracker::update_particle(Particle* _host_particle){
     bool is_present = false;
     vector<ofVec3f>::iterator track_it;
-
-    for(track_it = particles_tracker.value.begin();
-        track_it != particles_tracker.value.end();
+    Item_Parameter_VectorOfofVect3f p_tracker = particles_tracker;
+    for(track_it = p_tracker.value.begin();
+        track_it != p_tracker.value.end();
         track_it++){
 
         if((int)(track_it->z) == *(int*)(_host_particle->get_variable("id",this).value)){
             is_present = true;
-            _host_particle->loc.value.x = track_it->x;
-            _host_particle->loc.value.y = track_it->y;
+
+            _host_particle->vel.value.x = (int)track_it->x - _host_particle->loc.value.x;
+            _host_particle->vel.value.y = (int)track_it->y - _host_particle->loc.value.y;
+            //cout << (_host_particle->loc.value) << endl;
             break;
         }
 
     }
 
-    if(!is_present)
+    if(!is_present){
         erase_particle(_host_particle);
+    }
 };
 
 void OscTracker::setup_particle(Particle* _host_particle){

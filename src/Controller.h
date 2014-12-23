@@ -125,50 +125,52 @@ class OscParticlesTrackerController :  public Controller{
             ofxOscMessage m;
             int n_args;
             float last_t = ofGetElapsedTimef(),
-            max_time = 2E-1;
+            max_time = 3E-1,
+            sleep_time = 3E-2;
             vector<ofVec3f>* osc_tracker =
-            &static_cast<Item_Parameter_VectorOfofVect3f*>(get_button("multi-touch")->parameter)->value;
+            &static_cast<Item_Parameter_VectorOfofVect3f*>(get_button("touch")->parameter)->value;
             while(true){
                 // check for waiting messages
                 if (receiver.hasWaitingMessages()){
                     // get the next message
                     receiver.getNextMessage(&m);
                     // check for Touch app message
-                    n_args = m.getNumArgs()/4;
+                    n_args = m.getNumArgs();
                 } else {
                     n_args = 0;
                 }
             
-                if(n_args > 0 and m.getAddress() == "/touches") {
-                        lock();
-                        osc_tracker->clear();
-                        for (int i=0; i<n_args; i++){
-                            osc_tracker->push_back(ofVec3f());
-                            // z coord is used to store the id
-                            osc_tracker->back().z = m.getArgAsInt32(i*4);
-                            osc_tracker->back().x = m.getArgAsFloat(i*4+1);
-                            osc_tracker->back().y = m.getArgAsFloat(i*4+2);
-                        }
-                        unlock();
-                    cout << "locations:" << endl;
-                    for( vector<ofVec3f>::iterator loc_it = osc_tracker->begin();
-                         loc_it != osc_tracker->end(); loc_it++ )
-                        cout << *loc_it << endl;
+                if(n_args > 0 and n_args%4 == 0 and m.getAddress() == "/touches") {
+                    
+                    osc_tracker->clear();
+                    for (int i=0; i<n_args/4; i++){
+                        osc_tracker->push_back(ofVec3f());
+                        // z coord is used to store the id
+                        osc_tracker->back().z = m.getArgAsInt32(i*4);
+                        osc_tracker->back().x = m.getArgAsFloat(i*4+1);
+                        osc_tracker->back().y = m.getArgAsFloat(i*4+2);
+                    }
+                    //cout << "locations:" << endl;
+                    //for( vector<ofVec3f>::iterator loc_it = osc_tracker->begin();
+                    //     loc_it != osc_tracker->end(); loc_it++ )
+                    //    cout << *loc_it << endl;
 
                     last_t = ofGetElapsedTimef();
+                    notify_button_events("touch");
 
                 } else if (osc_tracker->size() > 0 and ofGetElapsedTimef() - last_t > max_time) {
-                    cout << "revove locations:" << endl;
-                    for( vector<ofVec3f>::iterator loc_it = osc_tracker->begin();
-                         loc_it != osc_tracker->end(); loc_it++ )
-                        cout << *loc_it << endl;
+                    //cout << "revove locations:" << endl;
+                    //for( vector<ofVec3f>::iterator loc_it = osc_tracker->begin();
+                    //     loc_it != osc_tracker->end(); loc_it++ )
+                    //    cout << *loc_it << endl;
 
                     lock();
                     osc_tracker->clear();
                     unlock();
                     last_t = ofGetElapsedTimef();
+                    notify_button_events("touch");
                 } else {
-                    ofSleepMillis(100);
+                    ofSleepMillis(sleep_time);
                 }
             }
         }

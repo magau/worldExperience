@@ -32,27 +32,33 @@ void testApp::setup(){
     // e o comportamento "B_GravityGlue".
     Tag* t0 = world.create_tag();
     //t0->create_behavior("GravityGlue");
-    buffer_behavior = t0->create_behavior(typeid(GravityGlue*));
+    t0->create_behavior(typeid(GravityGlue*));
 
     t0->add_particles(world.particles.get_items_by_typeid(typeid(Sphere*)));
     //t0->add_behavior("B_GravityGlue");
 
     // Cria uma nova particula vermelha.
-    //p = world.create_particle("Circle");
-    buffer_particle = world.create_particle(typeid(Sphere*));
-    buffer_particle->set_item_parameter<ofColor>("color",ofColor(255,0,0));
+    ////p = world.create_particle("Circle");
+//    buffer_particle = world.create_particle(typeid(Sphere*));
+//    buffer_particle->set_item_parameter<ofColor>("color",ofColor(255,0,0));
     //p->set_ofColor("color",ofColor(255,0,0));
 
     // Cria uma nova tag t1 à qual adiciona a particula vermelha
     // e o comportamento "B_MouseTracking".
     buffer_tags.push_back(world.create_tag());
-    buffer_tags[0]->add_particle(buffer_particle);
-    //buffer_tag->create_behavior("MouseTracking");
-    buffer_tags[0]->create_behavior(typeid(MouseTracking*));
-        // Adiciona à tag buffer_tag uma interacção do tipo ElecticleRepulsion"
-    //Interaction* i0 = buffer_tag->create_interaction("Electrical_Repulsion");
-    Interaction* i0 = buffer_tags[0]->create_interaction(typeid(Electrical_Repulsion*));
-//cout << "Electrical_Repulsion interaction created." << endl;
+
+    buffer_behavior = buffer_tags[0]->create_behavior("OscTracker");
+    osc_cl->attach_listener_parameter("touch",buffer_behavior,"osc_msg");
+
+    // Adiciona à tag buffer_tag uma interacção do tipo ElecticleRepulsion"
+    Interaction* i0 = buffer_tags[0]->create_interaction("Electrical_Repulsion");
+    //Interaction* i0 = buffer_tags[0]->create_interaction(typeid(Electrical_Repulsion*));
+    //cout << "Electrical_Repulsion interaction created." << endl;
+
+//    buffer_tags[0]->add_particle(buffer_particle);
+//    buffer_tags[0]->create_behavior("MouseTracking");
+    //buffer_tags[0]->create_behavior(typeid(MouseTracking*));
+
     //cl->add_listener("ctrl2",i0);
 //    cl->attach_listener_parameter("ctrl2",i0,"weight");
     //Interaction* i0 = buffer_tag->add_interaction("I_WaveSource");
@@ -69,8 +75,8 @@ void testApp::setup(){
     //buffer_tag->add_particle(buffer_particle);
     buffer_interaction = buffer_tags[1]->create_interaction("DrawLine");
     
-    buffer_interaction->actuated_tags.back()->create_behavior(typeid(GravityGlue*));
-    i0->add_actuated_tag(buffer_interaction->actuated_tags.back());
+//    buffer_interaction->actuated_tags.back()->create_behavior(typeid(GravityGlue*));
+//    i0->add_actuated_tag(buffer_interaction->actuated_tags.back());
 
     //buffer_tag->create_interaction(typeid(DrawLine*));
     //i1->add_actuated_tag(t2);
@@ -123,12 +129,12 @@ void testApp::keyPressed(int key){
          case 'r':{
 
              if(buffer_tags[1]->particles.size() > 0)
-                 buffer_tags[1]->remove_particle(buffer_particle);
+                 buffer_tags[1]->remove_particles();
 
              break;}
          case 'd':{
 
-             buffer_tags[1]->add_particle(buffer_particle);
+             buffer_tags[1]->add_particles(buffer_tags[0]->particles);
               break;}
          case 'c':{
 

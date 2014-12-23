@@ -58,6 +58,8 @@ Behavior* Items_Factory::create_behavior(const type_info& item_typeid){
 
     if (item_typeid == typeid(GravityGlue*)){
         newItem = new GravityGlue();
+    } else if (item_typeid == typeid(OscTracker*)){
+        newItem = new OscTracker();
     } else if (item_typeid == typeid(MouseTracking*)){
         newItem = new MouseTracking();
     }
@@ -78,6 +80,8 @@ Behavior* Items_Factory::create_behavior(string item_name){
 
     if (item_name.compare("GravityGlue") == 0){
         newItem = new GravityGlue();
+    } else if (item_name.compare("OscTracker") == 0){
+        newItem = new OscTracker();
     } else if (item_name.compare("MouseTracking") == 0){
         newItem = new MouseTracking();
     }

@@ -14,7 +14,7 @@ World :: World(){
     //light.setOrientation(ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2 , 700.f));
     //light.setOrientation(ofVec3f(ofGetWindowWidth()/2,ofGetWindowHeight()/2 , 700.f));
     ofVec3f eulerAngles = camera.getOrientationEuler();
-    cout << "euler angles:" << eulerAngles << endl;
+    //cout << "euler angles:" << eulerAngles << endl;
     ofQuaternion q(0,ofVec3f(1,0,0),0,ofVec3f(0,0,1),180,ofVec3f(0,1,0));
     light.setOrientation(q);
 }
