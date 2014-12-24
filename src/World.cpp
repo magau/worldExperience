@@ -106,8 +106,8 @@ PointersVector<Particle*> World::get_particle_by_typeid(const type_info& particl
     return particles.get_items_by_typeid(particle_typeid);
 }
 
-Particle* World::get_particle_by_id(int particle_id){
-    return particles.get_item_by_id(particle_id);
+Particle* World::get_particle_by_id(Particle* particle_ptr){
+    return particles.get_item_by_id(particle_ptr);
 }
 
 
@@ -115,12 +115,16 @@ void World :: remove_particle(Particle* particle){
     // Remove the particle from the particles container of its
     // owne tag.
     PointersVector<Tag*>::iterator iter_tag;
-    for(iter_tag=particle->tags.end() - 1;
-        iter_tag >= particle->tags.begin();
-        iter_tag--)
-        (*iter_tag)->remove_particle(particle);
+    if (particle->tags.size() > 0){
+        for(iter_tag=particle->tags.end() - 1;
+            iter_tag >= particle->tags.begin();
+            iter_tag--) {
+
+            (*iter_tag)->remove_particle(particle);
+        }
+    }
     // Remove the particle from the world.particles container.
-    particles.erase_item_by_id(particle->get_id());
+    particles.erase_item_by_id(particle);
 }
 
 void World :: remove_particles(PointersVector<Particle*>* particles_selection){
@@ -144,18 +148,18 @@ Tag* World::create_tag(string iName){
     Tag* newTag = new Tag(this);
     tags.push_back(newTag);
 
-    if (iName.size() != 0) {
-        newTag->set_name(iName) ;
-    } else {
-        char tmp[7];
-        sprintf(tmp,"T_%04d",newTag->get_id());
-        newTag->set_name(tmp);
-    }
+    //if (iName.size() != 0) {
+    //    newTag->set_name(iName) ;
+    //} else {
+    //    char tmp[7];
+    //    sprintf(tmp,"T_%04d",newTag->get_id());
+    //    newTag->set_name(tmp);
+    //}
     return newTag;
 }
 
-void World :: remove_tag(Tag* tag){
-    tags.erase_item_by_id(tag->get_id());
+void World :: remove_tag(Tag* tag_ptr){
+    tags.erase_item_by_id(tag_ptr);
 }
 
 

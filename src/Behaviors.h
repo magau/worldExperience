@@ -46,6 +46,7 @@ class OscTracker : public Behavior{
     public:
         Item_Parameter_VectorOfofVect3f particles_tracker;
         string default_particle;
+        int default_rad;
         OscTracker();
         const type_info& get_typeid();
         void update();

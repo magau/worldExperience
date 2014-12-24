@@ -121,7 +121,6 @@ class OscParticlesTrackerController :  public Controller{
         void setup();
         void update(){};
         void threadedFunction(){
-            cout << "start osc thread..." << endl;
             ofxOscMessage m;
             int n_args;
             float last_t = ofGetElapsedTimef(),

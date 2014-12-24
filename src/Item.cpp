@@ -37,13 +37,13 @@ void Item::print_shared_var_names(){
     }
 }
 
-int    Item::get_id(){return id;}
+Item*  Item::get_id(){return this;}
 
 World* Item::get_world(){return world;}
 
 void   Item::set_name(string _name){name=_name;}
 
-void   Item::set_id(int _id){id=_id;}
+//void   Item::set_id(int _id){id=_id;}
 
 void   Item::set_world(World* _world){world=_world;}
 

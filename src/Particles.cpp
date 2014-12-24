@@ -130,6 +130,9 @@ void Circle :: display() {
 
 Sphere::Sphere() : Particle(){
     set_name(get_type_name());
+    sphere.setRadius( rad.value );
+    tmp_rad = rad.value;
+    spin_fac = 1.5708/tmp_rad; // pi/(2*r)
 }
 
 const type_info& Sphere::get_typeid() {
@@ -139,7 +142,6 @@ const type_info& Sphere::get_typeid() {
 void Sphere :: display() {
     if (rad.value != tmp_rad and rad.value > 0){
         sphere.setRadius( rad.value );
-        cout << tmp_rad << "->" << rad.value << endl;
         tmp_rad = rad.value;
         spin_fac = 1.5708/tmp_rad; // pi/(2*r)
     }

@@ -8,6 +8,8 @@
 void testApp::setup(){
 
     ofEnableSmoothing();
+    //ofSetFrameRate(1);
+    ofSetVerticalSync(true);
 //#ifdef USE_MOUSE_THREAD
 //    mouse.startThread(true);
 //#endif
@@ -17,8 +19,6 @@ void testApp::setup(){
     Controller* cl = world.create_controller("Controller");
     //cl = world.create_controller("MidiController");
     //Particle* p;
-    //ofSetFrameRate(1);
-    ofSetVerticalSync(true);
     //managerInterface.start(&world);
     
     // Cria a particula "MP_RegGrid" que por sua vez cria uma
@@ -34,7 +34,8 @@ void testApp::setup(){
     //t0->create_behavior("GravityGlue");
     t0->create_behavior(typeid(GravityGlue*));
 
-    t0->add_particles(world.particles.get_items_by_typeid(typeid(Sphere*)));
+    //t0->add_particles(world.particles.get_items_by_typeid(typeid(Sphere*)));
+    t0->add_particles(world.particles.get_items_by_typeid(typeid(Circle*)));
     //t0->add_behavior("B_GravityGlue");
 
     // Cria uma nova particula vermelha.

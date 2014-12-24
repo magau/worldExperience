@@ -10,7 +10,7 @@ class Tag : public Item {
         const type_info& get_typeid();
         void add_particle(Particle* particle);
         void add_particles(PointersVector<Particle*> added_particles);
-        Particle* get_particle_by_id(int particle_id);
+        Particle* get_particle_by_id(Particle* particle_ptr);
         PointersVector<Particle*> get_particles_by_typeid(const type_info& particle_typeid);
         void remove_particle(Particle* particle);
         void free_particle(Particle* particle);
@@ -22,13 +22,13 @@ class Tag : public Item {
         Behavior* create_behavior(string behavior_name, bool isActive=true);
         Behavior* create_behavior(const type_info& behavior_typeid, bool isActive=true);
         PointersVector<Behavior*> get_behaviors_by_typeid(const type_info& behavior_typeid);
-        Behavior* get_behavior_by_id(int behavior_id);
+        Behavior* get_behavior_by_id(Behavior* behavior_ptr);
         void remove_behavior(Behavior* behavior);
         void remove_behaviors();
 
         Interaction* create_interaction(string interaction_name, bool isActive=true);
         Interaction* create_interaction(const type_info& interaction_typeid, bool isActive=true);
-        Interaction* get_interaction_by_id(int interaction_id);
+        Interaction* get_interaction_by_id(Interaction* interaction_ptr);
         PointersVector<Interaction*> get_interactions_by_typeid(const type_info& interaction_typeid);
         void remove_interaction(Interaction* interaction);
         void remove_interactions();

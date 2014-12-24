@@ -15,7 +15,7 @@ class World {
         Particle* create_particle(string iName, bool isActive=true);
         Particle* create_particle(const type_info& particle_type, bool isActive=true);
         PointersVector<Particle*> get_particle_by_typeid(const type_info& particle_typeid);
-        Particle* get_particle_by_id(int particle_id);
+        Particle* get_particle_by_id(Particle* particle_ptr);
         void remove_particle(Particle* particle_ptr);
         void remove_particles(PointersVector<Particle*>* particles);
         PointersVector<Particle*>* update();

@@ -18,22 +18,20 @@ template <typename BaseTypePtr>
 class PointersVector : public vector<BaseTypePtr>{
     public:
         bool isMainContainer;
-        vector<int> freeIdBuff;
 
         PointersVector();
         PointersVector(bool _isMainContainer);
         PointersVector(const PointersVector& ptr_container);
         PointersVector<BaseTypePtr>& operator=(const PointersVector& ptr_container);
-        void push_back(BaseTypePtr item);
         void pop_back();
         typename vector<BaseTypePtr>::iterator erase(typename vector<BaseTypePtr>::iterator position);
         typename vector<BaseTypePtr>::iterator erase(typename vector<BaseTypePtr>::iterator first, typename vector<BaseTypePtr>::iterator last);
         void clear();
         void set_main_container(bool _isMainContainer);
         bool is_main_container() const;
-        typename vector<BaseTypePtr>::iterator erase_item_by_id(int id);
+        typename vector<BaseTypePtr>::iterator erase_item_by_id(BaseTypePtr item);
         void erase_items_by_typeid(const type_info& type_id);
-        BaseTypePtr get_item_by_id(int id);
+        BaseTypePtr get_item_by_id(BaseTypePtr item);
         PointersVector<BaseTypePtr> get_items_by_typeid(const type_info& type_id);
 
         // This function is suposed to be used only for purpouse of debug.
@@ -43,7 +41,7 @@ class PointersVector : public vector<BaseTypePtr>{
          "reset_itemTypeById" should be implemented in order to replace
          old items by newers of diferent types, passing the properties
          you plane to keep with from one to the other.
-         virtual void reset_itemTypeById(int id, string iName="");
+         virtual void reset_itemTypeById(Item* item_ptr, string iName="");
         */
 };
 
@@ -63,7 +61,7 @@ PointersVector<BaseTypePtr>::PointersVector(const PointersVector& ptr_container)
     if( !(ptr_container.is_main_container() && isMainContainer) ) {
         typename PointersVector<BaseTypePtr>::const_iterator item_it; 
         for (item_it = ptr_container.begin(); item_it != ptr_container.end(); item_it++){
-            push_back(*item_it);
+            vector<BaseTypePtr>::push_back(*item_it);
         }
     }
 }
@@ -74,29 +72,10 @@ PointersVector<BaseTypePtr>& PointersVector<BaseTypePtr>::operator=(const Pointe
     if( !(ptr_container.is_main_container() && isMainContainer) ) {
         typename PointersVector<BaseTypePtr>::const_iterator item_it; 
         for (item_it = ptr_container.begin(); item_it != ptr_container.end(); item_it++){
-            push_back(*item_it);
+            vector<BaseTypePtr>::push_back(*item_it);
         }
     }
     return *this;
-}
-
-
-template <typename BaseTypePtr> 
-void PointersVector<BaseTypePtr>::push_back(BaseTypePtr item){
-/* 
- * Add a new element to this container.
- * If the value of the boolean bember 'isMainContainer'
- * is true, an id number is associated to the added item.
- */
-    vector<BaseTypePtr>::push_back(item);
-    if (isMainContainer) {
-        if (freeIdBuff.size() > 0){
-            vector<BaseTypePtr>::back()->set_id(freeIdBuff.back());
-            freeIdBuff.pop_back();
-        } else {
-            vector<BaseTypePtr>::back()->set_id(vector<BaseTypePtr>::size() - 1);
-        }
-    }
 }
 
 template <typename BaseTypePtr>
@@ -104,13 +83,8 @@ typename vector<BaseTypePtr>::iterator PointersVector<BaseTypePtr>::erase(typena
 /*
  * Erase element from "PointersVector" after deallocate
  * the respective memory using the "delete" function.
- * Also keep "id" value of each erased element
- * in "freeIdBuff" vector for future added items.
  */
     if (isMainContainer) {
-        if ( (*position)->get_id() < (int)(vector<BaseTypePtr>::size() - 1) ) {
-            freeIdBuff.push_back((*position)->get_id());
-        }
         delete *position;
     }
     return vector<BaseTypePtr>::erase(position);
@@ -119,9 +93,6 @@ typename vector<BaseTypePtr>::iterator PointersVector<BaseTypePtr>::erase(typena
 template <typename BaseTypePtr>
 void PointersVector<BaseTypePtr>::pop_back() {
     if (isMainContainer) {
-        if ( vector<BaseTypePtr>::back()->get_id() < (int)vector<BaseTypePtr>::size() - 1 ) {
-            freeIdBuff.push_back(vector<BaseTypePtr>::back()->get_id());
-        }
         delete vector<BaseTypePtr>::back();
     }
     vector<BaseTypePtr>::pop_back();
@@ -137,14 +108,9 @@ typename vector<BaseTypePtr>::iterator PointersVector<BaseTypePtr>::erase( typen
  * the one pointed by "last".
  */
     typename vector<BaseTypePtr>::iterator item_it; 
-    int tmp_size = (int)vector<BaseTypePtr>::size();
     if (isMainContainer) {
         for (item_it = last-1; item_it >= first; item_it--) {
-            if ( (*item_it)->get_id() < tmp_size - 1 ) {
-                freeIdBuff.push_back((*item_it)->get_id());
-            }
             delete *item_it;
-            tmp_size--;
         }
     }
     vector<BaseTypePtr>::erase(first,last);
@@ -160,26 +126,25 @@ void PointersVector<BaseTypePtr>::clear(){
              item_it++){
             delete *item_it;
         }
-        freeIdBuff.clear();
     }
     vector<BaseTypePtr>::clear();
 }
 
 template <typename BaseTypePtr>
-BaseTypePtr PointersVector<BaseTypePtr>::get_item_by_id(int item_id) {
+BaseTypePtr PointersVector<BaseTypePtr>::get_item_by_id(BaseTypePtr item) {
     typename vector<BaseTypePtr>::iterator item_it; 
     for (item_it = vector<BaseTypePtr>::begin(); item_it != vector<BaseTypePtr>::end(); item_it++) {
-        if ((*item_it)->get_id() == item_id)
+        if ((*item_it) == item)
             return *item_it;
     }
     return (BaseTypePtr)NULL;
 }
 
 template <typename BaseTypePtr>
-typename vector<BaseTypePtr>::iterator PointersVector<BaseTypePtr>::erase_item_by_id(int item_id) {
+typename vector<BaseTypePtr>::iterator PointersVector<BaseTypePtr>::erase_item_by_id(BaseTypePtr item) {
     typename vector<BaseTypePtr>::iterator item_it; 
     for (item_it = vector<BaseTypePtr>::begin(); item_it != vector<BaseTypePtr>::end(); item_it++) {
-        if ((*item_it)->get_id() == item_id)
+        if (*item_it == item)
             return erase(item_it);
     }
     return vector<BaseTypePtr>::end();
@@ -219,6 +184,6 @@ template <typename BaseTypePtr>
 void PointersVector<BaseTypePtr>::show_items_name_and_id(){
     typename vector<BaseTypePtr>::iterator item_it;
     for (item_it = vector<BaseTypePtr>::begin(); item_it != vector<BaseTypePtr>::end(); item_it++) {
-        cout<<"name:"<<(*item_it)->get_name()<<" id:"<<(*item_it)->get_id()<<endl;
+        cout<<"name:"<<(*item_it)->get_name()<<" id:"<<(long long)(*item_it)<<endl;
     }
 }

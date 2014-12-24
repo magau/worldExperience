@@ -59,8 +59,8 @@ void Tag::add_particles(PointersVector<Particle*> added_particles){
     }
 }
 
-Particle* Tag::get_particle_by_id(int particle_id){
-    return particles.get_item_by_id(particle_id);
+Particle* Tag::get_particle_by_id(Particle* particle_ptr){
+    return particles.get_item_by_id(particle_ptr);
 }
 
 PointersVector<Particle*> Tag::get_particles_by_typeid(const type_info& particle_typeid){
@@ -68,13 +68,14 @@ PointersVector<Particle*> Tag::get_particles_by_typeid(const type_info& particle
 }
 
 void Tag::remove_particle(Particle* particle){
-    if (get_particle_by_id(particle->get_id()) != (Particle*)NULL) {
+
+    if (get_particle_by_id(particle) != (Particle*)NULL) {
         // Free the particle variables seted by this tag's behaviors and interactions:
         free_particle(particle);
         // Remove the particle from this tag's particles container:
-        particles.erase_item_by_id(particle->get_id()); 
+        particles.erase_item_by_id(particle); 
         // Remove this tag from particle's tags container:
-        particle->tags.erase_item_by_id(id);
+        particle->tags.erase_item_by_id(this);
         // Remove particle from this tag's attaced buttons event listeners:
         free_attached_buttons(particle);
     }
@@ -110,9 +111,9 @@ void Tag::remove_particles(PointersVector<Particle*>* particles_selection){
         // Remove the particle from this tag's particles container:
         particles_selection->pop_back();
         if (particles_selection != &particles)
-            particles.erase_item_by_id((*iter_particle)->get_id()); 
+            particles.erase_item_by_id(*iter_particle); 
         // Remove this tag from particle's tags container:
-        (*iter_particle)->tags.erase_item_by_id(id);
+        (*iter_particle)->tags.erase_item_by_id(this);
         // Remove particle from this tag's attaced buttons event listeners:
         free_attached_buttons(*iter_particle);
     }
@@ -153,13 +154,13 @@ PointersVector<Behavior*> Tag::get_behaviors_by_typeid(const type_info& behavior
     return behaviors.get_items_by_typeid(behavior_typeid);
 }
 
-Behavior* Tag::get_behavior_by_id(int behavior_id){
-    return behaviors.get_item_by_id(behavior_id);
+Behavior* Tag::get_behavior_by_id(Behavior* behavior_ptr){
+    return behaviors.get_item_by_id(behavior_ptr);
 }
 
-void Tag::remove_behavior(Behavior* behavior){
-    behavior->free();
-    behaviors.erase_item_by_id(behavior->get_id());
+void Tag::remove_behavior(Behavior* behavior_ptr){
+    behavior_ptr->free();
+    behaviors.erase_item_by_id(behavior_ptr);
 }
 
 void Tag::remove_behaviors(){
@@ -191,13 +192,13 @@ PointersVector<Interaction*> Tag::get_interactions_by_typeid(const type_info& in
     return interactions.get_items_by_typeid(interaction_typeid);
 }
 
-Interaction* Tag::get_interaction_by_id(int interaction_id){
-    return interactions.get_item_by_id(interaction_id);
+Interaction* Tag::get_interaction_by_id(Interaction* interaction_ptr){
+    return interactions.get_item_by_id(interaction_ptr);
 }
 
-void Tag::remove_interaction(Interaction* interaction){
-    interaction->free();
-    interactions.erase_item_by_id(interaction->get_id());
+void Tag::remove_interaction(Interaction* interaction_ptr){
+    interaction_ptr->free();
+    interactions.erase_item_by_id(interaction_ptr);
 }
 
 void Tag::remove_interactions(){

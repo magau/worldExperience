@@ -226,10 +226,10 @@ class Item{
         virtual string get_type_name();
 
         string get_name();
-        int get_id();
+        Item* get_id();
         World* get_world();
         void set_name(string _name);
-        void set_id(int _id);
+        //void set_id(int _id);
         void set_world(World* _world);
         void print_shared_var_names();
 

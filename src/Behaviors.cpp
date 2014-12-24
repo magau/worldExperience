@@ -118,7 +118,9 @@ void MouseTracking::update_particle(Particle* _host_particle){
 
 OscTracker::OscTracker() : Behavior(){
     set_name(get_type_name());
-    default_particle = "Circle";
+    //default_particle = "Circle";
+    default_particle = "Sphere";
+    default_rad = 10;
     set_variable("default",&default_particle,STRING);
     set_variable("osc_msg",&particles_tracker,IP_VECTOR_OF_VEC3F);
 }
@@ -148,7 +150,8 @@ void OscTracker::update(){
         if (!is_present) {
             Particle* particle = create_particle(default_particle);
             particle->set_variable("id",(int)(track_it->z),this);
-            particle->set_item_parameter<ofColor>("color",ofColor(255,0,0));
+            particle->set_item_parameter("rad",default_rad);
+            particle->set_item_parameter("color",ofColor(255,0,0));
         }
     }
 

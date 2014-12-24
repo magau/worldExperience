@@ -34,17 +34,17 @@ void Action::update_particle(Particle* _host_particle){}
 
 void Action::update(){
     PointersVector<Particle*>::iterator iter_particle;
-    //if (get_tag()->particles.size() > 0) {
+    if (get_tag()->particles.size() > 0) {
         
-        for (iter_particle = get_tag()->particles.begin();
-             iter_particle != get_tag()->particles.end();
-             iter_particle++){
+        for (iter_particle = get_tag()->particles.end() - 1;
+             iter_particle >= get_tag()->particles.begin();
+             iter_particle--){
 
              if ((*iter_particle)->get_item_parameter<bool>("is_active")->value)
                  update_particle(*iter_particle);
          }
         
-    //}
+    }
 }
 
 Particle* Action::create_particle(string p_name){
@@ -54,7 +54,7 @@ Particle* Action::create_particle(string p_name){
 };
 
 void Action::erase_particle(Particle* particle){
-    particle->is_active = false;
-    particle->is_alive = false;
-    //get_world()->remove_particle(particle);
+    //particle->is_active = false;
+    //particle->is_alive = false;
+    get_world()->remove_particle(particle);
 };

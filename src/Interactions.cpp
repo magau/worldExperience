@@ -29,8 +29,8 @@ void Interaction::add_actuated_tag(Tag* tag){
    actuated_tags.push_back(tag); 
 }
 
-void Interaction::remove_actuated_tag(Tag* tag){
-   actuated_tags.erase_item_by_id(tag->id);
+void Interaction::remove_actuated_tag(Tag* tag_ptr){
+   actuated_tags.erase_item_by_id(tag_ptr);
 }
 
 Electrical_Repulsion::Electrical_Repulsion() : Interaction() {
