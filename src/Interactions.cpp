@@ -205,15 +205,14 @@ void DrawLine :: interact(Particle* _actuated_particle, Particle*_host_particle)
     Line* actuated_particle = (Line*)_actuated_particle;
     ofVec3f _host_loc = _host_particle->get_item_parameter<ofVec3f>("loc")->value;
     int npoints = actuated_particle->points.size();
-    //if (npoints > 0){
+    if (npoints > 0){
         ofVec3f end_point_loc = actuated_particle->points[npoints - 1];
         if(_host_loc.distance(end_point_loc) > min_dist)
             actuated_particle->points.addVertex(_host_loc);
             //actuated_particle->points.simplify(1);
-    //} else {
-    //    actuated_particle->points.addVertex(_host_loc);
-    //    actuated_particle->loc.value = _host_loc;
-    //}
+    } else {
+        actuated_particle->points.addVertex(_host_loc);
+    }
 
 }
 
@@ -227,7 +226,8 @@ void DrawLine::setup_particle(Particle* _host_particle){
      Line* actuated_particle = (Line*)(get_world()->create_particle("Line"));
      ofVec3f _host_loc = _host_particle->loc.value;//get_item_parameter<ofVec3f>("loc")->value;
      actuated_particle->loc.value = _host_loc;
-     actuated_particle->points.addVertex(_host_loc);
+     //cout << _host_loc << endl;
+     //actuated_particle->points.addVertex(_host_loc);
      _host_particle->set_variable("act_part",actuated_particle,PARTICLE,this);
      (*actuated_tags.begin())->add_particle(actuated_particle);
      //_host_particle->set_variable("loc", _host_loc, this);

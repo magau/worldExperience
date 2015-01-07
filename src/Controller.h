@@ -75,7 +75,10 @@ class Controller : public ofThread, public Item {
             Item_Parameter<T>* parameter = static_cast<Item_Parameter<T>*>(button->parameter);
             if(reverse){
                 if (typeid(T) == typeid(bool)){
-                    parameter->value = False;
+                    //cout << "set bool parameter false" << endl;
+                    //cout << "parameter value: " << (parameter->value) << endl;
+                    parameter->value = false;
+                    //cout << "parameter value after: " << (parameter->value) << endl;
                 } else {
                     if (closed_range){
                         parameter->value = (((parameter->value - parameter->range.first - 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;
@@ -90,7 +93,10 @@ class Controller : public ofThread, public Item {
                 }
             } else {
                 if (typeid(T) == typeid(bool)){
-                    parameter->value = True;
+                    //cout << "set bool parameter true" << endl;
+                    //cout << "parameter value: " << (parameter->value) << endl;
+                    parameter->value = true;
+                    //cout << "parameter value after: " << (parameter->value) << endl;
                 } else {
                     if (closed_range){
                         parameter->value = (((parameter->value - parameter->range.first + 1) % parameter->delta) + parameter->delta) % parameter->delta + parameter->range.first;

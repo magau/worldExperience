@@ -385,6 +385,26 @@ void Item::clear_variables(unordered_map <shared_variable_key, shared_variable, 
 void Item::map_shv_parameter(shared_variable* current_var, shared_variable* input_var) {
     switch (input_var->type_enum) {
 
+        case IP_BOOL:
+        {
+
+            Item_Parameter<bool> input_ip = *static_cast<Item_Parameter<bool>*>(input_var->value);
+
+            switch (current_var->type_enum) {
+                case IP_BOOL:
+                {
+                    Item_Parameter<bool>* current_ip = static_cast<Item_Parameter<bool>*>(current_var->value);
+                    current_ip->value = input_ip.value;
+                    //cout << input_ip.value << "; " << current_ip->value << endl; 
+
+                    break;
+                }
+                default:
+                    cout << "IP_BOOL can't be maped for this type!" << endl;
+                    break;
+            }
+            break;
+        }
         case IP_INT:
         {
 
@@ -406,10 +426,10 @@ void Item::map_shv_parameter(shared_variable* current_var, shared_variable* inpu
                     break;
                 }
                 case T_NULL:
-                    cout << "arg_t not defined for this type!" << endl;
+                    cout << "IP_INT can't be maped for this type!" << endl;
                     break;
                 default:
-                    cout << "arg_t not defined for this type!" << endl;
+                    cout << "IP_INT can't be maped for this type!" << endl;
                     break;
             }
             break;
@@ -462,19 +482,19 @@ void Item::map_shv_parameter(shared_variable* current_var, shared_variable* inpu
                     break;
                 }
                 case T_NULL:
-                    cout << "arg_t not defined for this type!" << endl;
+                    cout << "IP_FLOAT can't be maped for this type!" << endl;
                     break;
                 default:
-                    cout << "arg_t not defined for this type!" << endl;
+                    cout << "IP_FLOAT can't be maped for this type!" << endl;
                     break;
             }
             break;
         }
         case T_NULL:
-            cout << "arg_t not defined for this type!" << endl;
+            cout << "map_shv_parameter is not defined for this type!" << endl;
             break;
         default:
-            cout << "arg_t not defined for this type!" << endl;
+            cout << "map_shv_parameter is not defined for this type!" << endl;
             break;
     }
 }
@@ -493,6 +513,7 @@ void Item::map_event_contents(pair<vector<shared_variable_key>, shared_variable>
 
         if(current_var.value != NULL) {
             shared_variable input_var = received_var.second;
+            // map_shv_parameter should be revued or replaced...
             map_shv_parameter(&current_var, &input_var);
         } else if (current_var.callback != NULL) {
             shared_variable input_var = received_var.second;

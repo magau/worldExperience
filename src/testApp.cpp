@@ -72,9 +72,11 @@ void testApp::setup(){
     //Tag* t2 = world.create_tag();
     //t2->add_particle(l);
 
-    buffer_tags.push_back(world.create_tag());
+//    buffer_tags.push_back(world.create_tag());
     //buffer_tag->add_particle(buffer_particle);
-    buffer_interaction = buffer_tags[1]->create_interaction("DrawLine");
+    buffer_interaction = buffer_tags[0]->create_interaction("DrawLine");
+//    cout << buffer_interaction->get_type_name() << " is active:" << buffer_interaction->get_item_parameter<bool>("is_active")->value << endl;
+    cl->attach_listener_parameter("switch2",buffer_interaction,"is_active");
     
 //    buffer_interaction->actuated_tags.back()->create_behavior(typeid(GravityGlue*));
 //    i0->add_actuated_tag(buffer_interaction->actuated_tags.back());
@@ -86,15 +88,13 @@ void testApp::setup(){
 
     World_Camera* c0 = &(world.camera);
 
-    //cl->attach_listener_parameter("ctrl3",buffer_behavior,"weight");
-    cl->attach_listener_parameter("ctrl3",t0,"rad");
-    //cl->attach_listener_parameter("ctrl3",i0,"weight");
     cl->attach_listener_parameter("ctrl1",c0,"pan");
     cl->attach_listener_parameter("ctrl2",c0,"tilt");
-    cl->attach_listener_parameter("switch4",c0,"travel");
-
-
+    cl->attach_listener_parameter("ctrl3",t0,"rad");
+    //cl->attach_listener_parameter("ctrl3",buffer_behavior,"weight");
+    //cl->attach_listener_parameter("ctrl3",i0,"weight");
     cl->attach_listener_parameter("ctrl4",i0,"weight");
+    cl->attach_listener_parameter("switch1",c0,"travel");
 
 //cout << "setup done." << endl; 
 }
@@ -139,15 +139,17 @@ void testApp::keyPressed(int key){
               break;}
          case 'c':{
 
-             if(buffer_tags[1]->interactions.size() > 0) {
-                 buffer_tags[1]->remove_interaction(buffer_interaction);
-                 if(buffer_tags[1]->interactions.size() > 0)
-                     buffer_interaction = *(buffer_tags[1]->interactions.end()-1);
+             if(buffer_tags[0]->interactions.size() > 0) {
+                 buffer_tags[0]->remove_interaction(buffer_interaction);
+                 if(buffer_tags[0]->interactions.size() > 0)
+                     buffer_interaction = *(buffer_tags[0]->interactions.end()-1);
              }
              break;}
          case 'a':{
 
-             buffer_interaction = buffer_tags[1]->create_interaction("DrawLine");
+             buffer_interaction = buffer_tags[0]->create_interaction("DrawLine");
+             Controller* cl = world.controllers.back();
+             cl->attach_listener_parameter("switch2",buffer_interaction,"is_active");
 
              break;}
     //     case 'g':{

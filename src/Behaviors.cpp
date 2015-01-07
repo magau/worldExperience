@@ -168,10 +168,8 @@ void OscTracker::update_particle(Particle* _host_particle){
 
         if((int)(track_it->z) == *(int*)(_host_particle->get_variable("id",this).value)){
             is_present = true;
-
             _host_particle->vel.value.x = (int)track_it->x - _host_particle->loc.value.x;
             _host_particle->vel.value.y = (int)track_it->y - _host_particle->loc.value.y;
-            //cout << (_host_particle->loc.value) << endl;
             break;
         }
 

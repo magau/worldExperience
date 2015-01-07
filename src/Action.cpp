@@ -40,8 +40,11 @@ void Action::update(){
              iter_particle >= get_tag()->particles.begin();
              iter_particle--){
 
-             if ((*iter_particle)->get_item_parameter<bool>("is_active")->value)
+             if ((*iter_particle)->get_item_parameter<bool>("is_active")->value){
                  update_particle(*iter_particle);
+             } else {
+                 cout << "skip behavior :" << get_type_name() << endl;
+             }
          }
         
     }

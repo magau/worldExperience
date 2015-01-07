@@ -132,7 +132,7 @@ Sphere::Sphere() : Particle(){
     set_name(get_type_name());
     sphere.setRadius( rad.value );
     tmp_rad = rad.value;
-    spin_fac = 1.5708/tmp_rad; // pi/(2*r)
+    spin_fac = 1.5708/tmp_rad; // (pi/2)/r
 }
 
 const type_info& Sphere::get_typeid() {

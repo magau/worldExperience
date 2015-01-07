@@ -218,7 +218,8 @@ void Tag::run(){
          iter_interaction != interactions.end();
          iter_interaction++){
          //cout << (*iter_interaction)->get_type_name() << endl;
-         (*iter_interaction)->update();
+         if ((*iter_interaction)->get_item_parameter<bool>("is_active")->value)
+             (*iter_interaction)->update();
     }
 
     PointersVector<Behavior*>::iterator iter_behavior;
@@ -226,7 +227,8 @@ void Tag::run(){
          iter_behavior != behaviors.end();
          iter_behavior++){
          //cout << (*iter_behavior)->get_type_name() << endl;
-         (*iter_behavior)->update();
+         if ((*iter_behavior)->get_item_parameter<bool>("is_active")->value)
+             (*iter_behavior)->update();
     }
 }
 

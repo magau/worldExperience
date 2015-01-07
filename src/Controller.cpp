@@ -28,6 +28,7 @@ void Controller::attach_listener_parameter(string button_name,
                                            string parameter_name,
                                            Item* host_item) {
 
+    // Attach button event to listener Item:
     Button* button = get_button(button_name);
     unordered_map <Item*,Button::Button_Item>::iterator b_item_map_it = button->listeners_map.find(listener);
     if (b_item_map_it == button->listeners_map.end()){
@@ -74,8 +75,11 @@ void Controller::setup() {
     add_button("ctrl4");
     setup_button_parameter("ctrl4",IP_INT,10,pair<int,int>(0,1024));
 
-    add_button("switch4");
-    setup_button_parameter("switch4",IP_BOOL,True);
+    add_button("switch1");
+    setup_button_parameter("switch1",IP_BOOL,true);
+
+    add_button("switch2");
+    setup_button_parameter("switch2",IP_BOOL,true);
 
 }
 
@@ -89,7 +93,10 @@ void Controller::notify_button_events(string button_name) {
          b_item_map_it++){
 
          pair<vector<shared_variable_key>,shared_variable> sent_value(b_item_map_it->second.attached_variables, value);
+         //cout << "notify event set variable: " << b_item_map_it->second.attached_variables[0].name << ", to item: " << (b_item_map_it->first->get_type_name()) << " is_active:" << (b_item_map_it->first->get_item_parameter<bool>("is_active")->value) << endl;
+         //cout << "arg_t IP_BOOL: " << IP_BOOL << "; shared_variable.type_enum: " << value.type_enum << endl;
          ofNotifyEvent(b_item_map_it->second.event, sent_value);
+         //cout << "notify done." << endl;
          //cout << ((b_item_map_it->second.attached_variables.end()-1)->name) << endl;
     } 
 }
@@ -131,18 +138,27 @@ void Controller::update() {
             notify_button_events("ctrl4");
         }
     }
-    if (ofGetKeyPressed('0')){
+    if (ofGetKeyPressed('9')){
         if (ofGetKeyPressed('+')){
-            iterate_button_parameter<bool>("switch4");
-            notify_button_events("switch4");
+            iterate_button_parameter<bool>("switch1");
+            notify_button_events("switch1");
         } else if (ofGetKeyPressed('-')){
-            iterate_button_parameter<bool>("switch4", true);
-            notify_button_events("switch4");
+            iterate_button_parameter<bool>("switch1", true);
+            notify_button_events("switch1");
         }
 
         //Button* button = static_cast<Button*>(get_variable("switch4").value);
         //Item_Parameter<bool>* parameter = static_cast<Item_Parameter<bool>*>(button->parameter);
         //cout << "switch4 value:" << parameter->value << endl;
+    }
+    if (ofGetKeyPressed('0')){
+        if (ofGetKeyPressed('+')){
+            iterate_button_parameter<bool>("switch2");
+            notify_button_events("switch2");
+        } else if (ofGetKeyPressed('-')){
+            iterate_button_parameter<bool>("switch2", true);
+            notify_button_events("switch2");
+        }
     }
 }
 
