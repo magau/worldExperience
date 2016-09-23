@@ -6,8 +6,7 @@
 #include <algorithm>
 #include <boost/regex.hpp>
 using namespace boost;
-#include <tr1/unordered_map> 
-using namespace tr1;
+#include <unordered_map> 
 using namespace std;
 #include "math.h"
 #include "PointersVector.h"
