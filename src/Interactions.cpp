@@ -150,17 +150,21 @@ void Wave_Source :: update_particle(Particle* _host_particle){
 
 void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particle){
     float dist,acc,size_ds;
-    ofPoint ds, dir, wavePos;
+    //ofPoint ds, dir, wavePos;
+    glm::vec3 ds, dir, wavePos;
 
     ofVec3f* actuated_loc = &actuated_particle->get_item_parameter<ofVec3f>("loc")->value;
     ofVec3f* _host_loc = &_host_particle->get_item_parameter<ofVec3f>("loc")->value;
 
-    ds.x = actuated_loc->x - _host_loc->x;
-    ds.y = actuated_loc->y - _host_loc->y;
+    //ds.x = actuated_loc->x - _host_loc->x;
+    //ds.y = actuated_loc->y - _host_loc->y;
+    ds = glm::vec3(actuated_loc->x - _host_loc->x, actuated_loc->y - _host_loc->y, 0);
     size_ds = ofVec3f(0).distance(ds);
-    dir.set(ds.x/size_ds,ds.y/size_ds);
+    //dir.set(ds.x/size_ds,ds.y/size_ds);
+    dir = glm::vec3(ds.x/size_ds, ds.y/size_ds, 0);
     
-    wavePos.set(_host_loc->x + timer * dir.x, _host_loc->y + timer * dir.y);
+    //wavePos.set(_host_loc->x + timer * dir.x, _host_loc->y + timer * dir.y);
+    wavePos = glm::vec3(_host_loc->x + timer * dir.x, _host_loc->y + timer * dir.y, 0);
     dist = actuated_loc->distance(wavePos);
     if (dist > max_dist) {
         _host_particle->set_variable("is_alive",Item_Parameter<bool>(false));
@@ -170,8 +174,9 @@ void Wave_Source :: interact(Particle* actuated_particle, Particle*_host_particl
 
         acc = weight / pow(dist,2);
 
-        ds.x = actuated_loc->x - wavePos.x ;
-        ds.y = actuated_loc->y - wavePos.y;
+        //ds.x = actuated_loc->x - wavePos.x;
+        //ds.y = actuated_loc->y - wavePos.y;
+        ds = glm::vec3(actuated_loc->x - wavePos.x, actuated_loc->y - wavePos.y, 0);
         ofVec3f* actuated_acc = &actuated_particle->get_item_parameter<ofVec3f>("acc")->value;
         actuated_acc->x += ds.x * acc;
         actuated_acc->y += ds.y * acc;

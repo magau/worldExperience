@@ -169,7 +169,8 @@ void Line :: update() {
         loc.value = centroid2D;
     
     ofVec3f disp = vel.value;
-    for(vector<ofPoint>::iterator p_it = points.getVertices().begin();
+    //for(vector<ofPoint>::iterator p_it = points.getVertices().begin();
+    for(vector<glm::vec3>::iterator p_it = points.getVertices().begin();
                                   p_it != points.getVertices().end();
                                   p_it++)
         *p_it += disp;
